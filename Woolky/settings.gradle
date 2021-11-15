@@ -1,0 +1,2 @@
+rootProject.name='Woolky'
+include ':app'
