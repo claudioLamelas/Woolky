@@ -1,21 +1,31 @@
 package com.example.woolky;
 
+import android.graphics.Color;
+
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
 
-    public int dim, sizeOfSquareSide;
-    public LatLng initialPosition;
+    private int dim, sizeOfSquareSide;
+    private LatLng initialPosition;
+    private List<Polyline> boardLines;
 
     public Board(int dim, int sizeOfSquareSide, LatLng initialPosition) {
         this.dim = dim;
         this.sizeOfSquareSide = sizeOfSquareSide;
-        this.initialPosition = initialPosition;
+        //faz com que o utilizador comece no meio do tabuleiro
+        this.initialPosition = getInitialPositionToTopLeft(initialPosition, sizeOfSquareSide);
+        this.boardLines = new ArrayList<>();
     }
 
-    public boolean inBoard(LatLng position) {
+    private boolean inBoard(LatLng position) {
         boolean b1 = Double.compare(position.latitude, initialPosition.latitude) < 0;
         boolean b2 = Double.compare(position.latitude, LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide, dim).latitude) > 0;
         boolean b3 = Double.compare(position.longitude, initialPosition.longitude) > 0;
@@ -35,6 +45,11 @@ public class Board {
             fimLinhaHorizontal = LocationCalculator.getPositionXMetersBelow(fimLinhaHorizontal, sizeOfSquareSide, i);
             drawLine(mMap, inicioLinhaHorizontal, fimLinhaHorizontal);
         }
+    }
+
+    private LatLng getInitialPositionToTopLeft(LatLng initialPosition, int sizeOfSquareSide) {
+        initialPosition = LocationCalculator.getPositionXMetersRight(initialPosition, sizeOfSquareSide/2, -3);
+        return LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide/2, -3);
     }
 
     public int[] getPositionInBoard(LatLng posicaoAtual) {
@@ -58,6 +73,25 @@ public class Board {
     }
 
     private void drawLine(GoogleMap mMap, LatLng inicioLinha, LatLng fimLinha) {
-        mMap.addPolyline((new PolylineOptions()).clickable(false).add(inicioLinha, fimLinha));
+        Polyline line = mMap.addPolyline((new PolylineOptions()).clickable(false).add(inicioLinha, fimLinha));
+        boardLines.add(line);
+    }
+
+    public void playCircle(int[] coordenadas, GoogleMap mMap) {
+        if (coordenadas[0] > -1 && coordenadas[1] > -1) {
+            LatLng centerOfCell = LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide/2, coordenadas[0] * 2 + 1);
+            centerOfCell = LocationCalculator.getPositionXMetersRight(centerOfCell, sizeOfSquareSide/2, coordenadas[1] * 2 + 1);
+            mMap.addCircle(new CircleOptions().center(centerOfCell).radius(10.0).strokeColor(Color.RED));
+        }
+    }
+
+    public void setInitialPosition(LatLng newInitialPosition) {
+        this.initialPosition = getInitialPositionToTopLeft(newInitialPosition, this.sizeOfSquareSide);
+    }
+
+    public void remove() {
+        for (Polyline l : boardLines) {
+            l.remove();
+        }
     }
 }

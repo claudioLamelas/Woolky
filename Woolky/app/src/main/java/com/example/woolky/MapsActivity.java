@@ -13,8 +13,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,12 +34,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private static final int FINE_LOCATION_CODE = 114;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     protected LocationManager locationManager;
+    private LatLng currentPosition;
+
+    private Board board;
+    private Marker userMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        findViewById(R.id.drawBoardButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                board = new Board(3, 30, currentPosition);
+                board.drawBoard(mMap);
+            }
+        });
 
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
 
@@ -60,15 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -76,32 +81,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
-
-                //--------------- CÓDIGO PARA WOOLKY ----------------//
                 int dim = 3;
                 int ladoQuadrado = 30;
                 LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
-                //faz com que o utilizador comece no meio do tabuleiro
-                posicaoInicial = LocationCalculator.getPositionXMetersRight(posicaoInicial, 15, -3);
-                posicaoInicial = LocationCalculator.getPositionXMetersBelow(posicaoInicial, 15, -3);
-                Board board = new Board(dim, ladoQuadrado, posicaoInicial);
-                board.drawBoard(mMap);
+                currentPosition = posicaoInicial;
+                /*board = new Board(dim, ladoQuadrado, posicaoInicial);
+                board.drawBoard(mMap);*/
 
-                LatLng pontoTeste = LocationCalculator.getPositionXMetersRight(posicaoInicial, 15, 5);
-                pontoTeste = LocationCalculator.getPositionXMetersBelow(pontoTeste, 15, 5);
+                /*LatLng pontoTeste = MockUsers.usersPositions.get(1);
                 int [] coordenadas = board.getPositionInBoard(pontoTeste);
 
-                if (coordenadas[0] > -1 && coordenadas[1] > -1) {
-                    LatLng centerOfCell = LocationCalculator.getPositionXMetersBelow(posicaoInicial, ladoQuadrado/2, coordenadas[0] * 2 + 1);
-                    centerOfCell = LocationCalculator.getPositionXMetersRight(centerOfCell, ladoQuadrado/2, coordenadas[1] * 2 + 1);
-                    mMap.addCircle(new CircleOptions().center(centerOfCell).radius(10.0).strokeColor(Color.RED));
-                }
-                //--------------- CÓDIGO PARA WOOLKY ----------------//
+                board.playCircle(coordenadas, mMap);*/
 
-                //lastLocation = newPosition;
-                mMap.addMarker(new MarkerOptions().position(newPosition).icon(BitmapFromVector(cx, ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))).title("EU"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPosition, 16));
+                userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(BitmapFromVector(cx, ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
                 for (int i = 0; i < MockUsers.usersPositions.size(); i++) {
                     Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
@@ -113,19 +106,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(@NonNull Marker marker) {
-                        Toast.makeText(cx, marker.getTitle(), Toast.LENGTH_LONG).show();
+                        UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTitle());
+                        dialog.show(getSupportFragmentManager(), "userID");
                     }
                 });
 
-                /*mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(@NonNull LatLng latLng) {
-                        mMap.clear();
+                        board.remove();
+                        board = null;
                     }
-                });*/
+                });
             }
         });
+        checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, this);
     }
+
+
 
     private BitmapDescriptor BitmapFromVector(Context context, Drawable vectorDrawable) {
         // below line is use to set bounds to our vector drawable.
@@ -142,5 +141,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // after generating our bitmap we are returning our bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+        if (userMarker != null) {
+            userMarker.remove();
+            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(BitmapFromVector(this, ContextCompat.getDrawable(this, R.drawable.ic_android_24dp))));
+        }
+        if (board != null) {
+            board.remove();
+            board.setInitialPosition(currentPosition);
+            board.drawBoard(mMap);
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
