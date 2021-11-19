@@ -16,4 +16,5 @@ public class MockUsers {
             new LatLng(38.80056, -9.14342));
     public static List<String> usersInformation = Arrays.asList("Juan Calamares", "Francesca Giacomo", "Ana Caxo Paulo");
     public static List<Integer> usersColors = Arrays.asList(Color.RED, Color.BLUE, Color.rgb(222, 157, 35));
+    public static List<Integer> usersLevels = Arrays.asList(20, 5, 17);
 }

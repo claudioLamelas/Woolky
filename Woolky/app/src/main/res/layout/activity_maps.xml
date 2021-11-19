@@ -22,9 +22,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#FFFFFF"
         android:text="Draw Board"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/map" />
+
+    <ImageButton
+        android:id="@+id/recenterPositionButton"
+        android:layout_width="49dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="84dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/circle_shape"
+        android:backgroundTint="#FFFFFF"
+        android:elevation="10dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_my_location_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

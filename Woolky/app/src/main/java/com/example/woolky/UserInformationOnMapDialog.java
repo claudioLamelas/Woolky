@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 
 /**
@@ -24,10 +26,12 @@ public class UserInformationOnMapDialog extends DialogFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "userID";
+    private static final String ARG_PARAM2 = "userData";
     //private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String userId;
+    private int userLevel;
 
     public UserInformationOnMapDialog() {
         // Required empty public constructor
@@ -38,12 +42,14 @@ public class UserInformationOnMapDialog extends DialogFragment {
      * this fragment using the provided parameters.
      *
      * @param userId The user id
+     * @param tag The information associated with the user
      * @return A new instance of fragment UserInformationOnMapDialog.
      */
-    public static UserInformationOnMapDialog newInstance(String userId) {
+    public static UserInformationOnMapDialog newInstance(String userId, Object tag) {
         UserInformationOnMapDialog fragment = new UserInformationOnMapDialog();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, userId);
+        args.putInt(ARG_PARAM2, (int)tag);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,6 +59,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this.userId = getArguments().getString(ARG_PARAM1);
+            this.userLevel = getArguments().getInt(ARG_PARAM2);
         }
     }
 
@@ -71,8 +78,9 @@ public class UserInformationOnMapDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.fragment_user_information_on_map_dialog, null);
-        builder.setTitle(userId)
-                .setView(v)
+        ((TextView) v.findViewById(R.id.userName)).setText(userId);
+        ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + userLevel);
+        builder.setView(v)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {

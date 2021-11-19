@@ -4,4 +4,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="send_friend_request">Send Friend Request</string>
+    <string name="invite_to_play">Invite To Play</string>
+    <string name="invite_button">Invite</string>
+    <string name="picture_content_descriptor">Foto de perfil do utilizador</string>
+    <string name="send_invite_to_play_button">Send</string>
 </resources>

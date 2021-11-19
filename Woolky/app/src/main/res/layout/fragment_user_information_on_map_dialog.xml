@@ -12,42 +12,81 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="Send Friend Request"
+        android:text="@string/send_friend_request"
+        android:textColor="#000000"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
+        app:layout_constraintBottom_toBottomOf="@+id/sendFriendRequestButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button" />
+        app:layout_constraintTop_toTopOf="@+id/sendFriendRequestButton" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/sendFriendRequestButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="176dp"
         android:layout_marginEnd="24dp"
-        android:text="Send"
+        android:background="@drawable/round_corners"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/send_invite_to_play_button"
+        android:textColor="#FFFFFF"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/inviteToPlayButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="24dp"
-        android:text="Invite"
+        android:background="@drawable/round_corners"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/invite_button"
+        android:textColor="#FFFFFF"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/sendFriendRequestButton" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:text="Invite To Play"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:text="Meter Nome do User"
+        android:textColor="#000000"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button2" />
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/userLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Meter Nivel Do User"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/userName"
+        app:layout_constraintTop_toBottomOf="@+id/userName" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="99dp"
+        android:layout_height="98dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/picture_content_descriptor"
+        android:src="@drawable/ic_android_24dp"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:entries="@array/gameModes"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteToPlayButton"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/inviteToPlayButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -62,6 +63,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
+            }
+        });
+
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -77,21 +85,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
         final Context cx = this;
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                int dim = 3;
-                int ladoQuadrado = 30;
                 LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
                 currentPosition = posicaoInicial;
-                /*board = new Board(dim, ladoQuadrado, posicaoInicial);
-                board.drawBoard(mMap);*/
-
-                /*LatLng pontoTeste = MockUsers.usersPositions.get(1);
-                int [] coordenadas = board.getPositionInBoard(pontoTeste);
-
-                board.playCircle(coordenadas, mMap);*/
 
                 userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(BitmapFromVector(cx, ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
@@ -99,14 +99,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < MockUsers.usersPositions.size(); i++) {
                     Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
                     vectorDrawable.setTint(MockUsers.usersColors.get(i));
-                    mMap.addMarker(new MarkerOptions().position(MockUsers.usersPositions.get(i)).title(MockUsers.usersInformation.get(i))
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(MockUsers.usersPositions.get(i)).title(MockUsers.usersInformation.get(i))
                     .icon(BitmapFromVector(cx, vectorDrawable)));
+
+                    //Com isto será possivel armazenar dados de cada user no marker
+                    marker.setTag(MockUsers.usersLevels.get(i));
                 }
 
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(@NonNull Marker marker) {
-                        UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTitle());
+                        UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTitle(), marker.getTag());
                         dialog.show(getSupportFragmentManager(), "userID");
                     }
                 });
@@ -121,7 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 2, this);
     }
 
 
