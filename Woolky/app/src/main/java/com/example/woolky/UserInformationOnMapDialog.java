@@ -3,6 +3,7 @@ package com.example.woolky;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -80,6 +82,9 @@ public class UserInformationOnMapDialog extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_user_information_on_map_dialog, null);
         ((TextView) v.findViewById(R.id.userName)).setText(userId);
         ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + userLevel);
+        String[] array = getResources().getStringArray(R.array.gameModes);
+        ArrayAdapter<String> gameModesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.game_modes_dropdown_item, array);
+        ((Spinner) v.findViewById(R.id.gameModeSpinner)).setAdapter(gameModesAdapter);
         builder.setView(v)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override

@@ -9,4 +9,6 @@
     <string name="invite_button">Invite</string>
     <string name="picture_content_descriptor">Foto de perfil do utilizador</string>
     <string name="send_invite_to_play_button">Send</string>
+    <string name="challenges_button">Challenges</string>
+    <string name="recenter_button_content_description">Botão para voltar à posição atual</string>
 </resources>

@@ -14,7 +14,7 @@
         android:layout_marginStart="24dp"
         android:text="@string/send_friend_request"
         android:textColor="#000000"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/sendFriendRequestButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/sendFriendRequestButton" />
@@ -23,7 +23,7 @@
         android:id="@+id/sendFriendRequestButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="176dp"
+        android:layout_marginTop="152dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/round_corners"
         android:backgroundTint="@color/colorPrimary"
@@ -55,7 +55,7 @@
         android:layout_marginTop="24dp"
         android:text="Meter Nome do User"
         android:textColor="#000000"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,14 +66,14 @@
         android:layout_marginTop="24dp"
         android:text="Meter Nivel Do User"
         android:textColor="#000000"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/userName"
         app:layout_constraintTop_toBottomOf="@+id/userName" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="99dp"
-        android:layout_height="98dp"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
         android:layout_marginTop="24dp"
         android:contentDescription="@string/picture_content_descriptor"
         android:src="@drawable/ic_android_24dp"
@@ -81,10 +81,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/gameModeSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:entries="@array/gameModes"
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/inviteToPlayButton"
         app:layout_constraintStart_toStartOf="@+id/textView"
