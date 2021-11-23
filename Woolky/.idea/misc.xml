@@ -3,6 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/challenges_button_shape.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/ic_android_24dp.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/ic_my_location_black_24dp.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.3731481481481482" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/shape_profile.xml" value="0.33" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/drawable/shape_profile_dark_mode.xml" value="0.34814814814814815" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/layout/activity_maps.xml" value="0.28940217391304346" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/layout/fragment_map.xml" value="0.28940217391304346" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/layout/fragment_profile.xml" value="0.41041666666666665" />
+        <entry key="..\:/Users/PC/AndroidStudioProjects/2022/Woolky/Woolky/app/src/main/res/layout/fragment_user_information_on_map_dialog.xml" value="0.28940217391304346" />
         <entry key="..\:/Users/catyl/Desktop/Faculdade/1 Semestre/Computacao Movel/Woolky/Woolky/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/catyl/Desktop/Faculdade/1 Semestre/Computacao Movel/Woolky/Woolky/app/src/main/res/layout/activity_home.xml" value="0.278125" />
         <entry key="..\:/Users/catyl/Desktop/Faculdade/1 Semestre/Computacao Movel/Woolky/Woolky/app/src/main/res/layout/activity_login.xml" value="0.209375" />

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A7C9E4"
-    tools:context=".ProfileFragment">
+    android:background="@color/profile_main"
+    tools:context=".ui.profile.ProfileFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,9 +41,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout2"
             android:layout_width="350dp"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             android:layout_marginTop="10dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/shape_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -80,9 +80,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout3"
             android:layout_width="350dp"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/shape_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -107,9 +107,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout4"
             android:layout_width="350dp"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/shape_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -132,26 +132,29 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout5"
-            android:layout_width="350dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="1dp"
-            android:background="#A7C9E4"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/shape_profile"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.86"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
-            <RadioButton
+            <Switch
                 android:id="@+id/btn_dark_mode"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
                 android:text="DarkMode"
                 android:textColor="#000000"
                 android:textSize="24dp"
                 android:textStyle="bold"
+                android:layoutDirection="rtl"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
