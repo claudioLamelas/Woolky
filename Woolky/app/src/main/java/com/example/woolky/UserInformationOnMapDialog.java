@@ -80,18 +80,31 @@ public class UserInformationOnMapDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.fragment_user_information_on_map_dialog, null);
+
+        v.findViewById(R.id.inviteToPlayButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeToGameMode(v);
+            }
+        });
+
         ((TextView) v.findViewById(R.id.userName)).setText(userId);
         ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + userLevel);
         String[] array = getResources().getStringArray(R.array.gameModes);
         ArrayAdapter<String> gameModesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.game_modes_dropdown_item, array);
         ((Spinner) v.findViewById(R.id.gameModeSpinner)).setAdapter(gameModesAdapter);
         builder.setView(v)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                        dialog.dismiss();
                     }
                 });
         return builder.create();
+    }
+
+    private void changeToGameMode(View v) {
+        GameModeFragment gameModeFragment = new GameModeFragment();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, gameModeFragment).commitNow();
     }
 }
