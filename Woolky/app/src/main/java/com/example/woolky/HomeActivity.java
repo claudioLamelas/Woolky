@@ -9,9 +9,8 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.example.woolky.ui.home.HomeFragment;
+import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
-import com.example.woolky.ui.map.MapFragment;
-import com.example.woolky.MapsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -44,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
                             break;
 
                         case R.id.nav_map:
-                            selected = new MapsActivity();
+                            selected = new VicinityMapFragment();
                             break;
 
                         case R.id.nav_profile:

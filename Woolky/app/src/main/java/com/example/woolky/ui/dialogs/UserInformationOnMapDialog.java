@@ -1,9 +1,8 @@
-package com.example.woolky;
+package com.example.woolky.ui.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.example.woolky.ui.map.GameModeFragment;
+import com.example.woolky.R;
 
 
 /**

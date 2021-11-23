@@ -1,4 +1,4 @@
-package com.example.woolky;
+package com.example.woolky.utils;
 
 import android.app.Activity;
 import android.content.Context;

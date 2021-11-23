@@ -1,16 +1,12 @@
-package com.example.woolky;
+package com.example.woolky.ui.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,14 +16,18 @@ import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.example.woolky.utils.Board;
+import com.example.woolky.ui.dialogs.ChallengesDialog;
+import com.example.woolky.utils.MockUsers;
+import com.example.woolky.R;
+import com.example.woolky.ui.dialogs.UserInformationOnMapDialog;
+import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
+public class VicinityMapFragment extends Fragment implements OnMapReadyCallback, LocationListener {
     private static final int FINE_LOCATION_CODE = 114;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -48,7 +48,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_maps, container, false);
+        return inflater.inflate(R.layout.fragment_vicinity_map, container, false);
     }
 
 

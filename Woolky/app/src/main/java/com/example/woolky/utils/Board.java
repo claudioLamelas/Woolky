@@ -1,7 +1,8 @@
-package com.example.woolky;
+package com.example.woolky.utils;
 
 import android.graphics.Color;
 
+import com.example.woolky.utils.LocationCalculator;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
