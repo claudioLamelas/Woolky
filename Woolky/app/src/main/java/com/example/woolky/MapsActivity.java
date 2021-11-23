@@ -5,14 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,9 +18,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -32,12 +28,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 
@@ -67,11 +61,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.activity_maps, container, false);
-
-        //getActivity().getSupportFragmentManager().findFragmentById(R.id.map)
-
-        return v;
+        return inflater.inflate(R.layout.activity_maps, container, false);
     }
 
 
@@ -80,9 +70,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         super.onViewCreated(view, savedInstanceState);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map) ;
+        checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
         mapFragment.getMapAsync(this);
 
-        getActivity().findViewById(R.id.drawBoardButton).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.drawBoardButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 board = new Board(3, 30, currentPosition);
@@ -90,7 +81,15 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             }
         });
 
-        getActivity().findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.openChallengesButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChallengesDialog challengesDialog = ChallengesDialog.newInstance("retirar", "retirar");
+                challengesDialog.show(getChildFragmentManager(), "challenges");
+            }
+        });
+
+        view.findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
@@ -111,7 +110,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         final Context cx = getActivity();
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
@@ -122,14 +121,14 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
                 currentPosition = posicaoInicial;
 
-                userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(BitmapFromVector(cx, ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
+                userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
                 for (int i = 0; i < MockUsers.usersPositions.size(); i++) {
                     Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
                     vectorDrawable.setTint(MockUsers.usersColors.get(i));
                     Marker marker = mMap.addMarker(new MarkerOptions().position(MockUsers.usersPositions.get(i)).title(MockUsers.usersInformation.get(i))
-                    .icon(BitmapFromVector(cx, vectorDrawable)));
+                    .icon(BitmapFromVector(vectorDrawable)));
 
                     //Com isto será possivel armazenar dados de cada user no marker
                     marker.setTag(MockUsers.usersLevels.get(i));
@@ -158,7 +157,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
 
 
-    private BitmapDescriptor BitmapFromVector(Context context, Drawable vectorDrawable) {
+    private BitmapDescriptor BitmapFromVector(Drawable vectorDrawable) {
         // below line is use to set bounds to our vector drawable.
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
 
@@ -186,7 +185,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         if (userMarker != null) {
             userMarker.remove();
-            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(BitmapFromVector(getActivity(), ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp))));
+            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp))));
         }
         if (board != null) {
             board.remove();
