@@ -1,8 +1,10 @@
 package com.example.woolky;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -17,6 +19,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,8 +40,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
+public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
     private static final int FINE_LOCATION_CODE = 114;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -47,15 +52,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker userMarker;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        //setContentView(R.layout.activity_maps);
+        //return inflater.inflate(R.layout.fragment_home, container, false);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+
+        //(SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map) ;
+
+
+    }
+
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
+        View v = inflater.inflate(R.layout.activity_maps, container, false);
+
+        //getActivity().getSupportFragmentManager().findFragmentById(R.id.map)
+
+        return v;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map) ;
         mapFragment.getMapAsync(this);
 
-        findViewById(R.id.drawBoardButton).setOnClickListener(new View.OnClickListener() {
+        getActivity().findViewById(R.id.drawBoardButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 board = new Board(3, 30, currentPosition);
@@ -63,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
+        getActivity().findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
@@ -72,21 +99,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
     }
 
     private void checkPermission(String permission, int code) {
-        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{permission}, code);
+        if (ContextCompat.checkSelfPermission(getActivity(), permission) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, code);
         }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
-        final Context cx = this;
+        final Context cx = getActivity();
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
+        checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -110,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onInfoWindowClick(@NonNull Marker marker) {
                         UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTitle(), marker.getTag());
-                        dialog.show(getSupportFragmentManager(), "userID");
+                        dialog.show(getChildFragmentManager(), "userID");
                     }
                 });
 
@@ -147,11 +176,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        locationManager.removeUpdates(this);
+    }
+
+    @Override
     public void onLocationChanged(Location location) {
         currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         if (userMarker != null) {
             userMarker.remove();
-            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(BitmapFromVector(this, ContextCompat.getDrawable(this, R.drawable.ic_android_24dp))));
+            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(BitmapFromVector(getActivity(), ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp))));
         }
         if (board != null) {
             board.remove();
