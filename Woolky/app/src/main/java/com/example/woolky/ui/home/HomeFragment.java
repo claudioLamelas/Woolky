@@ -11,12 +11,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.woolky.R;
-import com.example.woolky.databinding.FragmentHomeBinding;
+//import com.example.woolky.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-private FragmentHomeBinding binding;
+//private FragmentHomeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
            ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +42,6 @@ private FragmentHomeBinding binding;
 @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        //binding = null;
     }
 }
