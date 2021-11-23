@@ -87,5 +87,6 @@
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/inviteToPlayButton"
         app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/inviteToPlayButton" />
+        app:layout_constraintTop_toTopOf="@+id/inviteToPlayButton"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>
