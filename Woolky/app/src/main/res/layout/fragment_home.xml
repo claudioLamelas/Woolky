@@ -22,11 +22,12 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
                 android:text="Good Day Tobias"
                 android:textSize="34sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,10 +35,11 @@
                 android:id="@+id/linearLayout2"
                 android:layout_width="350dp"
                 android:layout_height="250dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
+                android:layout_marginEnd="16dp"
                 android:background="#535353"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView">
 
@@ -155,7 +157,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/friendsButton"
                 android:layout_width="350dp"
                 android:layout_height="74dp"
                 android:layout_marginTop="21dp"
@@ -170,6 +172,25 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/categories" />
+
+            <ImageButton
+                android:id="@+id/groupsButton"
+                android:layout_width="350dp"
+                android:layout_height="74dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:paddingStart="20dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="15dp"
+                android:scaleType="fitStart"
+                android:src="@drawable/friends"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.542"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/friendsButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
