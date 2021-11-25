@@ -4,27 +4,29 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+
 import com.example.woolky.R;
+import com.example.woolky.ui.friends.FriendsListFragment;
+import com.example.woolky.ui.groups.GroupsListFragment;
 //import com.example.woolky.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-//private FragmentHomeBinding binding;
+    //private FragmentHomeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-           ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
        /* homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
-    binding = FragmentHomeBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -35,11 +37,24 @@ public class HomeFragment extends Fragment {
         });
         return root;*/
 
-
-            return inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-@Override
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Button friendsButton = view.findViewById(R.id.friendsButton);
+        Button groupsButton = view.findViewById(R.id.groupsButton);
+        friendsButton.setOnClickListener(v -> {
+            // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment, new FriendsListFragment()).addToBackStack(null).commit();
+        });
+        groupsButton.setOnClickListener(v -> {
+            // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupsListFragment()).addToBackStack(null).commit();
+        });
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         //binding = null;
