@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gameModes">
+        <item>Jogo do Galo</item>
+        <item>Quente e Frio</item>
+        <item>Batalha Naval</item>
+    </string-array>
+</resources>
