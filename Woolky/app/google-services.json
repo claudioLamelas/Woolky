@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "1073074125471-99ed2hgf9se5rt46dimbpcg7l80h3ci3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.woolky",
+            "certificate_hash": "a955526f5dc856cba38f1cfd2baf9ce523756c17"
+          }
+        },
+        {
           "client_id": "1073074125471-6jfrera0sq1n5l7udgqjuq41ctn1950e.apps.googleusercontent.com",
           "client_type": 3
         }
