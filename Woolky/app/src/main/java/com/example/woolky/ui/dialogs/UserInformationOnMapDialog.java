@@ -17,8 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.woolky.domain.GameInvite;
+import com.example.woolky.domain.GameMode;
+import com.example.woolky.domain.InviteState;
 import com.example.woolky.ui.map.GameModeFragment;
 import com.example.woolky.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 /**
@@ -86,7 +91,12 @@ public class UserInformationOnMapDialog extends DialogFragment {
         v.findViewById(R.id.inviteToPlayButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeToGameMode(v);
+                GameInvite gameInvite = new GameInvite("Eu", userId, GameMode.TIC_TAC_TOE, InviteState.SENT);
+                FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
+                DatabaseReference ref = database.getReference().child("gameInvites").child(userId);
+                String id = ref.push().getKey();
+                ref.child(id).setValue(gameInvite);
+                //changeToGameMode(v);
             }
         });
 

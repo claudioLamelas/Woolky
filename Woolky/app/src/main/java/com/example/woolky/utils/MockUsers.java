@@ -4,17 +4,18 @@ import android.graphics.Color;
 
 import androidx.core.graphics.ColorUtils;
 
+import com.example.woolky.domain.LatLngCustom;
+import com.example.woolky.domain.ShareLocationType;
+import com.example.woolky.domain.User;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class MockUsers {
-    public static List<LatLng> usersPositions = Arrays.asList(
-            new LatLng(38.79954, -9.14414),
-            new LatLng(38.80002, -9.14424),
-            new LatLng(38.80056, -9.14342));
-    public static List<String> usersInformation = Arrays.asList("Juan Calamares", "Francesca Giacomo", "Ana Caxo Paulo");
-    public static List<Integer> usersColors = Arrays.asList(Color.RED, Color.BLUE, Color.rgb(222, 157, 35));
-    public static List<Integer> usersLevels = Arrays.asList(20, 5, 17);
+    public static List<User> users = Arrays.asList(
+            new User("JuanCalamares", 20, Color.RED, new LatLngCustom(38.79954, -9.14414), ShareLocationType.ALL),
+            new User("FrancescaGiacomo", 5, Color.BLUE, new LatLngCustom(38.80002, -9.14424), ShareLocationType.ALL),
+            new User("AnaCaxoPaulo", 17, Color.rgb(222, 157, 35), new LatLngCustom(38.80056, -9.14342), ShareLocationType.ALL)
+    );
 }

@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.example.woolky.domain.ShareLocationType;
+import com.example.woolky.domain.User;
 import com.example.woolky.utils.Board;
 import com.example.woolky.ui.dialogs.ChallengesDialog;
 import com.example.woolky.utils.MockUsers;
@@ -33,6 +35,12 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class VicinityMapFragment extends Fragment implements OnMapReadyCallback, LocationListener {
@@ -41,13 +49,14 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     private FusedLocationProviderClient fusedLocationClient;
     protected LocationManager locationManager;
     private LatLng currentPosition;
-
-    private Board board;
     private Marker userMarker;
+
+    List<User> users;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        users = new ArrayList<>();
         return inflater.inflate(R.layout.fragment_vicinity_map, container, false);
     }
 
@@ -56,10 +65,24 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map) ;
         Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        assert mapFragment != null;
-        mapFragment.getMapAsync(this);
+        OnMapReadyCallback cx = this;
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
+        DatabaseReference usersRef = database.getReference();
+        usersRef.child("users").get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    Object a = d.getValue();
+                    users.add(d.getValue(User.class));
+                }
+                assert mapFragment != null;
+                mapFragment.getMapAsync(cx);
+            }
+        });
 
         view.findViewById(R.id.openChallengesButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,14 +121,16 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
                 userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
-                for (int i = 0; i < MockUsers.usersPositions.size(); i++) {
-                    Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
-                    vectorDrawable.setTint(MockUsers.usersColors.get(i));
-                    Marker marker = mMap.addMarker(new MarkerOptions().position(MockUsers.usersPositions.get(i)).title(MockUsers.usersInformation.get(i))
-                    .icon(Utils.BitmapFromVector(vectorDrawable)));
+                for (User u : users) {
+                    if (u.getVisibilityType() != ShareLocationType.NOBODY) {
+                        Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
+                        vectorDrawable.setTint(u.getColor());
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserId())
+                                .icon(Utils.BitmapFromVector(vectorDrawable)));
 
-                    //Com isto será possivel armazenar dados de cada user no marker
-                    marker.setTag(MockUsers.usersLevels.get(i));
+                        //Com isto será possivel armazenar dados de cada user no marker
+                        marker.setTag(u.getLevel());
+                    }
                 }
 
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
