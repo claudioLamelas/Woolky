@@ -14,9 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.woolky.domain.GameInvite;
+import com.example.woolky.domain.InviteState;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class GameInvitesListener implements ChildEventListener {
 
@@ -35,21 +38,19 @@ public class GameInvitesListener implements ChildEventListener {
         if (snapshot.getValue() != null) {
             String lastInviteKey = snapshot.getKey();
             GameInvite lastInvite = snapshot.getValue(GameInvite.class);
+            DatabaseReference inviteReference = snapshot.getRef();
 
-            GameInviteFragment gif = GameInviteFragment.newInstance(lastInvite);
-            fragmentManager.beginTransaction().replace(R.id.inviteFragment, gif).commitNow();
-            int secondsDelayed = 10;
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    fragmentManager.beginTransaction().remove(gif).commitNow();
-                }
-            }, secondsDelayed * 1000);
+            if (lastInvite.getInviteState() == InviteState.SENT) {
+                GameInviteFragment gif = GameInviteFragment.newInstance(lastInvite, lastInviteKey);
+                gif.setInviteReference(inviteReference);
+                fragmentManager.beginTransaction().replace(R.id.inviteFragment, gif).commitNow();
+            }
         }
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+        //Aqui ver se o invite foi aceite ou recusado e fazer a lógica adequada
     }
 
     @Override

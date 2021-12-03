@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.woolky.domain.GameInvite;
+import com.example.woolky.domain.InviteState;
 import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
@@ -88,4 +89,21 @@ public class HomeActivity extends AppCompatActivity {
             };
 
 
+    public void setListenerToGameInvite(DatabaseReference inviteStateRef) {
+        inviteStateRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                InviteState inviteState = snapshot.getValue(InviteState.class);
+                if (inviteState != InviteState.SENT) {
+                    Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
+                    inviteStateRef.removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }

@@ -16,14 +16,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.woolky.HomeActivity;
 import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.GameMode;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.ui.map.GameModeFragment;
 import com.example.woolky.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -91,11 +96,15 @@ public class UserInformationOnMapDialog extends DialogFragment {
         v.findViewById(R.id.inviteToPlayButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HomeActivity activity = (HomeActivity) getActivity();
                 GameInvite gameInvite = new GameInvite("Eu", userId, GameMode.TIC_TAC_TOE, InviteState.SENT);
                 FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
                 DatabaseReference ref = database.getReference().child("gameInvites").child(userId);
                 String id = ref.push().getKey();
                 ref.child(id).setValue(gameInvite);
+                DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
+
+                activity.setListenerToGameInvite(inviteStateRef);
                 //changeToGameMode(v);
             }
         });
