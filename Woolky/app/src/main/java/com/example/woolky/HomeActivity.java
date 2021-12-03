@@ -1,32 +1,26 @@
 package com.example.woolky;
 
-import android.app.Activity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.HashMap;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -62,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
         gameInvitesRef.removeEventListener(listener);
     }
 
+
     private BottomNavigationView.OnItemSelectedListener navListener =
             new BottomNavigationView.OnItemSelectedListener() {
                 @Override
@@ -88,6 +83,10 @@ public class HomeActivity extends AppCompatActivity {
                 }
             };
 
+    public void logout() {
+        startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
+        finish();
+    }
 
     public void setListenerToGameInvite(DatabaseReference inviteStateRef) {
         inviteStateRef.addValueEventListener(new ValueEventListener() {
