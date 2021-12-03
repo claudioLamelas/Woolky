@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1073074125471",
+    "firebase_url": "https://woolky-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "woolky",
+    "storage_bucket": "woolky.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073074125471:android:187093cfe0ac7461f9c0aa",
+        "android_client_info": {
+          "package_name": "com.example.woolky"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073074125471-317u0qj8qe7omkepb430275c7g5scs2v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.woolky",
+            "certificate_hash": "1a30615427b9dde604f72223fd5482b8cbe7b75a"
+          }
+        },
+        {
+          "client_id": "1073074125471-6jfrera0sq1n5l7udgqjuq41ctn1950e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD66iyt_OYWfZdR6E90iXsMZZfT9z7JRVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073074125471-6jfrera0sq1n5l7udgqjuq41ctn1950e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
