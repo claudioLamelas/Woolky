@@ -24,6 +24,8 @@ public class HomeActivity extends AppCompatActivity {
         //testar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+//ijoijj
+
         BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
         bottomNav.setOnItemSelectedListener(navListener);
 
