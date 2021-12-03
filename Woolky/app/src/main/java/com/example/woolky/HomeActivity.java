@@ -1,5 +1,6 @@
 package com.example.woolky;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -15,23 +16,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 public class HomeActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        //testar
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
-//ijoijj
-
-        BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
-        bottomNav.setOnItemSelectedListener(navListener);
-
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
-
-    }
 
     private BottomNavigationView.OnItemSelectedListener navListener =
             new BottomNavigationView.OnItemSelectedListener() {
@@ -58,6 +42,30 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 }
             };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
+        //testar
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+//ijoijj
+
+        BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
+        bottomNav.setOnItemSelectedListener(navListener);
+
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
+
+    }
+
+    public void logout(){
+        startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
+        finish();
+    }
+
+
 
 
 }
