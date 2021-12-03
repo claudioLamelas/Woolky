@@ -13,9 +13,12 @@ import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class HomeActivity extends AppCompatActivity {
+
+    private FirebaseUser currentUser;
 
     private BottomNavigationView.OnItemSelectedListener navListener =
             new BottomNavigationView.OnItemSelectedListener() {
@@ -26,6 +29,11 @@ public class HomeActivity extends AppCompatActivity {
                     switch (item.getItemId()) {
                         case R.id.nav_home:
                             selected = new HomeFragment();
+
+                            Bundle user = new Bundle();
+                            user.putParcelable("current_user", currentUser);
+                            
+                            selected.setArguments(user);
                             break;
 
                         case R.id.nav_map:
@@ -48,6 +56,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        Intent login = getIntent();
+        currentUser = login.getParcelableExtra("current_user");
+
         //testar
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
@@ -56,7 +67,20 @@ public class HomeActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
         bottomNav.setOnItemSelectedListener(navListener);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
+        Bundle user = new Bundle();
+        user.putParcelable("current_user", currentUser);
+
+        HomeFragment home = new HomeFragment();
+        home.setArguments(user);
+
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment, home ).commit();
+
+
+
+    }
+
+    private void updateUiWithCurrentUser() {
+
 
     }
 

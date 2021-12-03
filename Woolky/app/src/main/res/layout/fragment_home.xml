@@ -21,32 +21,47 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/time_of_day"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_height="45dp"
                 android:layout_marginTop="32dp"
-                android:layout_marginEnd="16dp"
-                android:text="Good Evening Tobias"
+                android:layout_marginBottom="8dp"
+                android:text="Good Evening"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="34sp"
+                android:textSize="28sp"
+                app:layout_constraintBottom_toTopOf="@+id/username"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="46dp"
+                android:text="Teste"
+                android:textColor="#000000"
+                android:textSize="29sp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/time_of_day" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="0dp"
                 android:layout_height="250dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="46dp"
                 android:layout_marginEnd="16dp"
                 android:background="#535353"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView">
+                app:layout_constraintTop_toBottomOf="@+id/username">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -153,7 +168,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="44dp"
                 android:text="Categories"
                 android:textColor="#000000"
                 android:textSize="26sp"
@@ -162,25 +177,10 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
             <Button
-                android:id="@+id/friendsButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:drawableStart="@drawable/friends_icon"
-                android:text="Friends"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/categories"
-                app:layout_constraintTop_toBottomOf="@+id/categories" />
-
-            <Button
                 android:id="@+id/groupsButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="16dp"
                 android:drawableStart="@drawable/friends_icon"
                 android:text="Groups"
@@ -191,6 +191,22 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/categories"
                 app:layout_constraintTop_toBottomOf="@+id/friendsButton" />
+
+            <Button
+                android:id="@+id/friendsButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:drawableStart="@drawable/friends_icon"
+                android:text="Friends"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/categories"
+                app:layout_constraintTop_toBottomOf="@+id/categories" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
