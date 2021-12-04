@@ -22,6 +22,7 @@ import com.example.woolky.HomeActivity;
 import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.GameMode;
 import com.example.woolky.domain.InviteState;
+import com.example.woolky.domain.User;
 import com.example.woolky.ui.map.GameModeFragment;
 import com.example.woolky.R;
 import com.google.firebase.database.DataSnapshot;
@@ -39,13 +40,13 @@ import com.google.firebase.database.ValueEventListener;
 public class UserInformationOnMapDialog extends DialogFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "userID";
-    private static final String ARG_PARAM2 = "userData";
+
+    private static final String ARG_PARAM = "user";
     //private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String userId;
-    private int userLevel;
+    private User user;
+    private User signedInUser;
 
     public UserInformationOnMapDialog() {
         // Required empty public constructor
@@ -55,15 +56,13 @@ public class UserInformationOnMapDialog extends DialogFragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param userId The user id
-     * @param tag The information associated with the user
+     * @param user The information associated with the user
      * @return A new instance of fragment UserInformationOnMapDialog.
      */
-    public static UserInformationOnMapDialog newInstance(String userId, Object tag) {
+    public static UserInformationOnMapDialog newInstance(Object user) {
         UserInformationOnMapDialog fragment = new UserInformationOnMapDialog();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, userId);
-        args.putInt(ARG_PARAM2, (int)tag);
+        args.putSerializable(ARG_PARAM, (User) user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,9 +71,9 @@ public class UserInformationOnMapDialog extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.userId = getArguments().getString(ARG_PARAM1);
-            this.userLevel = getArguments().getInt(ARG_PARAM2);
+            this.user = (User) getArguments().getSerializable(ARG_PARAM);
         }
+        this.signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
     }
 
     @Override
@@ -97,9 +96,10 @@ public class UserInformationOnMapDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 HomeActivity activity = (HomeActivity) getActivity();
-                GameInvite gameInvite = new GameInvite("Eu", userId, GameMode.TIC_TAC_TOE, InviteState.SENT);
+                //TODO: Alterar EU para o id/nome do signedInUser
+                GameInvite gameInvite = new GameInvite(signedInUser.getUserName(), user.getUserId(), GameMode.TIC_TAC_TOE, InviteState.SENT);
                 FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
-                DatabaseReference ref = database.getReference().child("gameInvites").child(userId);
+                DatabaseReference ref = database.getReference().child("gameInvites").child(user.getUserId());
                 String id = ref.push().getKey();
                 ref.child(id).setValue(gameInvite);
                 DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
@@ -109,8 +109,8 @@ public class UserInformationOnMapDialog extends DialogFragment {
             }
         });
 
-        ((TextView) v.findViewById(R.id.userName)).setText(userId);
-        ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + userLevel);
+        ((TextView) v.findViewById(R.id.userName)).setText(user.getUserName());
+        ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + user.getLevel());
         String[] array = getResources().getStringArray(R.array.gameModes);
         ArrayAdapter<String> gameModesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.game_modes_dropdown_item, array);
         ((Spinner) v.findViewById(R.id.gameModeSpinner)).setAdapter(gameModesAdapter);

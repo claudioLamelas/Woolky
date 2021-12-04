@@ -63,7 +63,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
                     LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
                     currentPosition = posicaoInicial;
 
-                    userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
+                    userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp), R.color.user_default_color)));
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
                     board = new Board(3, 30, currentPosition);
@@ -116,7 +116,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
         currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         if (userMarker != null) {
             userMarker.remove();
-            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp))));
+            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), R.color.user_default_color)));
         }
     }
 

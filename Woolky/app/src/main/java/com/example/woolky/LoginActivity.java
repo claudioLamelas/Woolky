@@ -8,12 +8,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.woolky.domain.ShareLocationType;
+import com.example.woolky.domain.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
@@ -21,6 +24,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -66,7 +72,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser account) {
         if (account != null){
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            intent.putExtra("userId", account.getUid());
+            startActivity(intent);
             finish();
         }
 
@@ -110,10 +118,30 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("success", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+                            DatabaseReference usersRef = databaseRef.child("users");
+                            usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                                @Override
+                                public void onSuccess(DataSnapshot dataSnapshot) {
+                                    boolean newAccount = true;
+                                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                        User u = d.getValue(User.class);
+                                        if (u.getUserId().equals(user.getUid())) {
+                                            newAccount = false;
+                                        }
+                                    }
+                                    if (newAccount) {
+                                        User newUser = new User(user.getUid(), user.getDisplayName(), 0, R.color.user_default_color, ShareLocationType.ALL);
+                                        usersRef.child(newUser.getUserId()).setValue(newUser);
+                                    }
+                                }
+                            });
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w("failded", "signInWithCredential:failure", task.getException());
+                            Log.w("failed", "signInWithCredential:failure", task.getException());
                             updateUI(null);
                         }
                     }

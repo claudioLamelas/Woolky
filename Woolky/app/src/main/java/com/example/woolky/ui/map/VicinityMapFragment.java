@@ -16,11 +16,10 @@ import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.example.woolky.HomeActivity;
 import com.example.woolky.domain.ShareLocationType;
 import com.example.woolky.domain.User;
-import com.example.woolky.utils.Board;
 import com.example.woolky.ui.dialogs.ChallengesDialog;
-import com.example.woolky.utils.MockUsers;
 import com.example.woolky.R;
 import com.example.woolky.ui.dialogs.UserInformationOnMapDialog;
 import com.example.woolky.utils.Utils;
@@ -50,6 +49,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     protected LocationManager locationManager;
     private LatLng currentPosition;
     private Marker userMarker;
+    private User signedInUser;
 
     List<User> users;
 
@@ -57,6 +57,8 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         users = new ArrayList<>();
+        signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
+
         return inflater.inflate(R.layout.fragment_vicinity_map, container, false);
     }
 
@@ -76,7 +78,6 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    Object a = d.getValue();
                     users.add(d.getValue(User.class));
                 }
                 assert mapFragment != null;
@@ -118,25 +119,26 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
                 LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
                 currentPosition = posicaoInicial;
 
-                userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp))));
+                Drawable myVectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
+                userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(myVectorDrawable, signedInUser.getColor())));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
                 for (User u : users) {
-                    if (u.getVisibilityType() != ShareLocationType.NOBODY) {
+                    if (u.getVisibilityType() != ShareLocationType.NOBODY && !u.getUserId().equals(signedInUser.getUserId())) {
                         Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
                         vectorDrawable.setTint(u.getColor());
-                        Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserId())
-                                .icon(Utils.BitmapFromVector(vectorDrawable)));
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
+                                .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
 
                         //Com isto será possivel armazenar dados de cada user no marker
-                        marker.setTag(u.getLevel());
+                        marker.setTag(u);
                     }
                 }
 
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(@NonNull Marker marker) {
-                        UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTitle(), marker.getTag());
+                        UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTag());
                         dialog.show(getChildFragmentManager(), "userID");
                     }
                 });
@@ -157,7 +159,8 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         if (userMarker != null) {
             userMarker.remove();
-            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp))));
+            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
+                    icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), signedInUser.getColor())));
         }
     }
 

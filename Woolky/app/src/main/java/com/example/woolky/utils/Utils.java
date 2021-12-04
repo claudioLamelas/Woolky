@@ -1,7 +1,6 @@
 package com.example.woolky.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,9 +20,10 @@ public class Utils {
         }
     }
 
-    public static BitmapDescriptor BitmapFromVector(Drawable vectorDrawable) {
+    public static BitmapDescriptor BitmapFromVector(Drawable vectorDrawable, int color) {
         // below line is use to set bounds to our vector drawable.
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        vectorDrawable.setTint(color);
 
         // below line is use to create a bitmap for our drawable which we have added.
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);

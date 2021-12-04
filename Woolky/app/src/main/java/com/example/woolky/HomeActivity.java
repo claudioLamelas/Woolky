@@ -12,9 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.woolky.domain.InviteState;
+import com.example.woolky.domain.User;
 import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,9 +26,10 @@ import com.google.firebase.database.ValueEventListener;
 
 
 public class HomeActivity extends AppCompatActivity {
-    DatabaseReference databaseRef;
-    Context cx = this;
-    GameInvitesListener listener;
+    private DatabaseReference databaseRef;
+    private Context cx = this;
+    private GameInvitesListener listener;
+    private User signedInUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +42,20 @@ public class HomeActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
         bottomNav.setOnItemSelectedListener(navListener);
 
-        databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-        DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child("AnaCaxoPaulo");
+        String userId = getIntent().getStringExtra("userId");
 
-        listener = new GameInvitesListener(cx, getLayoutInflater(), getSupportFragmentManager());
+        databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+        DatabaseReference usersRef = databaseRef.child("users");
+        usersRef.child(userId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                signedInUser = dataSnapshot.getValue(User.class);
+            }
+        });
+
+        DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(userId);
+
+        listener = new GameInvitesListener(cx, getSupportFragmentManager());
         gameInvitesRef.addChildEventListener(listener);
 
         getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
@@ -52,7 +65,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child("AnaCaxoPaulo");
+        DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(signedInUser.getUserId());
         gameInvitesRef.removeEventListener(listener);
     }
 
@@ -104,5 +117,9 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public User getSignedInUser() {
+        return signedInUser;
     }
 }

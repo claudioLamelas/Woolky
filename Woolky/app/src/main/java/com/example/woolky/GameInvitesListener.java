@@ -24,12 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 public class GameInvitesListener implements ChildEventListener {
 
     Context cx;
-    LayoutInflater layoutInflater;
     FragmentManager fragmentManager;
 
-    public GameInvitesListener(Context cx, LayoutInflater layoutInflater, FragmentManager fragmentManager) {
+    public GameInvitesListener(Context cx, FragmentManager fragmentManager) {
         this.cx = cx;
-        this.layoutInflater = layoutInflater;
         this.fragmentManager = fragmentManager;
     }
 
