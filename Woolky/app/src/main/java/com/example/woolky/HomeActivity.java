@@ -32,7 +32,7 @@ public class HomeActivity extends AppCompatActivity {
 
                             Bundle user = new Bundle();
                             user.putParcelable("current_user", currentUser);
-                            
+
                             selected.setArguments(user);
                             break;
 

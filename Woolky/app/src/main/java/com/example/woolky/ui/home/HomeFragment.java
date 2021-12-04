@@ -61,7 +61,11 @@ public class HomeFragment extends Fragment {
 
     private void updateUiCurrentUser(View view) {
 
-        //String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String currentDate = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(new Date());
+
+        TextView date = view.findViewById(R.id.dateDaily);
+        date.setText(currentDate);
+
 
         String currentTime = new SimpleDateFormat("HH", Locale.getDefault()).format(new Date());
         Log.d("TIME", currentTime);
