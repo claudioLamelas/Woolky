@@ -1,6 +1,5 @@
 package com.example.woolky;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,8 +42,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        //testar
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         handler = new Handler();
         users = new ArrayList<>();
@@ -60,6 +57,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 signedInUser = dataSnapshot.getValue(User.class);
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
             }
         });
 
@@ -68,7 +66,6 @@ public class HomeActivity extends AppCompatActivity {
         listener = new GameInvitesListener(cx, getSupportFragmentManager());
         gameInvitesRef.addChildEventListener(listener);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
 
     }
 
@@ -123,12 +120,13 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
 
-            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+
         });
     }
+
 
     public DatabaseReference getDatabaseRef() {
         return databaseRef;

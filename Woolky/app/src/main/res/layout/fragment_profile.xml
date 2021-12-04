@@ -50,7 +50,7 @@
         </ImageView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/distance_counter"
             android:layout_width="350dp"
             android:layout_height="150dp"
             android:layout_marginTop="10dp"
@@ -96,7 +96,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+            app:layout_constraintTop_toBottomOf="@+id/distance_counter">
 
             <TextView
                 android:id="@+id/text_personal_information"
