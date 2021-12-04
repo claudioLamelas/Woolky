@@ -1,6 +1,7 @@
 package com.example.woolky.domain;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.Exclude;
 
 public class LatLngCustom {
     private double latitude, longitude;
@@ -28,6 +29,7 @@ public class LatLngCustom {
         this.longitude = longitude;
     }
 
+    @Exclude
     public LatLng getLatLng() {
         return new LatLng(this.latitude, this.longitude);
     }

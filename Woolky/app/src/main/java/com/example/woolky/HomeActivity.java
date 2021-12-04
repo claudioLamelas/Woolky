@@ -4,6 +4,7 @@ package com.example.woolky;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -24,20 +25,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class HomeActivity extends AppCompatActivity {
+    private Handler handler;
     private DatabaseReference databaseRef;
     private Context cx = this;
     private GameInvitesListener listener;
     private User signedInUser;
 
+    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
+    private List<User> users;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
         //testar
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        handler = new Handler();
+        users = new ArrayList<>();
 
         BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
         bottomNav.setOnItemSelectedListener(navListener);
@@ -67,6 +77,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(signedInUser.getUserId());
         gameInvitesRef.removeEventListener(listener);
+        handler.removeCallbacksAndMessages(null);
     }
 
 
@@ -119,7 +130,21 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    public DatabaseReference getDatabaseRef() {
+        return databaseRef;
+    }
+
     public User getSignedInUser() {
         return signedInUser;
+    }
+
+    public List<User> getUsers() { return users; }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+        int secondsDelayed = 15;
+        handler.postDelayed(() -> {
+            this.users.clear();
+        }, secondsDelayed * 1000);
     }
 }
