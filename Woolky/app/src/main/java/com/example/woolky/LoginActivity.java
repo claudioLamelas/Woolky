@@ -133,12 +133,13 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                     if (newAccount) {
                                         User newUser = new User(user.getUid(), user.getDisplayName(), 0, R.color.user_default_color, ShareLocationType.ALL);
-                                        usersRef.child(newUser.getUserId()).setValue(newUser);
+                                        usersRef.child(newUser.getUserId()).setValue(newUser).addOnSuccessListener((unused -> updateUI(user)));
+                                    } else {
+                                        updateUI(user);
                                     }
                                 }
                             });
 
-                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("failed", "signInWithCredential:failure", task.getException());
