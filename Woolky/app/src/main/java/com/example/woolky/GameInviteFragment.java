@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.GameMode;
 import com.example.woolky.domain.InviteState;
+import com.example.woolky.ui.map.GameModeFragment;
 import com.google.firebase.database.DatabaseReference;
 
 import java.io.Serializable;
@@ -81,6 +82,9 @@ public class GameInviteFragment extends Fragment {
         acceptButton.setOnClickListener((view) -> {
             handler.removeCallbacksAndMessages(null);
             inviteReference.child("inviteState").setValue(InviteState.ACCEPTED);
+
+            ((HomeActivity) getActivity()).setupGame(gameInviteID, gameInvite.getGameMode(), true);
+            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commitNow();
         });
 
         Button declineButton = v.findViewById(R.id.declineButton);

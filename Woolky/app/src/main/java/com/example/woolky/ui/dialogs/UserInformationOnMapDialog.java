@@ -104,7 +104,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
                 ref.child(id).setValue(gameInvite);
                 DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
 
-                activity.setListenerToGameInvite(inviteStateRef);
+                activity.setListenerToGameInvite(id, inviteStateRef);
                 //changeToGameMode(v);
             }
         });
@@ -122,10 +122,5 @@ public class UserInformationOnMapDialog extends DialogFragment {
                     }
                 });
         return builder.create();
-    }
-
-    private void changeToGameMode(View v) {
-        GameModeFragment gameModeFragment = new GameModeFragment();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, gameModeFragment).commitNow();
     }
 }

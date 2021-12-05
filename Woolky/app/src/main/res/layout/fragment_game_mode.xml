@@ -43,7 +43,7 @@
             tools:src="@drawable/tic_tac_toe_board" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/confirmPlayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/round_corners"
