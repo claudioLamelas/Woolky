@@ -6,11 +6,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +56,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
+        @SuppressLint("MissingPermission")
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
@@ -106,17 +109,22 @@ public class GameModeFragment extends Fragment implements LocationListener {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
-        view.findViewById(R.id.leaveGameButton).setOnClickListener(v ->
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, new VicinityMapFragment()).commitNow());
+        view.findViewById(R.id.leaveGameButton).setOnClickListener(v -> {
+            ticTacToe.setWinner(ticTacToe.opponentPiece());
+            gameRef.setValue(ticTacToe);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, new VicinityMapFragment()).commitNow();
+        });
 
         view.findViewById(R.id.confirmPlayButton).setOnClickListener(v -> {
-            List<Integer> playedPosition = this.ticTacToe.getBoard().getPositionInBoard(currentPosition);
-            if (this.ticTacToe.isPlayValid(playedPosition)) {
-                this.ticTacToe.makePlay(playedPosition, mMap);
-                if (!this.ticTacToe.isFinished()) {
-                    gameRef.setValue(this.ticTacToe);
+            List<Integer> playedPosition = ticTacToe.getBoard().getPositionInBoard(currentPosition);
+            if (ticTacToe.isPlayValid(playedPosition)) {
+                ticTacToe.makePlay(playedPosition, mMap);
+                int finishState = ticTacToe.isFinished();
+                if (finishState != -1) {
+                    ticTacToe.finishGame(finishState);
                 }
+                gameRef.setValue(ticTacToe);
             } else {
                 Toast.makeText(getActivity(), "You can't make this move", Toast.LENGTH_SHORT).show();
             }
@@ -141,6 +149,19 @@ public class GameModeFragment extends Fragment implements LocationListener {
         super.onDestroyView();
         gameRef.removeEventListener(gameListener);
         locationManager.removeUpdates(locationListener);
+    }
+
+    public void finishGame(TicTacToe.Piece value) {
+        if (value == TicTacToe.Piece.Blank) {
+            Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
+        } else if (value == this.ticTacToe.getMyPiece()) {
+            Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(), "You LOST the game", Toast.LENGTH_LONG).show();
+        }
+
+        new Handler().postDelayed(() -> getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment, new VicinityMapFragment()).commitNow(), 2 * 1000);
     }
 
     @Override

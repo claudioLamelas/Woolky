@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TicTacToe extends Game{
+
     public enum Piece {Blank, X, O};
 
     @Exclude
@@ -39,7 +40,10 @@ public class TicTacToe extends Game{
 
     @Override
     @Exclude
-    public boolean isFinished() {
+    //-1 == Não terminou
+    //0 == Empate
+    //1 == Ganhou
+    public int isFinished() {
         List<Piece> positions = board.getPositions();
         int boardDim = board.getDim();
 
@@ -58,15 +62,22 @@ public class TicTacToe extends Game{
                     positions.get(i * boardDim + (boardDim - i - 1)) != myPiece)
                 break;
 
-            //TODO:Checkar se é empate
-
             if (i == boardDim-1) {
                 //Este player ganhou
-                return true;
+                return 1;
             }
         }
 
-        return false;
+        //checka o empate, se já não houver casas vazias e ele não ganhou quer dizer que é empate
+        if (!positions.contains(Piece.Blank)) {
+            return 0;
+        }
+
+        return -1;
+    }
+
+    public void finishGame(int finishState) {
+        this.winner = finishState == 1 ? myPiece : Piece.Blank;
     }
 
     public void updatesLastPosition(List<Long> playedPosition, GoogleMap mMap) {
@@ -75,15 +86,20 @@ public class TicTacToe extends Game{
         playedPositionInt.add(playedPosition.get(1).intValue());
         int position = playedPositionInt.get(0) * this.board.getDim() + playedPositionInt.get(1);
         if (myPiece == currentPlayer) {
+            if (myPiece == Piece.X)
+                this.board.playCircle(playedPositionInt, mMap);
+            else
+                this.board.playCross(playedPositionInt, mMap);
+
             this.board.getPositions().set(position, opponentPiece());
         } else {
             this.board.getPositions().set(position, myPiece);
         }
         this.lastPlayedPosition = playedPositionInt;
-        this.board.playCircle(playedPositionInt, mMap);
+
     }
 
-    private Piece opponentPiece() {
+    public Piece opponentPiece() {
         return myPiece == Piece.X ? Piece.O : Piece.X;
     }
 
@@ -104,7 +120,10 @@ public class TicTacToe extends Game{
         int position = playedPosition.get(0) * this.board.getDim() + playedPosition.get(1);
         this.board.getPositions().set(position, myPiece);
         this.lastPlayedPosition = playedPosition;
-        this.board.playCircle(playedPosition, mMap);
+        if (myPiece == Piece.X)
+            this.board.playCross(playedPosition, mMap);
+        else
+            this.board.playCircle(playedPosition, mMap);
         currentPlayer = opponentPiece();
     }
 

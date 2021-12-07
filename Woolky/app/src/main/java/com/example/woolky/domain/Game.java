@@ -11,5 +11,5 @@ public abstract class Game {
         this.numParticipants = numParticipants;
     }
 
-    public abstract boolean isFinished();
+    public abstract int isFinished();
 }

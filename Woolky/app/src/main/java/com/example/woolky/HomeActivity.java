@@ -77,6 +77,9 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        signedInUser.setCurrentPosition(null);
+        DatabaseReference userRef = databaseRef.child("users").child(signedInUser.getUserId());
+        userRef.setValue(signedInUser);
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(signedInUser.getUserId());
         gameInvitesRef.removeEventListener(listener);
         handler.removeCallbacksAndMessages(null);

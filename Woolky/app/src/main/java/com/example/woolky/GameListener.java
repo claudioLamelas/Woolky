@@ -26,6 +26,10 @@ public class GameListener implements ChildEventListener {
             gameModeFragment.getTicTacToe().setCurrentPlayer(snapshot.getValue(TicTacToe.Piece.class));
             gameModeFragment.getConfirmPlayButton().setEnabled(gameModeFragment.getTicTacToe().isMyTurn());
         }
+
+        if (Objects.equals(snapshot.getKey(), "winner")) {
+            gameModeFragment.finishGame(snapshot.getValue(TicTacToe.Piece.class));
+        }
     }
 
     @Override

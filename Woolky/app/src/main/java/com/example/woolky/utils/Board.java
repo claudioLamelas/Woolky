@@ -92,6 +92,23 @@ public class Board<T> {
         }
     }
 
+    public void playCross(List<Integer> coordenadas, GoogleMap mMap) {
+        if (coordenadas.get(0) > -1 && coordenadas.get(1) > -1) {
+            LatLng topLeftCorner = LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide, coordenadas.get(0));
+            topLeftCorner = LocationCalculator.getPositionXMetersRight(topLeftCorner, sizeOfSquareSide, coordenadas.get(1));
+
+            LatLng topRightCorner = LocationCalculator.getPositionXMetersRight(topLeftCorner, sizeOfSquareSide, 1);
+
+            LatLng bottomLeftCorner = LocationCalculator.getPositionXMetersBelow(topLeftCorner, sizeOfSquareSide, 1);
+
+            LatLng bottomRightCorner = LocationCalculator.getPositionXMetersBelow(topRightCorner, sizeOfSquareSide, 1);
+
+
+            mMap.addPolyline(new PolylineOptions().add(topLeftCorner, bottomRightCorner).color(Color.BLUE));
+            mMap.addPolyline(new PolylineOptions().add(topRightCorner, bottomLeftCorner).color(Color.BLUE));
+        }
+    }
+
     public void setInitialPosition(LatLng newInitialPosition) {
         this.initialPosition = getInitialPositionToTopLeft(newInitialPosition, this.sizeOfSquareSide);
     }
