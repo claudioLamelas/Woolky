@@ -66,8 +66,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //FirebaseAuth.getInstance().signOut();
+        //mGoogleSignInClient.signOut();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
+
     }
 
     private void updateUI(FirebaseUser account) {
@@ -132,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                                         }
                                     }
                                     if (newAccount) {
-                                        User newUser = new User(user.getUid(), user.getDisplayName(), 0, R.color.user_default_color, ShareLocationType.ALL);
+                                        User newUser = new User(user.getUid(), user.getDisplayName(), 0, R.color.user_default_color, ShareLocationType.ALL, user.getPhotoUrl().toString());
                                         usersRef.child(newUser.getUserId()).setValue(newUser).addOnSuccessListener((unused -> updateUI(user)));
                                     } else {
                                         updateUI(user);

@@ -1,5 +1,7 @@
 package com.example.woolky.domain;
 
+import android.net.Uri;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
@@ -7,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable {
+    private String photoUrl;
     private String userId;
     private String userName;
     private int level, color;
@@ -28,16 +31,18 @@ public class User implements Serializable {
         this.friends = new ArrayList<>();
     }
 
-    public User(String userId, String userName, int level, int color, ShareLocationType visibilityType) {
+    public User(String userId, String userName, int level, int color, ShareLocationType visibilityType, String photoUrl) {
         this.userId = userId;
         this.userName = userName;
         this.level = level;
         this.color = color;
         this.visibilityType = visibilityType;
+        this.photoUrl = photoUrl;
 
         this.groups = new ArrayList<>();
         this.friends = new ArrayList<>();
     }
+
 
     public String getUserId() {
         return userId;
@@ -101,5 +106,13 @@ public class User implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public void setphotoUrl (String url) {
+        this.photoUrl = url.toString();
+    }
+
+    public String getPhotoUrl (){
+        return photoUrl;
     }
 }
