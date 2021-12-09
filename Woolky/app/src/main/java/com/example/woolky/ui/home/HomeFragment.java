@@ -1,17 +1,20 @@
 package com.example.woolky.ui.home;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.woolky.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
@@ -66,6 +69,11 @@ public class HomeFragment extends Fragment {
 
         TextView name = view.findViewById(R.id.username);
         name.setText(signedInUser.getUserName());
+
+        ImageView photo = view.findViewById(R.id.photo);
+        //photo.setImageURI(null);
+        //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
+        Glide.with(getActivity()).load(Uri.parse(signedInUser.getPhotoUrl())).circleCrop().into(photo);
     }
 
     @Override
