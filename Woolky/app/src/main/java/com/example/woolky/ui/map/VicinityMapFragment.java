@@ -160,7 +160,8 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(myVectorDrawable, signedInUser.getColor())));
 
         for (User u : users) {
-            if (u.getVisibilityType() != ShareLocationType.NOBODY && !u.getUserId().equals(signedInUser.getUserId())) {
+            if (u.getVisibilityType() != ShareLocationType.NOBODY && !u.getUserId().equals(signedInUser.getUserId()) &&
+                u.getCurrentPosition() != null) {
                 Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
                 Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
                         .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
@@ -195,7 +196,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
             dbRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser)
                     .addOnSuccessListener(unused -> {
                         this.mayUpdate = false;
-                        int secondsDelayed = 10;
+                        int secondsDelayed = 2;
                         handler.postDelayed(() -> this.mayUpdate = true, secondsDelayed * 1000);
                     });
         }

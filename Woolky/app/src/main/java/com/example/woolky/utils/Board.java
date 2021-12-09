@@ -12,11 +12,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board {
+public class Board<T> {
 
     private int dim, sizeOfSquareSide;
     private LatLng initialPosition;
     private List<Polyline> boardLines;
+    private List<T> positions;
 
     public Board(int dim, int sizeOfSquareSide, LatLng initialPosition) {
         this.dim = dim;
@@ -53,20 +54,25 @@ public class Board {
         return LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide/2, -3);
     }
 
-    public int[] getPositionInBoard(LatLng posicaoAtual) {
-        int[] linhaColuna = {-1, -1};
+    public List<Integer> getPositionInBoard(LatLng posicaoAtual) {
+        List<Integer> linhaColuna = new ArrayList<>(2);
+        linhaColuna.add(-1);
+        linhaColuna.add(-1);
+
         if (inBoard(posicaoAtual)) {
             int linha = -1;
             int coluna = -1;
             for (int i = dim - 1; i >= 0; i--) {
                 if (linha == -1 && Double.compare(posicaoAtual.latitude, LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide, i).latitude) < 0) {
                     linha = i;
-                    linhaColuna[0] = linha;
+                    linhaColuna.remove(0);
+                    linhaColuna.add(0, linha);
                 }
 
                 if (coluna == -1 && Double.compare(posicaoAtual.longitude, LocationCalculator.getPositionXMetersRight(initialPosition, sizeOfSquareSide, i).longitude) > 0) {
                     coluna = i;
-                    linhaColuna[1] = coluna;
+                    linhaColuna.remove(1);
+                    linhaColuna.add(1, coluna);
                 }
             }
         }
@@ -78,11 +84,28 @@ public class Board {
         boardLines.add(line);
     }
 
-    public void playCircle(int[] coordenadas, GoogleMap mMap) {
-        if (coordenadas[0] > -1 && coordenadas[1] > -1) {
-            LatLng centerOfCell = LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide/2, coordenadas[0] * 2 + 1);
-            centerOfCell = LocationCalculator.getPositionXMetersRight(centerOfCell, sizeOfSquareSide/2, coordenadas[1] * 2 + 1);
+    public void playCircle(List<Integer> coordenadas, GoogleMap mMap) {
+        if (coordenadas.get(0) > -1 && coordenadas.get(1) > -1) {
+            LatLng centerOfCell = LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide/2, coordenadas.get(0) * 2 + 1);
+            centerOfCell = LocationCalculator.getPositionXMetersRight(centerOfCell, sizeOfSquareSide/2, coordenadas.get(1) * 2 + 1);
             mMap.addCircle(new CircleOptions().center(centerOfCell).radius(10.0).strokeColor(Color.RED));
+        }
+    }
+
+    public void playCross(List<Integer> coordenadas, GoogleMap mMap) {
+        if (coordenadas.get(0) > -1 && coordenadas.get(1) > -1) {
+            LatLng topLeftCorner = LocationCalculator.getPositionXMetersBelow(initialPosition, sizeOfSquareSide, coordenadas.get(0));
+            topLeftCorner = LocationCalculator.getPositionXMetersRight(topLeftCorner, sizeOfSquareSide, coordenadas.get(1));
+
+            LatLng topRightCorner = LocationCalculator.getPositionXMetersRight(topLeftCorner, sizeOfSquareSide, 1);
+
+            LatLng bottomLeftCorner = LocationCalculator.getPositionXMetersBelow(topLeftCorner, sizeOfSquareSide, 1);
+
+            LatLng bottomRightCorner = LocationCalculator.getPositionXMetersBelow(topRightCorner, sizeOfSquareSide, 1);
+
+
+            mMap.addPolyline(new PolylineOptions().add(topLeftCorner, bottomRightCorner).color(Color.BLUE));
+            mMap.addPolyline(new PolylineOptions().add(topRightCorner, bottomLeftCorner).color(Color.BLUE));
         }
     }
 
@@ -94,5 +117,17 @@ public class Board {
         for (Polyline l : boardLines) {
             l.remove();
         }
+    }
+
+    public List<T> getPositions() {
+        return positions;
+    }
+
+    public int getDim() {
+        return dim;
+    }
+
+    public void setPositions(List<T> initialPositions) {
+        positions = initialPositions;
     }
 }

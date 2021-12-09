@@ -6,15 +6,21 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.woolky.GameListener;
+import com.example.woolky.domain.TicTacToe;
 import com.example.woolky.utils.Board;
 import com.example.woolky.R;
 import com.example.woolky.utils.Utils;
@@ -29,28 +35,28 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.List;
 
 public class GameModeFragment extends Fragment implements LocationListener {
+
+    private TicTacToe ticTacToe;
+    private DatabaseReference gameRef;
+    private GameListener gameListener;
+    private boolean isReceiver;
+    private Button confirmPlayButton;
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     protected LocationManager locationManager;
     private LocationListener locationListener;
     private LatLng currentPosition;
-    private Board board;
     private Marker userMarker;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
+        @SuppressLint("MissingPermission")
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
@@ -66,8 +72,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
                     userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp), R.color.user_default_color)));
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
-                    board = new Board(3, 30, currentPosition);
-                    board.drawBoard(mMap);
+                    ticTacToe.getBoard().drawBoard(mMap);
                 }
             });
             Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
@@ -75,7 +80,20 @@ public class GameModeFragment extends Fragment implements LocationListener {
         }
     };
 
-    public GameModeFragment() {}
+    public GameModeFragment(DatabaseReference gameRef, TicTacToe ticTacToe) {
+        this.gameRef = gameRef;
+        this.ticTacToe = ticTacToe;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            isReceiver = getArguments().getBoolean("isReceiver");
+        }
+        gameListener = new GameListener(this);
+        gameRef.addChildEventListener(gameListener);
+    }
 
     @Nullable
     @Override
@@ -91,16 +109,37 @@ public class GameModeFragment extends Fragment implements LocationListener {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
-        view.findViewById(R.id.leaveGameButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new VicinityMapFragment()).commitNow();
+        view.findViewById(R.id.leaveGameButton).setOnClickListener(v -> {
+            ticTacToe.setWinner(ticTacToe.opponentPiece());
+            gameRef.setValue(ticTacToe);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, new VicinityMapFragment()).commitNow();
+        });
+
+        view.findViewById(R.id.confirmPlayButton).setOnClickListener(v -> {
+            List<Integer> playedPosition = ticTacToe.getBoard().getPositionInBoard(currentPosition);
+            if (ticTacToe.isPlayValid(playedPosition)) {
+                ticTacToe.makePlay(playedPosition, mMap);
+                int finishState = ticTacToe.isFinished();
+                if (finishState != -1) {
+                    ticTacToe.finishGame(finishState);
+                }
+                gameRef.setValue(ticTacToe);
+            } else {
+                Toast.makeText(getActivity(), "You can't make this move", Toast.LENGTH_SHORT).show();
             }
         });
+
+        confirmPlayButton = view.findViewById(R.id.confirmPlayButton);
 
         locationListener = this;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        if (isReceiver) {
+            gameRef.setValue(ticTacToe);
+        }
+
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
@@ -108,7 +147,21 @@ public class GameModeFragment extends Fragment implements LocationListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        gameRef.removeEventListener(gameListener);
         locationManager.removeUpdates(locationListener);
+    }
+
+    public void finishGame(TicTacToe.Piece value) {
+        if (value == TicTacToe.Piece.Blank) {
+            Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
+        } else if (value == this.ticTacToe.getMyPiece()) {
+            Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(), "You LOST the game", Toast.LENGTH_LONG).show();
+        }
+
+        new Handler().postDelayed(() -> getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment, new VicinityMapFragment()).commitNow(), 2 * 1000);
     }
 
     @Override
@@ -133,5 +186,21 @@ public class GameModeFragment extends Fragment implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    public TicTacToe getTicTacToe() {
+        return ticTacToe;
+    }
+
+    public DatabaseReference getGameRef() {
+        return gameRef;
+    }
+
+    public Button getConfirmPlayButton() {
+        return confirmPlayButton;
+    }
+
+    public GoogleMap getMap() {
+        return mMap;
     }
 }
