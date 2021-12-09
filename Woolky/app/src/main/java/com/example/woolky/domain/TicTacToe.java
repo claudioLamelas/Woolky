@@ -47,27 +47,51 @@ public class TicTacToe extends Game{
         List<Piece> positions = board.getPositions();
         int boardDim = board.getDim();
 
+        boolean wonCol = true;
+        boolean wonRow = true;
+
         for (int i = 0; i < boardDim; i++) {
             //col
-            if (positions.get(lastPlayedPosition.get(0) * boardDim + i) != myPiece)
-                break;
-            //row
-            if (positions.get(i * boardDim + lastPlayedPosition.get(1)) != myPiece)
-                break;
-            //diag
-            if (lastPlayedPosition.get(0).equals(lastPlayedPosition.get(1)) && positions.get(i * boardDim + i) != myPiece)
-                break;
-            //anti-diag
-            if (lastPlayedPosition.get(0) + lastPlayedPosition.get(1) == boardDim - 1 &&
-                    positions.get(i * boardDim + (boardDim - i - 1)) != myPiece)
-                break;
+            wonCol = wonCol && positions.get(lastPlayedPosition.get(0) * boardDim + i) == myPiece;
+        }
 
-            if (i == boardDim-1) {
-                //Este player ganhou
+        if (wonCol) {
+            return 1;
+        }
+
+        for (int i = 0; i < boardDim; i++) {
+            //row
+            wonRow = wonRow && positions.get(i * boardDim + lastPlayedPosition.get(1)) == myPiece;
+        }
+
+        if (wonRow) {
+            return 1;
+        }
+
+        if (lastPlayedPosition.get(0).equals(lastPlayedPosition.get(1))) {
+            boolean wonDiag = true;
+            for (int i = 0; i < boardDim; i++) {
+                //diag
+                wonDiag = wonDiag && positions.get(i * boardDim + i) == myPiece;
+            }
+
+            if (wonDiag) {
                 return 1;
             }
         }
 
+        if (lastPlayedPosition.get(0) + lastPlayedPosition.get(1) == boardDim - 1) {
+            boolean wonAntiDiag = true;
+            for (int i = 0; i < boardDim; i++) {
+                //anti-diag
+                wonAntiDiag = wonAntiDiag && positions.get(i * boardDim + (boardDim - i - 1)) == myPiece;
+
+                if (wonAntiDiag) {
+                    return 1;
+                }
+            }
+        }
+        
         //checka o empate, se já não houver casas vazias e ele não ganhou quer dizer que é empate
         if (!positions.contains(Piece.Blank)) {
             return 0;
