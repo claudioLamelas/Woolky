@@ -3,6 +3,7 @@ package com.example.woolky.ui.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.woolky.HomeActivity;
 import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.GameMode;
@@ -108,6 +111,9 @@ public class UserInformationOnMapDialog extends DialogFragment {
                 //changeToGameMode(v);
             }
         });
+
+        ImageView photo = v.findViewById(R.id.dialogUserPhoto);
+        Glide.with(getActivity()).load(Uri.parse(user.getPhotoUrl())).circleCrop().into(photo);
 
         ((TextView) v.findViewById(R.id.userName)).setText(user.getUserName());
         ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + user.getLevel());

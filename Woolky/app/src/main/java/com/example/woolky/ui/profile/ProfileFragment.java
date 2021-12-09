@@ -58,9 +58,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUiProfile(View view) {
-
-
-
         TextView name = view.findViewById(R.id.userName_profile);
         name.setText(signedInUser.getUserName());
 
