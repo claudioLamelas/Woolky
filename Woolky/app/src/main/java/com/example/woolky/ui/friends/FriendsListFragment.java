@@ -34,7 +34,9 @@ public class FriendsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
         // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
+
         List<Friend> friends = Arrays.asList(new Friend("Michael"), new Friend("John"));
+
         adapter = new FriendsListAdapter(friends);
         recyclerView.setAdapter(adapter);
         showMessageIfNoFriends(friends);

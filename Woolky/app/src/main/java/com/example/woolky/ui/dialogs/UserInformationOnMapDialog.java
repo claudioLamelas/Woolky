@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.woolky.HomeActivity;
+import com.example.woolky.domain.FriendsInvite;
 import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.GameMode;
 import com.example.woolky.domain.InviteState;
@@ -106,8 +107,22 @@ public class UserInformationOnMapDialog extends DialogFragment {
                 String id = ref.push().getKey();
                 ref.child(id).setValue(gameInvite);
                 DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
-
                 activity.setListenerToGameInvite(id, inviteStateRef);
+                //changeToGameMode(v);
+            }
+        });
+
+        v.findViewById(R.id.sendFriendRequestButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeActivity activity = (HomeActivity) getActivity();
+                FriendsInvite friendsInvite = new FriendsInvite(signedInUser.getUserName(), signedInUser.getUserId(),InviteState.SENT);
+                FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
+                DatabaseReference ref = database.getReference().child("friendInvite").child(user.getUserId());
+                String id = ref.push().getKey();
+                ref.child(id).setValue(friendsInvite);
+                DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
+                activity.setListenerFriendsInvite(id, inviteStateRef, user.getUserId());
                 //changeToGameMode(v);
             }
         });

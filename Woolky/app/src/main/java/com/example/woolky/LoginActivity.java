@@ -66,8 +66,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //FirebaseAuth.getInstance().signOut();
-        //mGoogleSignInClient.signOut();
+        /*FirebaseAuth.getInstance().signOut();
+        mGoogleSignInClient.signOut();*/
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
 
@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient.signOut();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
     }
 
 
