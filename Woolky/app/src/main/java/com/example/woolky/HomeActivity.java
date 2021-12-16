@@ -134,7 +134,6 @@ public class HomeActivity extends AppCompatActivity {
                     if (inviteState == InviteState.DECLINED) {
                         Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
                     }
-
                     if (inviteState == InviteState.ACCEPTED) {
                         setupFriend(inviteId,false, toUserId);
                     }
@@ -190,7 +189,6 @@ public class HomeActivity extends AppCompatActivity {
                 databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
             });
         }else{
-
             DatabaseReference friendRef = databaseRef.child("friendInvite").child(toUserId).child(friendInviteID);
             List<String> finalFriends = friends;
             friendRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {

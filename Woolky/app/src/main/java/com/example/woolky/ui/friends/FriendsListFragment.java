@@ -1,6 +1,7 @@
 package com.example.woolky.ui.friends;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +16,28 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.woolky.HomeActivity;
 import com.example.woolky.R;
+import com.example.woolky.domain.ShareLocationType;
+import com.example.woolky.domain.User;
 import com.example.woolky.utils.MarginItemDecoration;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FriendsListFragment extends Fragment {
     private RecyclerView recyclerView;
     private FriendsListAdapter adapter;
     private TextView noFriendsMessage;
+    private User signedInUser;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,8 +48,27 @@ public class FriendsListFragment extends Fragment {
         recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
         // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
 
-        List<Friend> friends = Arrays.asList(new Friend("Michael"), new Friend("John"));
-
+        HomeActivity homeActivity = ((HomeActivity) getActivity());
+        signedInUser = homeActivity.getSignedInUser();
+        List<Friend> friends = new ArrayList<>();
+        for (String id : signedInUser.getFriends()){
+            DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+            DatabaseReference usersRef = databaseRef.child("users");
+            usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                @Override
+                public void onSuccess(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        User u = d.getValue(User.class);
+                        if (u.getUserId().equals(id)) {
+                            Friend friend = new Friend(u.getUserName());
+                            friends.add(friend);
+                        }
+                    }
+                }
+            });
+            Friend friend = new Friend(id);
+            friends.add(friend);
+        }
         adapter = new FriendsListAdapter(friends);
         recyclerView.setAdapter(adapter);
         showMessageIfNoFriends(friends);
