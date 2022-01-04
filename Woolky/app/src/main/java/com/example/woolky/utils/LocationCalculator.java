@@ -4,6 +4,9 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LocationCalculator {
 
     public static LatLng getPositionXMetersRight(LatLng posicaoInicial, int distanceFromPoint, int multiplier) {
@@ -79,5 +82,30 @@ public class LocationCalculator {
             degreesMinutesSeconds[1] = String.valueOf(minutesLat);
         }
         degreesMinutesSeconds[2] = String.valueOf(seconds);
+    }
+
+    public static List<LatLng> calculatePositions(LatLng initialPosition, List<PairCustom<Double, Double>> circlesRelativePositions) {
+        List<LatLng> positions = new ArrayList<>();
+
+        LatLng previousPosition = initialPosition;
+        LatLng newPosition;
+        for (PairCustom<Double, Double> p : circlesRelativePositions) {
+            if (p.getFirst() <= 0) {
+                newPosition = getPositionXMetersBelow(previousPosition, p.getFirst().intValue() * -1, -1);
+            } else {
+                newPosition = getPositionXMetersBelow(previousPosition, p.getFirst().intValue(), 1);
+            }
+
+            if (p.getSecond() <= 0) {
+                newPosition = getPositionXMetersRight(newPosition, p.getSecond().intValue() * -1, -1);
+            } else {
+                newPosition = getPositionXMetersRight(newPosition, p.getSecond().intValue(), 1);
+            }
+
+            positions.add(newPosition);
+            previousPosition = newPosition;
+        }
+
+        return positions;
     }
 }
