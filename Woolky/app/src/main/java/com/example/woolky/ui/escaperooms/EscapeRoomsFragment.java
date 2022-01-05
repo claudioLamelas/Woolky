@@ -1,6 +1,5 @@
 package com.example.woolky.ui.escaperooms;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,7 @@ import android.widget.ListView;
 
 import com.example.woolky.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.EscapeRoom;
+import com.example.woolky.domain.escaperooms.EscapeRoom;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
@@ -72,19 +71,6 @@ public class EscapeRoomsFragment extends Fragment {
 
         escapeRoomIds = new ArrayList<>();
         escapeRooms = new ArrayList<>();
-
-        HomeActivity homeActivity = (HomeActivity) getActivity();
-        DatabaseReference ref = homeActivity.getDatabaseRef();
-        ref.child("escapeRooms").child(homeActivity.getSignedInUser().getUserId()).get().addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot != null) {
-                for (DataSnapshot er : dataSnapshot.getChildren()) {
-                    escapeRoomIds.add(er.getKey());
-                    EscapeRoom escapeRoom = er.getValue(EscapeRoom.class);
-                    escapeRooms.add(escapeRoom);
-                }
-                arrayAdapter.notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
@@ -98,6 +84,22 @@ public class EscapeRoomsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        escapeRooms.clear();
+        escapeRoomIds.clear();
+
+        HomeActivity homeActivity = (HomeActivity) getActivity();
+        DatabaseReference ref = homeActivity.getDatabaseRef();
+        ref.child("escapeRooms").child(homeActivity.getSignedInUser().getUserId()).get().addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot != null) {
+                for (DataSnapshot er : dataSnapshot.getChildren()) {
+                    escapeRoomIds.add(er.getKey());
+                    EscapeRoom escapeRoom = er.getValue(EscapeRoom.class);
+                    escapeRooms.add(escapeRoom);
+                }
+                arrayAdapter.notifyDataSetChanged();
+            }
+        });
+
         ListView lv = view.findViewById(R.id.escapeRoomsList);
         arrayAdapter = new ArrayAdapter<>
                 (getActivity(), android.R.layout.simple_list_item_1, escapeRoomIds);
@@ -106,11 +108,20 @@ public class EscapeRoomsFragment extends Fragment {
         lv.setOnItemClickListener((parent, v, position, id) -> {
             EscapeRoom chosenEscapeRoom = escapeRooms.get(position);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment,
-                    new EscapeRoomCreationFragment(chosenEscapeRoom, (String) parent.getItemAtPosition(position))).commit();
+                    new EscapeRoomCreationFragment(chosenEscapeRoom, (String) parent.getItemAtPosition(position)))
+                    .addToBackStack(null).commit();
+        });
+
+        lv.setOnItemLongClickListener((parent, v2, position, id) -> {
+            EscapeRoom chosenEscapeRoom = escapeRooms.get(position);
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment,
+                    new PlayEscapeRoomFragment(chosenEscapeRoom)).addToBackStack(null).commit();
+            return false;
         });
 
         view.findViewById(R.id.newEscapeRoomButton).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction().replace(R.id.fragment, new EscapeRoomCreationFragment()).commit();
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment, new EscapeRoomCreationFragment())
+                    .addToBackStack(null).commit();
         });
     }
 }

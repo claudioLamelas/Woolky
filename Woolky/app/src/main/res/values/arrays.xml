@@ -2,6 +2,7 @@
 <resources>
     <string-array name="gameModes">
         <item>Jogo do Galo</item>
+        <item>Escape Room</item>
         <item>Quente e Frio</item>
         <item>Batalha Naval</item>
     </string-array>

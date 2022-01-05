@@ -16,17 +16,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/saveEscapeRoomButton"
+        android:layout_width="49dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/circle_shape"
+        android:backgroundTint="#FFFFFF"
+        android:elevation="10dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_baseline_save_black_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <Button
+        android:id="@+id/addQuizButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/round_corners"
-        android:backgroundTint="#FFFFFF"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Save Escape Room"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Add quiz"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/saveEscapeRoomButton" />
+
+    <Button
+        android:id="@+id/testEscapeRoomButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Test"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addQuizButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>
