@@ -54,6 +54,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private List<Circle> vertex;
     private List<Polyline> polylines;
     private Circle activeCircle;
+    private Circle previousActiveCircle;
 
     private EscapeRoom escapeRoom = null;
     private String escapeRoomId;
@@ -79,6 +80,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         this.linesCircles = new ArrayList<>();
         this.circlesRelativePositions = new ArrayList<>();
         this.activeCircle = null;
+        this.previousActiveCircle = null;
         this.initialPosition = null;
         this.polylines = new ArrayList<>();
         this.quizzes = new ArrayList<>();
@@ -127,6 +129,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                             .strokeColor(Color.RED).radius(6).center(initialPosition).clickable(true));
                     vertex.add(initialCircle);
                     activeCircle = initialCircle;
+                    previousActiveCircle = initialCircle;
                 } else {
                     drawEscapeRoom();
                 }
@@ -148,12 +151,11 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         mMap.setOnCircleClickListener(circle -> {
             if (circle.equals(activeCircle)) {
                 Polyline p = mMap.addPolyline(new PolylineOptions()
-                        .add(vertex.get(vertex.size()-1).getCenter(), activeCircle.getCenter())
+                        .add(previousActiveCircle.getCenter(), activeCircle.getCenter())
                         .clickable(true));
 
                 linesCircles.add(new Triple<>(vertex.size()-1, vertex.indexOf(activeCircle), Color.BLACK));
                 polylines.add(p);
-
             } else {
                 changeActiveCircle(circle);
             }
@@ -167,9 +169,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                 polyline.setColor(Color.RED);
                 triple.setThird(Color.RED);
             } else if (triple.getThird() == Color.RED) {
-                polyline.setColor(Color.GREEN);
-                triple.setThird(Color.GREEN);
-            } else {
                 polyline.setColor(Color.BLACK);
                 triple.setThird(Color.BLACK);
             }
@@ -204,6 +203,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private void changeActiveCircle(Circle circle) {
         activeCircle.setFillColor(Color.BLACK);
         activeCircle.setStrokeColor(Color.BLACK);
+        previousActiveCircle = activeCircle;
         activeCircle = circle;
         activeCircle.setFillColor(Color.RED);
         activeCircle.setStrokeColor(Color.RED);

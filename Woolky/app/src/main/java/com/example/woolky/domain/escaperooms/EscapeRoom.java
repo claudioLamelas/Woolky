@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +24,14 @@ public class EscapeRoom {
     private List<Quiz> quizzes;
 
     private List<Circle> vertex;
+    private List<Polyline> polylines;
 
     public EscapeRoom() {
         linesCircles = new ArrayList<>();
         circlesRelativePositions = new ArrayList<>();
         quizzes = new ArrayList<>();
         vertex = new ArrayList<>();
+        polylines = new ArrayList<>();
     }
 
     public EscapeRoom(List<Triple<Integer, Integer, Integer>> linesCircles,
@@ -39,6 +42,7 @@ public class EscapeRoom {
         this.quizzes = quizzes;
 
         this.vertex = new ArrayList<>();
+        this.polylines = new ArrayList<>();
     }
 
 
@@ -66,6 +70,16 @@ public class EscapeRoom {
         this.quizzes = quizzes;
     }
 
+    @Exclude
+    public List<Circle> getVertex() {
+        return vertex;
+    }
+
+    @Exclude
+    public List<Polyline> getPolylines() {
+        return polylines;
+    }
+
     public void drawEscapeRoom(LatLng initialPosition, GoogleMap mMap) {
         List<LatLng> circlePositions = LocationCalculator.calculatePositions(initialPosition,
                 circlesRelativePositions);
@@ -80,7 +94,7 @@ public class EscapeRoom {
             Polyline p = mMap.addPolyline(new PolylineOptions().add(vertex.get(t.getFirst()).getCenter(),
                     vertex.get(t.getSecond()).getCenter()).clickable(true).color(t.getThird()));
 
-            //polylines.add(p);
+            polylines.add(p);
         }
     }
 }

@@ -108,4 +108,10 @@ public class LocationCalculator {
 
         return positions;
     }
+
+    public static double distancePointToPoint(LatLng p1, LatLng p2) {
+        float[] results = new float[1];
+        Location.distanceBetween(p1.latitude, p1.longitude, p2.latitude, p2.longitude, results);
+        return results[0];
+    }
 }
