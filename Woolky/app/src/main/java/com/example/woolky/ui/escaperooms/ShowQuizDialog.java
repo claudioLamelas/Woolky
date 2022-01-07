@@ -19,7 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.woolky.R;
+import com.example.woolky.domain.escaperooms.EscapeRoom;
 import com.example.woolky.domain.escaperooms.Quiz;
+import com.example.woolky.utils.Triple;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.List;
@@ -37,6 +39,7 @@ public class ShowQuizDialog extends DialogFragment {
     private static final String ARG_PARAM2 = "param2";
     private Quiz quiz;
     private Polyline polyline;
+    private EscapeRoom escapeRoom;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -46,9 +49,10 @@ public class ShowQuizDialog extends DialogFragment {
         // Required empty public constructor
     }
 
-    public ShowQuizDialog(Quiz quiz, Polyline polyline) {
+    public ShowQuizDialog(Quiz quiz, Polyline polyline, EscapeRoom escapeRoom) {
         this.quiz = quiz;
         this.polyline = polyline;
+        this.escapeRoom = escapeRoom;
     }
 
     /**
@@ -104,6 +108,11 @@ public class ShowQuizDialog extends DialogFragment {
 
                     if (index == quiz.getIndexOfCorrectAnswer()) {
                         polyline.setColor(Color.GREEN);
+
+                        int lineIndex = escapeRoom.getPolylines().indexOf(polyline);
+                        Triple<Integer, Integer, Integer> triple = escapeRoom.getLinesCircles().get(lineIndex);
+                        triple.setThird(Color.GREEN);
+
                         Toast.makeText(getActivity(), "Correct Answer", Toast.LENGTH_SHORT).show();
                     }
                     else

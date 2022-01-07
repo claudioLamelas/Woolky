@@ -38,17 +38,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:backgroundTint="#FBFBFB"
         android:text="Add quiz"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/saveEscapeRoomButton" />
 
     <Button
-        android:id="@+id/testEscapeRoomButton"
+        android:id="@+id/chooseStartPositionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Test"
+        android:backgroundTint="#FFFFFF"
+        android:text="Start Position"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addQuizButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

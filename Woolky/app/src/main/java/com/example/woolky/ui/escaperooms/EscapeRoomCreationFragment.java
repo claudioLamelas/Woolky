@@ -11,9 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.woolky.HomeActivity;
@@ -51,21 +53,18 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private LatLng initialPosition;
     private FusedLocationProviderClient fusedLocationClient;
 
-    private List<Circle> vertex;
-    private List<Polyline> polylines;
     private Circle activeCircle;
     private Circle previousActiveCircle;
+    private Circle userStartPosition;
+    private boolean choosingStartPosition;
 
     private EscapeRoom escapeRoom = null;
     private String escapeRoomId;
-    private List<Triple<Integer, Integer, Integer>> linesCircles;
     private List<PairCustom<Double, Double>> circlesRelativePositions;
-    private List<Quiz> quizzes;
 
 
     public EscapeRoomCreationFragment() {
         this.escapeRoomId = "";
-        // Required empty public constructor
     }
 
     public EscapeRoomCreationFragment(EscapeRoom escapeRoom, String escapeRoomId) {
@@ -76,14 +75,12 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.vertex = new ArrayList<>();
-        this.linesCircles = new ArrayList<>();
         this.circlesRelativePositions = new ArrayList<>();
         this.activeCircle = null;
         this.previousActiveCircle = null;
         this.initialPosition = null;
-        this.polylines = new ArrayList<>();
-        this.quizzes = new ArrayList<>();
+        this.choosingStartPosition = false;
+        this.userStartPosition = null;
     }
 
     @Override
@@ -110,6 +107,13 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             CreateNewQuizDialog dialog = CreateNewQuizDialog.newInstance("retirar", "retirar");
             dialog.show(getChildFragmentManager(), "quiz");
         });
+
+        Button chooseStartPositionButton = view.findViewById(R.id.chooseStartPositionButton);
+        chooseStartPositionButton.setOnClickListener(v -> {
+            int color = choosingStartPosition ? R.color.white : R.color.colorPrimaryDark;
+            chooseStartPositionButton.setBackgroundColor(getResources().getColor(color, null));
+            choosingStartPosition = !choosingStartPosition;
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -117,35 +121,55 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.mMap = googleMap;
 
+        //TODO: Mudar para o LocationManager.requestLocationUpdates()
         Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
+                SystemClock.sleep(2000);
                 initialPosition = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16));
 
                 if (escapeRoom == null) {
+                    escapeRoom = new EscapeRoom();
+
                     Circle initialCircle = mMap.addCircle(new CircleOptions().fillColor(Color.RED)
                             .strokeColor(Color.RED).radius(6).center(initialPosition).clickable(true));
-                    vertex.add(initialCircle);
+
+                    escapeRoom.getVertex().add(initialCircle);
                     activeCircle = initialCircle;
                     previousActiveCircle = initialCircle;
                 } else {
-                    drawEscapeRoom();
+                    escapeRoom.drawEscapeRoom(initialPosition, mMap);
+                    activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
+                    changeActiveCircle(activeCircle);
+                    userStartPosition = escapeRoom.getStartPositionCircle();
                 }
             }
         });
 
         mMap.setOnMapLongClickListener(latLng -> {
-            Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.BLACK).radius(6).center(latLng).clickable(true));
-            Polyline p = mMap.addPolyline(new PolylineOptions()
-                    .add(activeCircle.getCenter(), c.getCenter()).clickable(true));
-            vertex.add(c);
 
-            linesCircles.add(new Triple<>(vertex.indexOf(activeCircle), vertex.indexOf(c), Color.BLACK));
-            polylines.add(p);
+            if (!choosingStartPosition) {
+                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.BLACK).radius(6).center(latLng).clickable(true));
+                Polyline p = mMap.addPolyline(new PolylineOptions()
+                        .add(activeCircle.getCenter(), c.getCenter()).clickable(true));
+                escapeRoom.getVertex().add(c);
 
-            changeActiveCircle(c);
+                escapeRoom.getLinesCircles().add(new Triple<>(escapeRoom.getVertex().indexOf(activeCircle),
+                        escapeRoom.getVertex().indexOf(c), Color.BLACK));
+                escapeRoom.getPolylines().add(p);
+
+                changeActiveCircle(c);
+            } else {
+                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.GREEN).radius(6).center(latLng).clickable(false));
+                if (userStartPosition != null)
+                    userStartPosition.remove();
+
+                userStartPosition = c;
+                escapeRoom.setUserStartPosition(LocationCalculator.diferenceBetweenPoints(c.getCenter(),
+                        escapeRoom.getVertex().get(0).getCenter()));
+            }
         });
 
         mMap.setOnCircleClickListener(circle -> {
@@ -154,16 +178,17 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                         .add(previousActiveCircle.getCenter(), activeCircle.getCenter())
                         .clickable(true));
 
-                linesCircles.add(new Triple<>(vertex.size()-1, vertex.indexOf(activeCircle), Color.BLACK));
-                polylines.add(p);
+                escapeRoom.getLinesCircles().add(new Triple<>(escapeRoom.getVertex().indexOf(previousActiveCircle),
+                        escapeRoom.getVertex().indexOf(activeCircle), Color.BLACK));
+                escapeRoom.getPolylines().add(p);
             } else {
                 changeActiveCircle(circle);
             }
         });
 
         mMap.setOnPolylineClickListener(polyline -> {
-            int index = polylines.indexOf(polyline);
-            Triple<Integer, Integer, Integer> triple = linesCircles.get(index);
+            int index = escapeRoom.getPolylines().indexOf(polyline);
+            Triple<Integer, Integer, Integer> triple = escapeRoom.getLinesCircles().get(index);
 
             if (triple.getThird() == Color.BLACK) {
                 polyline.setColor(Color.RED);
@@ -173,31 +198,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                 triple.setThird(Color.BLACK);
             }
         });
-    }
-
-    private void drawEscapeRoom() {
-        List<LatLng> circlePositions = LocationCalculator.calculatePositions(initialPosition,
-                escapeRoom.getCirclesRelativePositions());
-
-        for (LatLng p : circlePositions) {
-            Circle c = mMap.addCircle(new CircleOptions().center(p).radius(6)
-                    .fillColor(Color.BLACK).clickable(true));
-            vertex.add(c);
-        }
-
-        activeCircle = vertex.get(vertex.size()-1);
-        changeActiveCircle(activeCircle);
-
-        for (Triple<Integer, Integer, Integer> t : escapeRoom.getLinesCircles()) {
-            Polyline p = mMap.addPolyline(new PolylineOptions().add(vertex.get(t.getFirst()).getCenter(),
-                    vertex.get(t.getSecond()).getCenter()).clickable(true).color(t.getThird()));
-
-            linesCircles.add(new Triple<>(t.getFirst(), t.getSecond(), t.getThird()));
-            polylines.add(p);
-        }
-
-        this.quizzes = escapeRoom.getQuizzes();
-
     }
 
     private void changeActiveCircle(Circle circle) {
@@ -210,34 +210,20 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     }
 
     private void saveEscapeRoom() {
-        for (int i = 0; i < vertex.size(); i++) {
+        for (int i = 0; i < escapeRoom.getVertex().size(); i++) {
             if (i == 0) {
                 circlesRelativePositions.add(new PairCustom<>(0.0, 0.0));
             } else {
-                Circle previousCircle = vertex.get(i-1);
-                Circle currentCircle = vertex.get(i);
-                LatLng onlyLatitude = new LatLng(currentCircle.getCenter().latitude, previousCircle.getCenter().longitude);
-                LatLng onlyLongitude = new LatLng(previousCircle.getCenter().latitude, currentCircle.getCenter().longitude);
+                Circle previousCircle = escapeRoom.getVertex().get(i-1);
+                Circle currentCircle = escapeRoom.getVertex().get(i);
 
-                //Com isto estou a verificar em que sentido é, se para a esquerda ou direita OU se para baixo ou para cima
-                //Uma latDif < 0 quer dizer que está em baixo
-                //Uma lonDif < 0 quer dizer que está à esquerda
-                double latDif = (currentCircle.getCenter().latitude - previousCircle.getCenter().latitude) < 0 ? 1 : -1;
-                double lonDif = (currentCircle.getCenter().longitude - previousCircle.getCenter().longitude) < 0 ? -1 : 1;
-
-                float[] resultsLat = new float[1];
-                Location.distanceBetween(previousCircle.getCenter().latitude, previousCircle.getCenter().longitude,
-                        onlyLatitude.latitude, onlyLatitude.longitude, resultsLat);
-
-                float[] resultsLon = new float[1];
-                Location.distanceBetween(previousCircle.getCenter().latitude, previousCircle.getCenter().longitude,
-                        onlyLongitude.latitude, onlyLongitude.longitude, resultsLon);
-
-                circlesRelativePositions.add(new PairCustom<>(resultsLat[0] * latDif, resultsLon[0] * lonDif));
+                circlesRelativePositions.add(LocationCalculator.diferenceBetweenPoints(previousCircle.getCenter(),
+                        currentCircle.getCenter()));
             }
         }
 
-        EscapeRoom escapeRoomToStore = new EscapeRoom(linesCircles, circlesRelativePositions, quizzes);
+        escapeRoom.setCirclesRelativePositions(circlesRelativePositions);
+        //EscapeRoom escapeRoomToStore = new EscapeRoom(linesCircles, circlesRelativePositions, quizzes);
 
         HomeActivity homeActivity = (HomeActivity) getActivity();
         User signedInUser = homeActivity.getSignedInUser();
@@ -247,7 +233,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         String roomID = escapeRoomId.equals("") ? ref.push().getKey() : escapeRoomId;
         escapeRoomId = roomID;
 
-        ref.child(roomID).setValue(escapeRoomToStore).addOnSuccessListener(unused ->
+        ref.child(roomID).setValue(escapeRoom).addOnSuccessListener(unused ->
                 Toast.makeText(homeActivity, "Escape Room Saved", Toast.LENGTH_SHORT).show());
 
         circlesRelativePositions.clear();
@@ -255,7 +241,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, Quiz quiz) {
-        this.quizzes.add(quiz);
+        escapeRoom.getQuizzes().add(quiz);
         dialog.dismiss();
         Toast.makeText(getActivity(), "Quiz added", Toast.LENGTH_SHORT).show();
     }

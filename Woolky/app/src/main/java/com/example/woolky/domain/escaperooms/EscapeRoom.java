@@ -1,7 +1,10 @@
 package com.example.woolky.domain.escaperooms;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Pair;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
@@ -15,10 +18,16 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EscapeRoom {
 
+    //Na verdade é a posição do primeiro vértice da room relativa à posição escolhida para o user começar
+    private PairCustom<Double, Double> userStartPosition;
+    private Circle startPositionCircle;
     private List<Triple<Integer, Integer, Integer>> linesCircles;
     private List<PairCustom<Double, Double>> circlesRelativePositions;
     private List<Quiz> quizzes;
@@ -32,6 +41,8 @@ public class EscapeRoom {
         quizzes = new ArrayList<>();
         vertex = new ArrayList<>();
         polylines = new ArrayList<>();
+        userStartPosition = null;
+        startPositionCircle = null;
     }
 
     public EscapeRoom(List<Triple<Integer, Integer, Integer>> linesCircles,
@@ -43,6 +54,8 @@ public class EscapeRoom {
 
         this.vertex = new ArrayList<>();
         this.polylines = new ArrayList<>();
+        this.userStartPosition = null;
+        this.startPositionCircle = null;
     }
 
 
@@ -76,11 +89,20 @@ public class EscapeRoom {
     }
 
     @Exclude
-    public List<Polyline> getPolylines() {
-        return polylines;
+    public List<Polyline> getPolylines() { return polylines; }
+
+    public PairCustom<Double, Double> getUserStartPosition() {
+        return userStartPosition;
+    }
+
+    public void setUserStartPosition(PairCustom<Double, Double> userStartPosition) {
+        this.userStartPosition = userStartPosition;
     }
 
     public void drawEscapeRoom(LatLng initialPosition, GoogleMap mMap) {
+        vertex.clear();
+        polylines.clear();
+
         List<LatLng> circlePositions = LocationCalculator.calculatePositions(initialPosition,
                 circlesRelativePositions);
 
@@ -90,11 +112,41 @@ public class EscapeRoom {
             vertex.add(c);
         }
 
+        LatLng userInitialPosition = LocationCalculator.calculatePositions(initialPosition,
+                Collections.singletonList(this.getUserStartPosition())).get(0);
+        this.startPositionCircle = mMap.addCircle(new CircleOptions().center(userInitialPosition).radius(6)
+                .fillColor(Color.GREEN).clickable(true));
+
         for (Triple<Integer, Integer, Integer> t : linesCircles) {
             Polyline p = mMap.addPolyline(new PolylineOptions().add(vertex.get(t.getFirst()).getCenter(),
                     vertex.get(t.getSecond()).getCenter()).clickable(true).color(t.getThird()));
 
             polylines.add(p);
         }
+    }
+
+    public void removeFromMap(GoogleMap mMap) {
+        for (Circle c : vertex) {
+            c.remove();
+        }
+
+        for (Polyline p : polylines){
+            p.remove();
+        }
+    }
+
+    @Exclude
+    public List<LatLng> getVertexPosition() {
+        List<LatLng> list = new ArrayList<>();
+        for (Circle circle : vertex) {
+            LatLng center = circle.getCenter();
+            list.add(center);
+        }
+        return list;
+    }
+
+    @Exclude
+    public Circle getStartPositionCircle() {
+        return startPositionCircle;
     }
 }

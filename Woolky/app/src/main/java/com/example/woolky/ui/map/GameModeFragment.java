@@ -64,6 +64,8 @@ public class GameModeFragment extends Fragment implements LocationListener {
             mMap = googleMap;
             final Context cx = getActivity();
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
+
+            //TODO: Mudar para o LocationManager.requestLocationUpdates()
             Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
@@ -178,21 +180,6 @@ public class GameModeFragment extends Fragment implements LocationListener {
             userMarker.remove();
             userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), R.color.user_default_color)));
         }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 
     public TicTacToe getTicTacToe() {

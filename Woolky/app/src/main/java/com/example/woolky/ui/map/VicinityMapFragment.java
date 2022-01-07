@@ -130,8 +130,11 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         mMap = googleMap;
         final Context cx = getActivity();
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
+
+        //TODO: Mudar para o LocationManager.requestLocationUpdates()
         Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @SuppressLint("PotentialBehaviorOverride")
             @Override
             public void onSuccess(Location location) {
                 LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());

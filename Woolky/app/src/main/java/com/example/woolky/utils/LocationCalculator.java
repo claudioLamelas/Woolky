@@ -114,4 +114,25 @@ public class LocationCalculator {
         Location.distanceBetween(p1.latitude, p1.longitude, p2.latitude, p2.longitude, results);
         return results[0];
     }
+
+    public static PairCustom<Double, Double> diferenceBetweenPoints(LatLng previousPosition, LatLng currentPosition) {
+        LatLng onlyLatitude = new LatLng(currentPosition.latitude, previousPosition.longitude);
+        LatLng onlyLongitude = new LatLng(previousPosition.latitude, currentPosition.longitude);
+
+        //Com isto estou a verificar em que sentido é, se para a esquerda ou direita OU se para baixo ou para cima
+        //Uma latDif < 0 quer dizer que está em baixo
+        //Uma lonDif < 0 quer dizer que está à esquerda
+        double latDif = (currentPosition.latitude - previousPosition.latitude) < 0 ? 1 : -1;
+        double lonDif = (currentPosition.longitude - previousPosition.longitude) < 0 ? -1 : 1;
+
+        float[] resultsLat = new float[1];
+        Location.distanceBetween(previousPosition.latitude, previousPosition.longitude,
+                onlyLatitude.latitude, onlyLatitude.longitude, resultsLat);
+
+        float[] resultsLon = new float[1];
+        Location.distanceBetween(previousPosition.latitude, previousPosition.longitude,
+                onlyLongitude.latitude, onlyLongitude.longitude, resultsLon);
+
+        return new PairCustom<>(resultsLat[0] * latDif, resultsLon[0] * lonDif);
+    }
 }
