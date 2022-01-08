@@ -19,10 +19,10 @@ import com.example.woolky.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link TicTacToeFinishDialog#newInstance} factory method to
+ * Use the {@link FinishGameDialog#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TicTacToeFinishDialog extends DialogFragment {
+public class FinishGameDialog extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,7 +31,7 @@ public class TicTacToeFinishDialog extends DialogFragment {
     // TODO: Rename and change types of parameters
     private String message;
 
-    public TicTacToeFinishDialog() {
+    public FinishGameDialog() {
         // Required empty public constructor
     }
 
@@ -43,8 +43,8 @@ public class TicTacToeFinishDialog extends DialogFragment {
      * @return A new instance of fragment TicTacToeFinishDialog.
      */
     // TODO: Rename and change types and number of parameters
-    public static TicTacToeFinishDialog newInstance(String message) {
-        TicTacToeFinishDialog fragment = new TicTacToeFinishDialog();
+    public static FinishGameDialog newInstance(String message) {
+        FinishGameDialog fragment = new FinishGameDialog();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, message);
         fragment.setArguments(args);

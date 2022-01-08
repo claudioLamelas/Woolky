@@ -83,7 +83,7 @@ public class GameInviteFragment extends Fragment {
 
             if (gameInvite instanceof EscapeRoomGameInvite) {
                 ((HomeActivity) getActivity()).setupEscapeRoomGame(gameInviteID,
-                        ((EscapeRoomGameInvite) gameInvite).getEscapeRoomId(), gameInvite.getFromId());
+                        ((EscapeRoomGameInvite) gameInvite).getEscapeRoomId(), gameInvite.getFromId(), true);
             } else {
                 ((HomeActivity) getActivity()).setupTicTacToeGame(gameInviteID, true);
             }

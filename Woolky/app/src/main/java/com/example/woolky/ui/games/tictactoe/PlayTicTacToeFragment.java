@@ -154,15 +154,15 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
     public void finishGame(TicTacToeGame.Piece value) {
         if (value == TicTacToeGame.Piece.Blank) {
             //Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
-            TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("It's a TIE");
+            FinishGameDialog dialog = FinishGameDialog.newInstance("It's a TIE");
             dialog.show(getChildFragmentManager(), "dialog");
         } else if (value == this.ticTacToeGame.getMyPiece()) {
             //Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
-            TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("You've Won :D");
+            FinishGameDialog dialog = FinishGameDialog.newInstance("You've Won :D");
             dialog.show(getChildFragmentManager(), "dialog");
         } else {
             //Toast.makeText(getActivity(), "You LOST the game", Toast.LENGTH_LONG).show();
-            TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("You've Lost :(");
+            FinishGameDialog dialog = FinishGameDialog.newInstance("You've Lost :(");
             dialog.show(getChildFragmentManager(), "dialog");
         }
 

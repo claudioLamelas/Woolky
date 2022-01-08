@@ -59,6 +59,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private Circle previousActiveCircle;
     private Circle userStartPosition;
     private boolean choosingStartPosition;
+    private Triple<Integer, Integer, Integer> blueLine;
 
     private EscapeRoom escapeRoom = null;
     private String escapeRoomId;
@@ -83,6 +84,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         this.initialPosition = null;
         this.choosingStartPosition = false;
         this.userStartPosition = null;
+        this.blueLine = null;
     }
 
     @Override
@@ -202,6 +204,18 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                 polyline.setColor(Color.RED);
                 triple.setThird(Color.RED);
             } else if (triple.getThird() == Color.RED) {
+                polyline.setColor(Color.BLUE);
+                triple.setThird(Color.BLUE);
+                if (blueLine == null)
+                    blueLine = triple;
+                else {
+                    int index2 = escapeRoom.getLinesCircles().indexOf(blueLine);
+                    escapeRoom.getPolylines().get(index2).setColor(Color.BLACK);
+                    blueLine.setThird(Color.BLACK);
+                    blueLine = triple;
+                }
+            } else {
+                blueLine = null;
                 polyline.setColor(Color.BLACK);
                 triple.setThird(Color.BLACK);
             }
@@ -268,6 +282,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             activeCircle = initialCircle;
             previousActiveCircle = initialCircle;
         } else {
+            blueLine = escapeRoom.getBlueLine();
             LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(initialPosition,
                     Collections.singletonList(escapeRoom.getUserStartPosition())).get(0);
             escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap);

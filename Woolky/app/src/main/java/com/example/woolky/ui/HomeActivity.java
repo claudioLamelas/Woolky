@@ -145,7 +145,7 @@ public class HomeActivity extends AppCompatActivity {
                             }
                             case ESCAPE_ROOM: {
                                 setupEscapeRoomGame(inviteId, ((EscapeRoomGameInvite)invite).getEscapeRoomId(),
-                                        invite.getFromId());
+                                        invite.getFromId(), false);
                                 break;
                             }
                         }
@@ -160,15 +160,20 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId) {
+    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId, boolean isReceiver) {
+        DatabaseReference gameRef = databaseRef.child("games").child(inviteId);
+
         databaseRef.child("escapeRooms").child(escapeRoomOwnerId).child(escapeRoomId)
                 .get().addOnSuccessListener(
                         dataSnapshot -> {
                             EscapeRoom escapeRoom = dataSnapshot.getValue(EscapeRoom.class);
                             EscapeRoomGame escapeRoomGame = new EscapeRoomGame(escapeRoom);
 
+                            if (!isReceiver)
+                                gameRef.setValue(escapeRoomGame);
+
                             getSupportFragmentManager().beginTransaction().replace(R.id.fragment,
-                                new PlayEscapeRoomFragment(escapeRoomGame)).commit();
+                                new PlayEscapeRoomFragment(gameRef, escapeRoomGame)).commit();
             });
     }
 

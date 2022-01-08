@@ -15,6 +15,7 @@ import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EscapeRoom {
 
@@ -115,6 +116,16 @@ public class EscapeRoom {
         }
     }
 
+    @Exclude
+    public Triple<Integer, Integer, Integer> getBlueLine() {
+        for (Triple<Integer, Integer, Integer> triple : linesCircles) {
+            if (triple.getThird() == Color.BLUE) {
+                return triple;
+            }
+        }
+        return null;
+    }
+
     public void removeFromMap(GoogleMap mMap) {
         for (Circle c : vertex) {
             c.remove();
@@ -139,4 +150,5 @@ public class EscapeRoom {
     public Circle getStartPositionCircle() {
         return startPositionCircle;
     }
+
 }

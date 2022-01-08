@@ -2,7 +2,7 @@ package com.example.woolky.ui.games.escaperooms;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.Color;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,12 +16,10 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.woolky.R;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.games.escaperooms.Quiz;
-import com.example.woolky.utils.Triple;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.List;
@@ -33,13 +31,18 @@ import java.util.List;
  */
 public class ShowQuizDialog extends DialogFragment {
 
+    private AnswerQuizListener answerQuizListener;
+
+    public interface AnswerQuizListener {
+        void onDialogPositiveClick(DialogFragment dialog, int chosenAnswer, Quiz quiz, Polyline polyline);
+    }
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private Quiz quiz;
     private Polyline polyline;
-    private EscapeRoom escapeRoom;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -49,10 +52,9 @@ public class ShowQuizDialog extends DialogFragment {
         // Required empty public constructor
     }
 
-    public ShowQuizDialog(Quiz quiz, Polyline polyline, EscapeRoom escapeRoom) {
+    public ShowQuizDialog(Quiz quiz, Polyline polyline) {
         this.quiz = quiz;
         this.polyline = polyline;
-        this.escapeRoom = escapeRoom;
     }
 
     /**
@@ -101,27 +103,12 @@ public class ShowQuizDialog extends DialogFragment {
 
         builder.setView(v)
                 .setPositiveButton("Answer", (dialog, id) -> {
-                    //TODO: Criar um listener para que seja o PlayEscapeRoom a fazer esta lógica
                     //TODO: Quando o user acerta mostrar um digito do código final
                     RadioGroup rGroup = v.findViewById(R.id.quizAnswers);
                     int optionId = rGroup.getCheckedRadioButtonId();
                     View radioChoice = v.findViewById(optionId);
                     int index = rGroup.indexOfChild(radioChoice);
-
-                    if (index == quiz.getIndexOfCorrectAnswer()) {
-                        polyline.setColor(Color.GREEN);
-
-                        int lineIndex = escapeRoom.getPolylines().indexOf(polyline);
-                        Triple<Integer, Integer, Integer> triple = escapeRoom.getLinesCircles().get(lineIndex);
-                        triple.setThird(Color.GREEN);
-
-                        Toast.makeText(getActivity(), "Correct Answer", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                        Toast.makeText(getActivity(), "Wrong Answer", Toast.LENGTH_SHORT).show();
-
-
-                    dialog.dismiss();
+                    answerQuizListener.onDialogPositiveClick(this, index, quiz, polyline);
                 });
         return builder.create();
     }
@@ -139,5 +126,16 @@ public class ShowQuizDialog extends DialogFragment {
         answer1.setText(answersList.get(1));
         answer2.setText(answersList.get(2));
         answer3.setText(answersList.get(3));
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            answerQuizListener = (AnswerQuizListener) getParentFragment();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString()
+                    + " must implement AnswerQuizListener");
+        }
     }
 }

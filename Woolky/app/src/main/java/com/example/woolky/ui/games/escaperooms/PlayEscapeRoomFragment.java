@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -20,11 +21,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
+import com.example.woolky.domain.games.escaperooms.EscapeRoomGameListener;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
-import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.games.escaperooms.Quiz;
+import com.example.woolky.ui.games.tictactoe.FinishGameDialog;
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
@@ -38,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.firebase.database.DatabaseReference;
 import com.google.maps.android.geometry.Point;
 
 import java.util.ArrayList;
@@ -48,9 +51,12 @@ import java.util.Random;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallback, LocationListener {
+public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallback, LocationListener,
+        ShowQuizDialog.AnswerQuizListener {
 
     private static final int FINE_LOCATION_CODE = 114;
+    private DatabaseReference gameRef;
+    private EscapeRoomGameListener escapeRoomGameListener;
     private EscapeRoomGame escapeRoomGame;
     private GoogleMap mMap;
     //private FusedLocationProviderClient fusedLocationClient;
@@ -63,7 +69,8 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         // Required empty public constructor
     }
 
-    public PlayEscapeRoomFragment(EscapeRoomGame escapeRoomGame) {
+    public PlayEscapeRoomFragment(DatabaseReference gameRef, EscapeRoomGame escapeRoomGame) {
+        this.gameRef = gameRef;
         this.escapeRoomGame = escapeRoomGame;
     }
     
@@ -73,6 +80,8 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
         //fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        escapeRoomGameListener = new EscapeRoomGameListener(this);
+        gameRef.addChildEventListener(escapeRoomGameListener);
     }
 
     @Override
@@ -93,6 +102,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        gameRef.removeEventListener(escapeRoomGameListener);
         locationManager.removeUpdates(this);
     }
 
@@ -125,7 +135,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                 Random random = new Random();
                 Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
                         .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
-                ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline, escapeRoomGame.getEscapeRoom());
+                ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
                 dialog.show(getChildFragmentManager(), "quiz");
             }
         });
@@ -135,7 +145,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         int index = escapeRoomGame.getEscapeRoom().getPolylines().indexOf(polyline);
         Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(index);
 
-        if (polyline.getColor() != Color.RED)
+        if (polyline.getColor() != Color.RED && polyline.getColor() != Color.BLUE)
             return false;
 
         //TODO: substituir pela PolyUtils.distanceToLine()
@@ -251,5 +261,35 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
      */
     Point subtractPoints(Point point1,Point point2) {
         return new Point(point1.x - point2.x, point1.y - point2.y);
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, int chosenAnswer, Quiz quiz, Polyline polyline) {
+        if (chosenAnswer == quiz.getIndexOfCorrectAnswer()) {
+            polyline.setColor(Color.GREEN);
+            int lineIndex = escapeRoomGame.getEscapeRoom().getPolylines().indexOf(polyline);
+            Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(lineIndex);
+            triple.setThird(Color.GREEN);
+            Toast.makeText(getActivity(), "Correct Answer", Toast.LENGTH_SHORT).show();
+
+            if (escapeRoomGame.isFinished() == 1) {
+                escapeRoomGame.setFinito(true);
+                gameRef.setValue(escapeRoomGame);
+            }
+        } else
+            Toast.makeText(getActivity(), "Wrong Answer", Toast.LENGTH_SHORT).show();
+
+
+        dialog.dismiss();
+    }
+
+    public void finishGame(Boolean finishedGame) {
+        if (finishedGame && escapeRoomGame.isFinito()) {
+            FinishGameDialog finishDialog = FinishGameDialog.newInstance("You've escaped the room :D");
+            finishDialog.show(getChildFragmentManager(), "finish");
+        } else {
+            FinishGameDialog finishDialog = FinishGameDialog.newInstance("Someone escaped first D:");
+            finishDialog.show(getChildFragmentManager(), "finish");
+        }
     }
 }

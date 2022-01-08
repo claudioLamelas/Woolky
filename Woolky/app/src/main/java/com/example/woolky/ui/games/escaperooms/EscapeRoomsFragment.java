@@ -116,7 +116,7 @@ public class EscapeRoomsFragment extends Fragment {
         lv.setOnItemLongClickListener((parent, v2, position, id) -> {
             EscapeRoom chosenEscapeRoom = escapeRooms.get(position);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment,
-                    new PlayEscapeRoomFragment(new EscapeRoomGame(chosenEscapeRoom))).addToBackStack(null).commit();
+                    new PlayEscapeRoomFragment(null, new EscapeRoomGame(chosenEscapeRoom))).addToBackStack(null).commit();
             return false;
         });
 
