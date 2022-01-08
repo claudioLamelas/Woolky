@@ -1,10 +1,6 @@
-package com.example.woolky.domain.escaperooms;
+package com.example.woolky.domain.games.escaperooms;
 
 import android.graphics.Color;
-import android.os.Build;
-import android.util.Pair;
-
-import androidx.annotation.RequiresApi;
 
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
@@ -18,10 +14,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EscapeRoom {
 

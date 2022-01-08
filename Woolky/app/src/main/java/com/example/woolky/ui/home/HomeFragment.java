@@ -15,10 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.example.woolky.HomeActivity;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
-import com.example.woolky.ui.escaperooms.EscapeRoomsFragment;
+import com.example.woolky.ui.games.escaperooms.EscapeRoomsFragment;
 import com.example.woolky.ui.friends.FriendsListFragment;
 import com.example.woolky.ui.groups.GroupsListFragment;
 

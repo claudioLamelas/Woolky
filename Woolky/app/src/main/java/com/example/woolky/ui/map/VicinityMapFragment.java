@@ -18,14 +18,11 @@ import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.example.woolky.HomeActivity;
-import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.LatLngCustom;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.utils.LatLngCustom;
 import com.example.woolky.domain.ShareLocationType;
 import com.example.woolky.domain.User;
-import com.example.woolky.ui.dialogs.ChallengesDialog;
 import com.example.woolky.R;
-import com.example.woolky.ui.dialogs.UserInformationOnMapDialog;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;

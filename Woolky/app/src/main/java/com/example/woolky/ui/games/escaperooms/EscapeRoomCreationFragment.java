@@ -1,4 +1,4 @@
-package com.example.woolky.ui.escaperooms;
+package com.example.woolky.ui.games.escaperooms;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -15,24 +15,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.woolky.HomeActivity;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.escaperooms.EscapeRoom;
+import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.User;
-import com.example.woolky.domain.escaperooms.Quiz;
+import com.example.woolky.domain.games.escaperooms.Quiz;
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
 import com.example.woolky.utils.Utils;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,7 +39,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;

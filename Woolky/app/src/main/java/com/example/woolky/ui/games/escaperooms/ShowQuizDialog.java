@@ -1,4 +1,4 @@
-package com.example.woolky.ui.escaperooms;
+package com.example.woolky.ui.games.escaperooms;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -19,8 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.woolky.R;
-import com.example.woolky.domain.escaperooms.EscapeRoom;
-import com.example.woolky.domain.escaperooms.Quiz;
+import com.example.woolky.domain.games.escaperooms.EscapeRoom;
+import com.example.woolky.domain.games.escaperooms.Quiz;
 import com.example.woolky.utils.Triple;
 import com.google.android.gms.maps.model.Polyline;
 

@@ -1,6 +1,7 @@
-package com.example.woolky.domain;
+package com.example.woolky.domain.games.tictactoe;
 
-import com.example.woolky.utils.Board;
+import com.example.woolky.domain.games.Game;
+import com.example.woolky.domain.games.Board;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.Exclude;
@@ -8,7 +9,7 @@ import com.google.firebase.database.Exclude;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicTacToe extends Game{
+public class TicTacToeGame extends Game {
 
     public enum Piece {Blank, X, O};
 
@@ -20,7 +21,7 @@ public class TicTacToe extends Game{
     private Piece currentPlayer;
     private Piece winner;
 
-    public TicTacToe(int numParticipants, LatLng boardInitialPosition, Piece myPiece) {
+    public TicTacToeGame(int numParticipants, LatLng boardInitialPosition, Piece myPiece) {
         super(numParticipants);
 
         board = new Board<>(3, 30, boardInitialPosition);

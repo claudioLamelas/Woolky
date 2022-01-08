@@ -1,4 +1,4 @@
-package com.example.woolky;
+package com.example.woolky.ui.games;
 
 import android.os.Bundle;
 
@@ -12,15 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.woolky.domain.GameInvite;
-import com.example.woolky.domain.GameMode;
+import com.example.woolky.domain.games.EscapeRoomGameInvite;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.R;
+import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.InviteState;
-import com.example.woolky.ui.map.GameModeFragment;
 import com.google.firebase.database.DatabaseReference;
-
-import java.io.Serializable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,7 +81,13 @@ public class GameInviteFragment extends Fragment {
             handler.removeCallbacksAndMessages(null);
             inviteReference.child("inviteState").setValue(InviteState.ACCEPTED);
 
-            ((HomeActivity) getActivity()).setupGame(gameInviteID, gameInvite.getGameMode(), true);
+            if (gameInvite instanceof EscapeRoomGameInvite) {
+                ((HomeActivity) getActivity()).setupEscapeRoomGame(gameInviteID,
+                        ((EscapeRoomGameInvite) gameInvite).getEscapeRoomId(), gameInvite.getFromId());
+            } else {
+                ((HomeActivity) getActivity()).setupTicTacToeGame(gameInviteID, true);
+            }
+
             getActivity().getSupportFragmentManager().beginTransaction().remove(this).commitNow();
         });
 
@@ -104,7 +108,7 @@ public class GameInviteFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             public void run() {
                 inviteReference.child("inviteState").setValue(InviteState.DECLINED);
-                getActivity().getSupportFragmentManager().beginTransaction().remove(thisFragment).commitNow();
+                requireActivity().getSupportFragmentManager().beginTransaction().remove(thisFragment).commitNow();
             }
         }, secondsDelayed * 1000);
     }

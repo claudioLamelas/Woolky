@@ -5,7 +5,7 @@
     android:id="@+id/playEscaperRoomLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.escaperooms.PlayEscapeRoomFragment">
+    tools:context=".ui.games.escaperooms.PlayEscapeRoomFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/playMap"

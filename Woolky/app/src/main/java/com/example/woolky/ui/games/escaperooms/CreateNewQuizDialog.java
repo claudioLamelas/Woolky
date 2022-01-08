@@ -1,9 +1,8 @@
-package com.example.woolky.ui.escaperooms;
+package com.example.woolky.ui.games.escaperooms;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.example.woolky.R;
-import com.example.woolky.domain.escaperooms.Quiz;
+import com.example.woolky.domain.games.escaperooms.Quiz;
 
 import java.util.ArrayList;
 import java.util.List;

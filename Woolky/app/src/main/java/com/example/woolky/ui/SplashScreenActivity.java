@@ -1,11 +1,12 @@
-package com.example.woolky;
+package com.example.woolky.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.WindowManager;
+
+import com.example.woolky.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
 

@@ -1,10 +1,9 @@
-package com.example.woolky;
+package com.example.woolky.domain.games.tictactoe;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.woolky.domain.TicTacToe;
-import com.example.woolky.ui.map.GameModeFragment;
+import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,35 +11,35 @@ import com.google.firebase.database.DatabaseError;
 import java.util.List;
 import java.util.Objects;
 
-public class GameListener implements ChildEventListener {
+public class TicTacToeGameListener implements ChildEventListener {
 
-    GameModeFragment gameModeFragment;
+    PlayTicTacToeFragment playTicTacToeFragment;
 
-    public GameListener(GameModeFragment gameModeFragment){
-        this.gameModeFragment = gameModeFragment;
+    public TicTacToeGameListener(PlayTicTacToeFragment playTicTacToeFragment){
+        this.playTicTacToeFragment = playTicTacToeFragment;
     }
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
         if (Objects.equals(snapshot.getKey(), "currentPlayer")) {
-            gameModeFragment.getTicTacToe().setCurrentPlayer(snapshot.getValue(TicTacToe.Piece.class));
-            gameModeFragment.getConfirmPlayButton().setEnabled(gameModeFragment.getTicTacToe().isMyTurn());
+            playTicTacToeFragment.getTicTacToe().setCurrentPlayer(snapshot.getValue(TicTacToeGame.Piece.class));
+            playTicTacToeFragment.getConfirmPlayButton().setEnabled(playTicTacToeFragment.getTicTacToe().isMyTurn());
         }
 
         if (Objects.equals(snapshot.getKey(), "winner")) {
-            gameModeFragment.finishGame(snapshot.getValue(TicTacToe.Piece.class));
+            playTicTacToeFragment.finishGame(snapshot.getValue(TicTacToeGame.Piece.class));
         }
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
         if (Objects.equals(snapshot.getKey(), "currentPlayer")) {
-            gameModeFragment.getTicTacToe().setCurrentPlayer(snapshot.getValue(TicTacToe.Piece.class));
-            gameModeFragment.getConfirmPlayButton().setEnabled(gameModeFragment.getTicTacToe().isMyTurn());
+            playTicTacToeFragment.getTicTacToe().setCurrentPlayer(snapshot.getValue(TicTacToeGame.Piece.class));
+            playTicTacToeFragment.getConfirmPlayButton().setEnabled(playTicTacToeFragment.getTicTacToe().isMyTurn());
         }
 
         if (Objects.equals(snapshot.getKey(), "lastPlayedPosition")) {
-            gameModeFragment.getTicTacToe().updatesLastPosition((List<Long>) snapshot.getValue(), gameModeFragment.getMap());
+            playTicTacToeFragment.getTicTacToe().updatesLastPosition((List<Long>) snapshot.getValue(), playTicTacToeFragment.getMap());
         }
     }
 

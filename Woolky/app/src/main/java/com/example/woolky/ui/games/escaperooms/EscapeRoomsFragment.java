@@ -1,4 +1,4 @@
-package com.example.woolky.ui.escaperooms;
+package com.example.woolky.ui.games.escaperooms;
 
 import android.os.Bundle;
 
@@ -12,9 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.woolky.HomeActivity;
+import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.escaperooms.EscapeRoom;
+import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
@@ -115,7 +116,7 @@ public class EscapeRoomsFragment extends Fragment {
         lv.setOnItemLongClickListener((parent, v2, position, id) -> {
             EscapeRoom chosenEscapeRoom = escapeRooms.get(position);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment,
-                    new PlayEscapeRoomFragment(chosenEscapeRoom)).addToBackStack(null).commit();
+                    new PlayEscapeRoomFragment(new EscapeRoomGame(chosenEscapeRoom))).addToBackStack(null).commit();
             return false;
         });
 

@@ -5,7 +5,7 @@
     android:id="@+id/newQuizLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.escaperooms.CreateNewQuizDialog">
+    tools:context=".ui.games.escaperooms.CreateNewQuizDialog">
 
     <EditText
         android:id="@+id/question"

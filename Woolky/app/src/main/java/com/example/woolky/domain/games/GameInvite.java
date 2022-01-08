@@ -1,20 +1,23 @@
-package com.example.woolky.domain;
+package com.example.woolky.domain.games;
+
+import com.example.woolky.domain.InviteState;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
 public class GameInvite implements Serializable {
-    private String from, to;
+    private String from, to, fromId;
     private GameMode gameMode;
     private InviteState inviteState;
     private Timestamp validUntil;
 
     public GameInvite(){}
 
-    public GameInvite(String from, String to, GameMode gameMode, InviteState inviteState) {
+    public GameInvite(String from, String fromId, String to, GameMode gameMode, InviteState inviteState) {
         this.from = from;
         this.to = to;
+        this.fromId = fromId;
         this.gameMode = gameMode;
         this.inviteState = inviteState;
     }
@@ -66,5 +69,13 @@ public class GameInvite implements Serializable {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public String getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(String fromId) {
+        this.fromId = fromId;
     }
 }

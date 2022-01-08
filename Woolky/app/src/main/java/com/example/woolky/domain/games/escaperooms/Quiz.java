@@ -1,4 +1,4 @@
-package com.example.woolky.domain.escaperooms;
+package com.example.woolky.domain.games.escaperooms;
 
 import java.util.List;
 

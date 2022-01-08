@@ -2,12 +2,8 @@ package com.example.woolky.utils;
 
 import android.graphics.Color;
 
-import androidx.core.graphics.ColorUtils;
-
-import com.example.woolky.domain.LatLngCustom;
 import com.example.woolky.domain.ShareLocationType;
 import com.example.woolky.domain.User;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Arrays;
 import java.util.List;

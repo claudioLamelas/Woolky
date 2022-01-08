@@ -1,4 +1,4 @@
-package com.example.woolky.ui.dialogs;
+package com.example.woolky.ui.map;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,21 +18,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.woolky.HomeActivity;
-import com.example.woolky.domain.GameInvite;
-import com.example.woolky.domain.GameMode;
+import com.example.woolky.domain.games.EscapeRoomGameInvite;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.domain.games.GameInvite;
+import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.User;
-import com.example.woolky.ui.map.GameModeFragment;
 import com.example.woolky.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -50,6 +46,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
     // TODO: Rename and change types of parameters
     private User user;
     private User signedInUser;
+    private Spinner gamesSpinner;
 
     public UserInformationOnMapDialog() {
         // Required empty public constructor
@@ -95,21 +92,36 @@ public class UserInformationOnMapDialog extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.fragment_user_information_on_map_dialog, null);
 
-        v.findViewById(R.id.inviteToPlayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                HomeActivity activity = (HomeActivity) getActivity();
-                //TODO: Alterar EU para o id/nome do signedInUser
-                GameInvite gameInvite = new GameInvite(signedInUser.getUserName(), user.getUserId(), GameMode.TIC_TAC_TOE, InviteState.SENT);
-                FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
-                DatabaseReference ref = database.getReference().child("gameInvites").child(user.getUserId());
-                String id = ref.push().getKey();
-                ref.child(id).setValue(gameInvite);
-                DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
+        v.findViewById(R.id.inviteToPlayButton).setOnClickListener(v1 -> {
+            HomeActivity activity = (HomeActivity) getActivity();
 
-                activity.setListenerToGameInvite(id, inviteStateRef);
-                //changeToGameMode(v);
+            String selectedGame = (String) gamesSpinner.getSelectedItem();
+
+            //FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
+            DatabaseReference ref = activity.getDatabaseRef().child("gameInvites").child(user.getUserId());
+            String id = ref.push().getKey();
+
+            GameInvite gameInvite;
+            switch (selectedGame) {
+                case "Tic Tac Toe": {
+                    gameInvite = new GameInvite(signedInUser.getUserName(), signedInUser.getUserId(),
+                            user.getUserId(), GameMode.TIC_TAC_TOE, InviteState.SENT);
+                    ref.child(id).setValue(gameInvite);
+                    break;
+                }
+                case "Escape Room": {
+                    //TODO: escapeRoomId tem de ser escolhido pelo user
+                    gameInvite = new EscapeRoomGameInvite(signedInUser.getUserName(), signedInUser.getUserId(),
+                            user.getUserId(), InviteState.SENT, "-Mspq6_rvHgm3aOlczOq");
+                    ref.child(id).setValue(gameInvite);
+                    break;
+                }
+                default:
+                    throw new IllegalStateException("Unexpected value: " + selectedGame);
             }
+
+            DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
+            activity.setListenerToGameInvite(id, inviteStateRef, gameInvite);
         });
 
         ImageView photo = v.findViewById(R.id.dialogUserPhoto);
@@ -119,7 +131,8 @@ public class UserInformationOnMapDialog extends DialogFragment {
         ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + user.getLevel());
         String[] array = getResources().getStringArray(R.array.gameModes);
         ArrayAdapter<String> gameModesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.game_modes_dropdown_item, array);
-        ((Spinner) v.findViewById(R.id.gameModeSpinner)).setAdapter(gameModesAdapter);
+        gamesSpinner = v.findViewById(R.id.gameModeSpinner);
+        gamesSpinner.setAdapter(gameModesAdapter);
         builder.setView(v)
                 .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                     @Override

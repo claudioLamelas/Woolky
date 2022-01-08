@@ -1,10 +1,9 @@
-package com.example.woolky;
+package com.example.woolky.ui;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -12,13 +11,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.woolky.domain.Game;
-import com.example.woolky.domain.GameMode;
+import com.example.woolky.R;
+import com.example.woolky.domain.games.EscapeRoomGameInvite;
+import com.example.woolky.domain.games.GameInvite;
+import com.example.woolky.domain.games.GameInvitesListener;
+import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.TicTacToe;
+import com.example.woolky.domain.games.escaperooms.EscapeRoom;
+import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
+import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
 import com.example.woolky.domain.User;
+import com.example.woolky.ui.games.escaperooms.EscapeRoomCreationFragment;
+import com.example.woolky.ui.games.escaperooms.PlayEscapeRoomFragment;
 import com.example.woolky.ui.home.HomeFragment;
-import com.example.woolky.ui.map.GameModeFragment;
+import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -122,19 +128,27 @@ public class HomeActivity extends AppCompatActivity {
         finish();
     }
 
-    public void setListenerToGameInvite(String inviteId, DatabaseReference inviteStateRef) {
+    public void setListenerToGameInvite(String inviteId, DatabaseReference inviteStateRef, GameInvite invite) {
         inviteStateRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-                    if (inviteState == InviteState.DECLINED) {
+                    if (inviteState == InviteState.DECLINED)
                         Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
-                    }
 
-                    if (inviteState == InviteState.ACCEPTED) {
-                        setupGame(inviteId, GameMode.TIC_TAC_TOE, false);
-                    }
+                    if (inviteState == InviteState.ACCEPTED)
+                        switch (invite.getGameMode()) {
+                            case TIC_TAC_TOE: {
+                                setupTicTacToeGame(inviteId, false);
+                                break;
+                            }
+                            case ESCAPE_ROOM: {
+                                setupEscapeRoomGame(inviteId, ((EscapeRoomGameInvite)invite).getEscapeRoomId(),
+                                        invite.getFromId());
+                                break;
+                            }
+                        }
                     inviteStateRef.removeEventListener(this);
                 }
             }
@@ -146,22 +160,31 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    public void setupGame(String gameInviteID, GameMode gameMode, boolean isReceiver) {
-        if (gameMode == GameMode.TIC_TAC_TOE) {
-            TicTacToe.Piece piece = isReceiver ? TicTacToe.Piece.X : TicTacToe.Piece.O;
-            TicTacToe ticTacToe = new TicTacToe(2, signedInUser.getCurrentPosition().getLatLng(), piece);
+    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId) {
+        databaseRef.child("escapeRooms").child(escapeRoomOwnerId).child(escapeRoomId)
+                .get().addOnSuccessListener(
+                        dataSnapshot -> {
+                            EscapeRoom escapeRoom = dataSnapshot.getValue(EscapeRoom.class);
+                            EscapeRoomGame escapeRoomGame = new EscapeRoomGame(escapeRoom);
 
-            DatabaseReference gameRef = databaseRef.child("games").child(gameInviteID);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment,
+                                new PlayEscapeRoomFragment(escapeRoomGame)).commit();
+            });
+    }
 
-            GameModeFragment gameModeFragment = new GameModeFragment(gameRef, ticTacToe);
-            /*gameModeFragment.setGameRef(gameRef);*/
+    public void setupTicTacToeGame(String gameInviteID, boolean isReceiver) {
+        TicTacToeGame.Piece piece = isReceiver ? TicTacToeGame.Piece.X : TicTacToeGame.Piece.O;
+        TicTacToeGame ticTacToeGame = new TicTacToeGame(2, signedInUser.getCurrentPosition().getLatLng(), piece);
 
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("isReceiver", isReceiver);
-            gameModeFragment.setArguments(bundle);
+        DatabaseReference gameRef = databaseRef.child("games").child(gameInviteID);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment, gameModeFragment).commitNow();
-        }
+        PlayTicTacToeFragment playTicTacToeFragment = new PlayTicTacToeFragment(gameRef, ticTacToeGame);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isReceiver", isReceiver);
+        playTicTacToeFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, playTicTacToeFragment).commitNow();
     }
 
     public DatabaseReference getDatabaseRef() {

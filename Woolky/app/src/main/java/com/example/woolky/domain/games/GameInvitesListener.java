@@ -1,25 +1,21 @@
-package com.example.woolky;
+package com.example.woolky.domain.games;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.example.woolky.domain.GameInvite;
+import com.example.woolky.ui.games.GameInviteFragment;
+import com.example.woolky.R;
 import com.example.woolky.domain.InviteState;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class GameInvitesListener implements ChildEventListener {
 
@@ -35,11 +31,18 @@ public class GameInvitesListener implements ChildEventListener {
     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
         if (snapshot.getValue() != null) {
             String lastInviteKey = snapshot.getKey();
-            GameInvite lastInvite = snapshot.getValue(GameInvite.class);
+            Object data = snapshot.getValue(Object.class);
+
+            GameInvite invite;
+            if (((HashMap<?, ?>) data).containsKey("escapeRoomId"))
+                invite = snapshot.getValue(EscapeRoomGameInvite.class);
+            else {
+                invite = snapshot.getValue(GameInvite.class);
+            }
             DatabaseReference inviteReference = snapshot.getRef();
 
-            if (lastInvite.getInviteState() == InviteState.SENT) {
-                GameInviteFragment gif = GameInviteFragment.newInstance(lastInvite, lastInviteKey);
+            if (invite.getInviteState() == InviteState.SENT) {
+                GameInviteFragment gif = GameInviteFragment.newInstance(invite, lastInviteKey);
                 gif.setInviteReference(inviteReference);
                 fragmentManager.beginTransaction().replace(R.id.inviteFragment, gif).commitNow();
             }

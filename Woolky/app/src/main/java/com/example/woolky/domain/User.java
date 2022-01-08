@@ -1,8 +1,6 @@
 package com.example.woolky.domain;
 
-import android.net.Uri;
-
-import com.google.android.gms.maps.model.LatLng;
+import com.example.woolky.utils.LatLngCustom;
 
 import java.io.Serializable;
 import java.util.ArrayList;

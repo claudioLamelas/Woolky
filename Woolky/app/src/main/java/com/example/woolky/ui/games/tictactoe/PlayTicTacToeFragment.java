@@ -1,4 +1,4 @@
-package com.example.woolky.ui.map;
+package com.example.woolky.ui.games.tictactoe;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,18 +12,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.woolky.GameListener;
-import com.example.woolky.HomeActivity;
-import com.example.woolky.domain.TicTacToe;
-import com.example.woolky.ui.dialogs.TicTacToeFinishDialog;
-import com.example.woolky.utils.Board;
+import com.example.woolky.domain.games.tictactoe.TicTacToeGameListener;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
 import com.example.woolky.R;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -41,11 +38,11 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
-public class GameModeFragment extends Fragment implements LocationListener {
+public class PlayTicTacToeFragment extends Fragment implements LocationListener {
 
-    private TicTacToe ticTacToe;
+    private TicTacToeGame ticTacToeGame;
     private DatabaseReference gameRef;
-    private GameListener gameListener;
+    private TicTacToeGameListener ticTacToeGameListener;
     private boolean isReceiver;
     private Button confirmPlayButton;
 
@@ -76,7 +73,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
                     userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp), R.color.user_default_color)));
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
 
-                    ticTacToe.getBoard().drawBoard(mMap);
+                    ticTacToeGame.getBoard().drawBoard(mMap);
                 }
             });
             Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
@@ -84,9 +81,9 @@ public class GameModeFragment extends Fragment implements LocationListener {
         }
     };
 
-    public GameModeFragment(DatabaseReference gameRef, TicTacToe ticTacToe) {
+    public PlayTicTacToeFragment(DatabaseReference gameRef, TicTacToeGame ticTacToeGame) {
         this.gameRef = gameRef;
-        this.ticTacToe = ticTacToe;
+        this.ticTacToeGame = ticTacToeGame;
     }
 
     @Override
@@ -95,8 +92,8 @@ public class GameModeFragment extends Fragment implements LocationListener {
         if (getArguments() != null) {
             isReceiver = getArguments().getBoolean("isReceiver");
         }
-        gameListener = new GameListener(this);
-        gameRef.addChildEventListener(gameListener);
+        ticTacToeGameListener = new TicTacToeGameListener(this);
+        gameRef.addChildEventListener(ticTacToeGameListener);
     }
 
     @Nullable
@@ -114,20 +111,20 @@ public class GameModeFragment extends Fragment implements LocationListener {
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         view.findViewById(R.id.leaveGameButton).setOnClickListener(v -> {
-            ticTacToe.setWinner(ticTacToe.opponentPiece());
-            gameRef.setValue(ticTacToe);
+            ticTacToeGame.setWinner(ticTacToeGame.opponentPiece());
+            gameRef.setValue(ticTacToeGame);
             ((HomeActivity) getActivity()).changeToMap();
         });
 
         view.findViewById(R.id.confirmPlayButton).setOnClickListener(v -> {
-            List<Integer> playedPosition = ticTacToe.getBoard().getPositionInBoard(currentPosition);
-            if (ticTacToe.isPlayValid(playedPosition)) {
-                ticTacToe.makePlay(playedPosition, mMap);
-                int finishState = ticTacToe.isFinished();
+            List<Integer> playedPosition = ticTacToeGame.getBoard().getPositionInBoard(currentPosition);
+            if (ticTacToeGame.isPlayValid(playedPosition)) {
+                ticTacToeGame.makePlay(playedPosition, mMap);
+                int finishState = ticTacToeGame.isFinished();
                 if (finishState != -1) {
-                    ticTacToe.finishGame(finishState);
+                    ticTacToeGame.finishGame(finishState);
                 }
-                gameRef.setValue(ticTacToe);
+                gameRef.setValue(ticTacToeGame);
             } else {
                 Toast.makeText(getActivity(), "You can't make this move", Toast.LENGTH_SHORT).show();
             }
@@ -140,7 +137,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         if (isReceiver) {
-            gameRef.setValue(ticTacToe);
+            gameRef.setValue(ticTacToeGame);
         }
 
         if (mapFragment != null) {
@@ -150,16 +147,16 @@ public class GameModeFragment extends Fragment implements LocationListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        gameRef.removeEventListener(gameListener);
+        gameRef.removeEventListener(ticTacToeGameListener);
         locationManager.removeUpdates(locationListener);
     }
 
-    public void finishGame(TicTacToe.Piece value) {
-        if (value == TicTacToe.Piece.Blank) {
+    public void finishGame(TicTacToeGame.Piece value) {
+        if (value == TicTacToeGame.Piece.Blank) {
             //Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
             TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("It's a TIE");
             dialog.show(getChildFragmentManager(), "dialog");
-        } else if (value == this.ticTacToe.getMyPiece()) {
+        } else if (value == this.ticTacToeGame.getMyPiece()) {
             //Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
             TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("You've Won :D");
             dialog.show(getChildFragmentManager(), "dialog");
@@ -182,8 +179,8 @@ public class GameModeFragment extends Fragment implements LocationListener {
         }
     }
 
-    public TicTacToe getTicTacToe() {
-        return ticTacToe;
+    public TicTacToeGame getTicTacToe() {
+        return ticTacToeGame;
     }
 
     public DatabaseReference getGameRef() {
