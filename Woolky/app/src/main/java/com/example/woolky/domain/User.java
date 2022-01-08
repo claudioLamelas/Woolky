@@ -115,4 +115,13 @@ public class User implements Serializable {
     public String getPhotoUrl (){
         return photoUrl;
     }
+
+    public void createNewGroup(String key) {
+
+        if (groups == null){
+            groups = new ArrayList<>();
+        }
+
+        groups.add(key);
+    }
 }

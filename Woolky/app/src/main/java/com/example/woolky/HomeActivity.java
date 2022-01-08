@@ -177,4 +177,7 @@ public class HomeActivity extends AppCompatActivity {
         }, secondsDelayed * 1000);
     }
 
+    public DatabaseReference getDatabaseReference() {
+        return databaseRef;
+    }
 }
