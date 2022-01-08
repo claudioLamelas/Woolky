@@ -50,6 +50,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#FFFFFF"
+        android:focusableInTouchMode="false"
         android:text="Start Position"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addQuizButton" />

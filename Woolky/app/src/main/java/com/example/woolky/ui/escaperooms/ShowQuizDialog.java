@@ -101,6 +101,8 @@ public class ShowQuizDialog extends DialogFragment {
 
         builder.setView(v)
                 .setPositiveButton("Answer", (dialog, id) -> {
+                    //TODO: Criar um listener para que seja o PlayEscapeRoom a fazer esta lógica
+                    //TODO: Quando o user acerta mostrar um digito do código final
                     RadioGroup rGroup = v.findViewById(R.id.quizAnswers);
                     int optionId = rGroup.getCheckedRadioButtonId();
                     View radioChoice = v.findViewById(optionId);

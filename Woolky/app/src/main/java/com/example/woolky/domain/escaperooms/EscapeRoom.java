@@ -107,15 +107,12 @@ public class EscapeRoom {
                 circlesRelativePositions);
 
         for (LatLng p : circlePositions) {
-            Circle c = mMap.addCircle(new CircleOptions().center(p).radius(6)
+            Circle c = mMap.addCircle(new CircleOptions().center(p).radius(5)
                     .fillColor(Color.BLACK).clickable(true));
             vertex.add(c);
         }
 
-        LatLng userInitialPosition = LocationCalculator.calculatePositions(initialPosition,
-                Collections.singletonList(this.getUserStartPosition())).get(0);
-        this.startPositionCircle = mMap.addCircle(new CircleOptions().center(userInitialPosition).radius(6)
-                .fillColor(Color.GREEN).clickable(true));
+
 
         for (Triple<Integer, Integer, Integer> t : linesCircles) {
             Polyline p = mMap.addPolyline(new PolylineOptions().add(vertex.get(t.getFirst()).getCenter(),

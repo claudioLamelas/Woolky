@@ -38,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -187,10 +188,11 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
             if (doLineSegmentsIntersect(previous, current, p1, p2)) {
                 if (triple.getThird() != Color.GREEN) {
-                    PairCustom<Double, Double> distancesDif = LocationCalculator.diferenceBetweenPoints(previousPosition, currentPosition);
+                    PairCustom<Double, Double> distancesDif =
+                            LocationCalculator.diferenceBetweenPoints(previousPosition, escapeRoom.getVertex().get(0).getCenter());
                     List<PairCustom<Double, Double>> list = new ArrayList<>();
                     list.add(distancesDif);
-                    LatLng newEscapeRoomPosition = LocationCalculator.calculatePositions(escapeRoom.getVertex().get(0).getCenter(),
+                    LatLng newEscapeRoomPosition = LocationCalculator.calculatePositions(currentPosition,
                             list).get(0);
                     escapeRoom.removeFromMap(mMap);
                     escapeRoom.drawEscapeRoom(newEscapeRoomPosition, mMap);

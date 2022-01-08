@@ -2,8 +2,12 @@ package com.example.woolky.ui.escaperooms;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -42,16 +46,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCallback,
-        CreateNewQuizDialog.CreateNewQuizListener {
+        CreateNewQuizDialog.CreateNewQuizListener, LocationListener {
     private static final int FINE_LOCATION_CODE = 114;
 
     private GoogleMap mMap;
     private LatLng initialPosition;
-    private FusedLocationProviderClient fusedLocationClient;
+//    private FusedLocationProviderClient fusedLocationClient;
+    private LocationManager locationManager;
 
     private Circle activeCircle;
     private Circle previousActiveCircle;
@@ -99,7 +105,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> saveEscapeRoom());
 
@@ -110,8 +117,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
         Button chooseStartPositionButton = view.findViewById(R.id.chooseStartPositionButton);
         chooseStartPositionButton.setOnClickListener(v -> {
-            int color = choosingStartPosition ? R.color.white : R.color.colorPrimaryDark;
-            chooseStartPositionButton.setBackgroundColor(getResources().getColor(color, null));
+            int color = choosingStartPosition ? R.color.white : R.color.colorPrimary;
+            chooseStartPositionButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(color, null)));
             choosingStartPosition = !choosingStartPosition;
         });
     }
@@ -123,35 +130,40 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
         //TODO: Mudar para o LocationManager.requestLocationUpdates()
         Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                SystemClock.sleep(2000);
-                initialPosition = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16));
+//        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+//            @Override
+//            public void onSuccess(Location location) {
+//                SystemClock.sleep(2000);
+//                initialPosition = new LatLng(location.getLatitude(), location.getLongitude());
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16));
+//
+//                if (escapeRoom == null) {
+//                    escapeRoom = new EscapeRoom();
+//
+//                    Circle initialCircle = mMap.addCircle(new CircleOptions().fillColor(Color.RED)
+//                            .strokeColor(Color.RED).radius(6).center(initialPosition).clickable(true));
+//
+//                    escapeRoom.getVertex().add(initialCircle);
+//                    activeCircle = initialCircle;
+//                    previousActiveCircle = initialCircle;
+//                } else {
+//                    LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(initialPosition,
+//                            Collections.singletonList(escapeRoom.getUserStartPosition())).get(0);
+//                    escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap);
+//                    activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
+//                    changeActiveCircle(activeCircle);
+//                    userStartPosition = mMap.addCircle(new CircleOptions().center(initialPosition).radius(6)
+//                            .fillColor(Color.GREEN).clickable(false));
+//                }
+//            }
+//        });
 
-                if (escapeRoom == null) {
-                    escapeRoom = new EscapeRoom();
-
-                    Circle initialCircle = mMap.addCircle(new CircleOptions().fillColor(Color.RED)
-                            .strokeColor(Color.RED).radius(6).center(initialPosition).clickable(true));
-
-                    escapeRoom.getVertex().add(initialCircle);
-                    activeCircle = initialCircle;
-                    previousActiveCircle = initialCircle;
-                } else {
-                    escapeRoom.drawEscapeRoom(initialPosition, mMap);
-                    activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
-                    changeActiveCircle(activeCircle);
-                    userStartPosition = escapeRoom.getStartPositionCircle();
-                }
-            }
-        });
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
 
         mMap.setOnMapLongClickListener(latLng -> {
 
             if (!choosingStartPosition) {
-                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.BLACK).radius(6).center(latLng).clickable(true));
+                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.BLACK).radius(5).center(latLng).clickable(true));
                 Polyline p = mMap.addPolyline(new PolylineOptions()
                         .add(activeCircle.getCenter(), c.getCenter()).clickable(true));
                 escapeRoom.getVertex().add(c);
@@ -162,7 +174,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
                 changeActiveCircle(c);
             } else {
-                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.GREEN).radius(6).center(latLng).clickable(false));
+                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.GREEN).radius(5).center(latLng).clickable(false));
                 if (userStartPosition != null)
                     userStartPosition.remove();
 
@@ -223,7 +235,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         }
 
         escapeRoom.setCirclesRelativePositions(circlesRelativePositions);
-        //EscapeRoom escapeRoomToStore = new EscapeRoom(linesCircles, circlesRelativePositions, quizzes);
 
         HomeActivity homeActivity = (HomeActivity) getActivity();
         User signedInUser = homeActivity.getSignedInUser();
@@ -244,5 +255,33 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         escapeRoom.getQuizzes().add(quiz);
         dialog.dismiss();
         Toast.makeText(getActivity(), "Quiz added", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        initialPosition = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16));
+
+        if (escapeRoom == null) {
+            escapeRoom = new EscapeRoom();
+
+            Circle initialCircle = mMap.addCircle(new CircleOptions().fillColor(Color.RED)
+                    .strokeColor(Color.RED).radius(5).center(initialPosition).clickable(true));
+
+            escapeRoom.getVertex().add(initialCircle);
+            activeCircle = initialCircle;
+            previousActiveCircle = initialCircle;
+        } else {
+            LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(initialPosition,
+                    Collections.singletonList(escapeRoom.getUserStartPosition())).get(0);
+            escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap);
+            activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
+            changeActiveCircle(activeCircle);
+            userStartPosition = mMap.addCircle(new CircleOptions().center(initialPosition).radius(5)
+                    .fillColor(Color.GREEN).clickable(false));
+        }
+
+        //Para que receba apenas uma vez e pare
+        locationManager.removeUpdates(this);
     }
 }
