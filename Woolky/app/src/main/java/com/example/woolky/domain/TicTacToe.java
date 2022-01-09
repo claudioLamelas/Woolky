@@ -86,9 +86,9 @@ public class TicTacToe extends Game{
                 //anti-diag
                 wonAntiDiag = wonAntiDiag && positions.get(i * boardDim + (boardDim - i - 1)) == myPiece;
 
-                if (wonAntiDiag) {
-                    return 1;
-                }
+            }
+            if (wonAntiDiag) {
+                return 1;
             }
         }
         

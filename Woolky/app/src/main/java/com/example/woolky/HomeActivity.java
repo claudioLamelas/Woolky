@@ -44,6 +44,7 @@ public class HomeActivity extends AppCompatActivity {
     private GameInvitesListener gameListener;
     private FriendsInvitesListener friendListener;
     private User signedInUser;
+    private BottomNavigationView bottomNav;
 
     private List<User> users;    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
 
@@ -56,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
         handler = new Handler();
         users = new ArrayList<>();
 
-        BottomNavigationView bottomNav = findViewById(R.id.navigation_bottom);
+        bottomNav = findViewById(R.id.navigation_bottom);
         bottomNav.setOnItemSelectedListener(navListener);
 
         String userId = getIntent().getStringExtra("userId");
@@ -126,6 +127,10 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 }
             };
+
+    public void changeToMap() {
+        bottomNav.setSelectedItemId(R.id.nav_map);
+    }
 
     public void logout() {
         startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
