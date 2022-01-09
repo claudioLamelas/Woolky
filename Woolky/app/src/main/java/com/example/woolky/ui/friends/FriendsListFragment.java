@@ -38,6 +38,7 @@ public class FriendsListFragment extends Fragment {
     private FriendsListAdapter adapter;
     private TextView noFriendsMessage;
     private User signedInUser;
+    private List<User> users; //talvez nao seja boa ideia, mas funciona
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,25 +50,19 @@ public class FriendsListFragment extends Fragment {
         // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
 
         HomeActivity homeActivity = ((HomeActivity) getActivity());
+        users = homeActivity.getUsers();
         signedInUser = homeActivity.getSignedInUser();
         List<Friend> friends = new ArrayList<>();
-        for (String id : signedInUser.getFriends()){
-            DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-            DatabaseReference usersRef = databaseRef.child("users");
-            usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                @Override
-                public void onSuccess(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                        User u = d.getValue(User.class);
-                        if (u.getUserId().equals(id)) {
-                            Friend friend = new Friend(u.getUserName());
-                            friends.add(friend);
-                        }
+        if (signedInUser.getFriends()!=null)
+        {
+            for (String id : signedInUser.getFriends()){
+                for (User user : users){
+                    if (user.getUserId().equals(id)){
+                        Friend friend = new Friend(user.getUserName());
+                        friends.add(friend);
                     }
                 }
-            });
-            Friend friend = new Friend(id);
-            friends.add(friend);
+            }
         }
         adapter = new FriendsListAdapter(friends);
         recyclerView.setAdapter(adapter);

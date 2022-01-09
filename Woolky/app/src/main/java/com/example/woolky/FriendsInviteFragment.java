@@ -72,6 +72,7 @@ public class FriendsInviteFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_friends_invite, container, false);
         ((TextView)v.findViewById(R.id.inviteDescription)).setText(this.friendsInvite.getFrom() + " invited you to be friends");
 
+        //Temn de verificar que já não são amigos
         Button acceptButton = v.findViewById(R.id.acceptButton);
         acceptButton.setOnClickListener((view) -> {
             handler.removeCallbacksAndMessages(null);

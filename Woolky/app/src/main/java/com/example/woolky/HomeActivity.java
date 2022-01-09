@@ -45,8 +45,8 @@ public class HomeActivity extends AppCompatActivity {
     private FriendsInvitesListener friendListener;
     private User signedInUser;
 
-    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
-    private List<User> users;
+    private List<User> users;    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,15 @@ public class HomeActivity extends AppCompatActivity {
 
         databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         DatabaseReference usersRef = databaseRef.child("users");
+        usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    User user = d.getValue(User.class);
+                    users.add(user);
+                }
+            }
+        });
         usersRef.child(userId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
@@ -78,9 +87,6 @@ public class HomeActivity extends AppCompatActivity {
         gameInvitesRef.addChildEventListener(gameListener);
         friendListener = new FriendsInvitesListener(cx, getSupportFragmentManager());
         friendInviteRef.addChildEventListener(friendListener);
-
-
-
     }
 
     @Override
@@ -201,8 +207,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
         }
-        /*HomeFragment homeFragment = new HomeFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment,homeFragment).commitNow();*/
     }
 
     public void setupGame(String gameInviteID, GameMode gameMode, boolean isReceiver) {
