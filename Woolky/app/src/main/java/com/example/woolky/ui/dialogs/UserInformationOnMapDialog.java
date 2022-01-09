@@ -103,10 +103,9 @@ public class UserInformationOnMapDialog extends DialogFragment {
             //ver se ja sao amigos
             for (String other_user : signedInUser.getFriends()){
                 if (other_user.equals(user.getUserId())){
-
                     ((TextView) v.findViewById(R.id.time_of_day)).setText("Already Friends");
                     ((Button) v.findViewById(R.id.sendFriendRequestButton)).setVisibility(View.INVISIBLE);
-                    Toast.makeText(v.getContext(), signedInUser.getUserName()+" e "+user.getUserName()+" já são amigos", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(v.getContext(), signedInUser.getUserName()+" e "+user.getUserName()+" já são amigos", Toast.LENGTH_SHORT).show();
                     break;
                 }
             }
