@@ -15,13 +15,11 @@ import com.example.woolky.R;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.games.GameInvitesListener;
-import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
 import com.example.woolky.domain.User;
-import com.example.woolky.ui.games.escaperooms.EscapeRoomCreationFragment;
 import com.example.woolky.ui.games.escaperooms.PlayEscapeRoomFragment;
 import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
@@ -94,29 +92,26 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private BottomNavigationView.OnItemSelectedListener navListener =
-            new BottomNavigationView.OnItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selected = null;
+            item -> {
+                Fragment selected = null;
 
-                    switch (item.getItemId()) {
-                        case R.id.nav_home:
-                            selected = new HomeFragment();
-                            break;
+                switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        selected = new HomeFragment();
+                        break;
 
-                        case R.id.nav_map:
-                            selected = new VicinityMapFragment();
-                            break;
+                    case R.id.nav_map:
+                        selected = new VicinityMapFragment();
+                        break;
 
-                        case R.id.nav_profile:
-                            selected = new ProfileFragment();
-                            break;
-                    }
-
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
-
-                    return true;
+                    case R.id.nav_profile:
+                        selected = new ProfileFragment();
+                        break;
                 }
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
+
+                return true;
             };
 
     public void changeToMap() {
@@ -145,7 +140,7 @@ public class HomeActivity extends AppCompatActivity {
                             }
                             case ESCAPE_ROOM: {
                                 setupEscapeRoomGame(inviteId, ((EscapeRoomGameInvite)invite).getEscapeRoomId(),
-                                        invite.getFromId(), false);
+                                        invite.getFromId(), ((EscapeRoomGameInvite)invite).getPlayersIds(), false);
                                 break;
                             }
                         }
@@ -153,21 +148,19 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
-
         });
     }
 
-    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId, boolean isReceiver) {
+    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId, List<String> playersIds, boolean isReceiver) {
         DatabaseReference gameRef = databaseRef.child("games").child(inviteId);
 
         databaseRef.child("escapeRooms").child(escapeRoomOwnerId).child(escapeRoomId)
                 .get().addOnSuccessListener(
                         dataSnapshot -> {
                             EscapeRoom escapeRoom = dataSnapshot.getValue(EscapeRoom.class);
-                            EscapeRoomGame escapeRoomGame = new EscapeRoomGame(escapeRoom);
+                            EscapeRoomGame escapeRoomGame = new EscapeRoomGame(escapeRoom, playersIds);
 
                             if (!isReceiver)
                                 gameRef.setValue(escapeRoomGame);

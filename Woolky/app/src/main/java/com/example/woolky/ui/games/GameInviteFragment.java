@@ -48,7 +48,6 @@ public class GameInviteFragment extends Fragment {
      * @param gameInvite Parameter 1.
      * @return A new instance of fragment GameInviteFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static GameInviteFragment newInstance(GameInvite gameInvite, String gameInviteID) {
         GameInviteFragment fragment = new GameInviteFragment();
         Bundle args = new Bundle();
@@ -82,8 +81,9 @@ public class GameInviteFragment extends Fragment {
             inviteReference.child("inviteState").setValue(InviteState.ACCEPTED);
 
             if (gameInvite instanceof EscapeRoomGameInvite) {
+                EscapeRoomGameInvite invite = ((EscapeRoomGameInvite) gameInvite);
                 ((HomeActivity) getActivity()).setupEscapeRoomGame(gameInviteID,
-                        ((EscapeRoomGameInvite) gameInvite).getEscapeRoomId(), gameInvite.getFromId(), true);
+                        invite.getEscapeRoomId(), invite.getFromId(), invite.getPlayersIds(), true);
             } else {
                 ((HomeActivity) getActivity()).setupTicTacToeGame(gameInviteID, true);
             }

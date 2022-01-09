@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -44,9 +45,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.maps.android.geometry.Point;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,6 +66,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     private LocationManager locationManager;
     private LatLng currentPosition;
     private Marker userMarker;
+    private List<Marker> otherPlayersMarkers;
     private User signedInUser;
 
     public PlayEscapeRoomFragment() {
@@ -82,6 +86,8 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         escapeRoomGameListener = new EscapeRoomGameListener(this);
         gameRef.addChildEventListener(escapeRoomGameListener);
+
+        otherPlayersMarkers = new ArrayList<>();
     }
 
     @Override
@@ -176,10 +182,21 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(currentPosition,
                     Collections.singletonList(escapeRoomGame.getEscapeRoom().getUserStartPosition())).get(0);
             escapeRoomGame.getEscapeRoom().drawEscapeRoom(escapeRoomInitialPosition, mMap);
+
+            //Desenha no mapa os markers dos outros players
+            for (String id : escapeRoomGame.getPlayersIds()) {
+                if (!id.equals(signedInUser.getUserId())) {
+                    Marker m = mMap.addMarker(new MarkerOptions().position(currentPosition).
+                            icon(Utils.BitmapFromVector(getUserDrawable(), Color.BLACK)));
+                    m.setTag(id);
+                    otherPlayersMarkers.add(m);
+                }
+            }
         }
         userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), signedInUser.getColor())));
+                icon(Utils.BitmapFromVector(getUserDrawable(), signedInUser.getColor())));
 
+        //Está a verificar se com a movimentação foram cruzadas algumas paredes e se sim movimenta a room conforme
         Point previous = new Point(previousPosition.latitude, previousPosition.longitude);
         Point current = new Point(currentPosition.latitude, currentPosition.longitude);
         for (Triple<Integer, Integer, Integer> triple : escapeRoomGame.getEscapeRoom().getLinesCircles()) {
@@ -200,25 +217,23 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                     escapeRoomGame.getEscapeRoom().removeFromMap(mMap);
                     escapeRoomGame.getEscapeRoom().drawEscapeRoom(newEscapeRoomPosition, mMap);
                     Toast.makeText(getActivity(), "Impossible to reach", Toast.LENGTH_SHORT).show();
+                    break;
                 }
-                break;
             }
         }
 
-//        if (!PolyUtil.containsLocation(currentPosition, escapeRoom.getVertexPosition(), false)) {
-//            PairCustom<Double, Double> coordinatesDif = LocationCalculator.diferenceBetweenPoints(previousPosition, currentPosition);
-//            List<PairCustom<Double, Double>> list = new ArrayList<>();
-//            list.add(coordinatesDif);
-//            LatLng newEscapeRoomPosition = LocationCalculator.calculatePositions(escapeRoom.getVertex().get(0).getCenter(),
-//                    list).get(0);
-//            escapeRoom.removeFromMap(mMap);
-//            escapeRoom.drawEscapeRoom(newEscapeRoomPosition, mMap);
-//        }
 
+        //A calcular a posicao relativa da nossa movimentação em relacao ao ponto inicial da room
+        PairCustom<Double, Double> distancesDif =
+                LocationCalculator.diferenceBetweenPoints(escapeRoomGame.getEscapeRoom().getVertex().get(0).getCenter(),
+                        currentPosition);
 
+        gameRef.child(signedInUser.getUserId()).setValue(distancesDif);
     }
 
-
+    private Drawable getUserDrawable() {
+        return ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp);
+    }
 
     boolean doLineSegmentsIntersect(Point p,Point p2,Point q,Point q2) {
         Point r = subtractPoints(p2, p);
@@ -291,5 +306,31 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             FinishGameDialog finishDialog = FinishGameDialog.newInstance("Someone escaped first D:");
             finishDialog.show(getChildFragmentManager(), "finish");
         }
+    }
+
+    public void updatePlayerPosition(String movedPlayerId, PairCustom<Double, Double> value) {
+        if (!movedPlayerId.equals(signedInUser.getUserId())) {
+            Marker m = null;
+            for (Marker marker : otherPlayersMarkers) {
+                if (marker.getTag().equals(movedPlayerId)) {
+                    m = marker;
+                    break;
+                }
+            }
+            int index = otherPlayersMarkers.indexOf(m);
+            m.setTag(null);
+            m.remove();
+
+            LatLng newPlayerPosition =
+                    LocationCalculator.calculatePositions(escapeRoomGame.getEscapeRoom().getVertex().get(0).getCenter(),
+                    Collections.singletonList(value)).get(0);
+
+            m = mMap.addMarker(new MarkerOptions()
+                    .position(newPlayerPosition)
+                    .icon(Utils.BitmapFromVector(getUserDrawable(), Color.BLACK)));
+            m.setTag(movedPlayerId);
+            otherPlayersMarkers.set(index, m);
+        }
+
     }
 }
