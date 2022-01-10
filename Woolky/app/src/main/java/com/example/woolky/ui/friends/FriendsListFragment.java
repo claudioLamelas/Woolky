@@ -1,11 +1,13 @@
 package com.example.woolky.ui.friends;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.woolky.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.ShareLocationType;
@@ -58,7 +61,7 @@ public class FriendsListFragment extends Fragment {
             for (String id : signedInUser.getFriends()){
                 for (User user : users){
                     if (user.getUserId().equals(id)){
-                        Friend friend = new Friend(user.getUserName());
+                        Friend friend = new Friend(user.getUserName(), user.getPhotoUrl());
                         friends.add(friend);
                     }
                 }
@@ -70,7 +73,7 @@ public class FriendsListFragment extends Fragment {
         return view;
     }
 
-    static class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
+    class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
         private List<Friend> friends;
 
         public FriendsListAdapter(List<Friend> friends) {
@@ -94,6 +97,7 @@ public class FriendsListFragment extends Fragment {
             holder.playButton.setOnClickListener(view ->
                     Toast.makeText(view.getContext(), "Play with " + holder.name.getText(), Toast.LENGTH_SHORT).show()
             );
+            Glide.with(getActivity()).load(Uri.parse(friends.get(position).photoUrl)).circleCrop().into(holder.avatar);
         }
 
         @Override
@@ -101,16 +105,17 @@ public class FriendsListFragment extends Fragment {
             return friends.size();
         }
 
-        static class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
             public View view;
             // public ImageView avatar; // TODO: Avatar should be specific to user. It is a mock for now
+            private ImageView avatar;
             public TextView name;
             public Button playButton;
 
             ViewHolder(View view) {
                 super(view);
                 this.view = view;
-                // this.avatar = itemView.findViewById(R.id.avatar);
+                this.avatar = itemView.findViewById(R.id.avatar);
                 this.name = itemView.findViewById(R.id.name);
                 this.playButton = itemView.findViewById(R.id.play_button);
             }
