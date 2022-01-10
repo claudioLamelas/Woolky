@@ -107,8 +107,7 @@ public class FriendsListFragment extends Fragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             public View view;
-            // public ImageView avatar; // TODO: Avatar should be specific to user. It is a mock for now
-            private ImageView avatar;
+            public ImageView avatar;
             public TextView name;
             public Button playButton;
 
