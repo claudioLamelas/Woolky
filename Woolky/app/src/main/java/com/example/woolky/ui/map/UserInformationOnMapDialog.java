@@ -5,33 +5,33 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-import com.example.woolky.domain.games.EscapeRoomGameInvite;
-import com.example.woolky.ui.HomeActivity;
-import com.example.woolky.domain.games.GameInvite;
-import com.example.woolky.domain.games.GameMode;
+import com.example.woolky.R;
+import com.example.woolky.domain.FriendsInvite;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.User;
-import com.example.woolky.R;
+import com.example.woolky.domain.games.EscapeRoomGameInvite;
+import com.example.woolky.domain.games.GameInvite;
+import com.example.woolky.domain.games.GameMode;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.escaperooms.ChooseEscapeRoomDialog;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,6 +75,7 @@ public class UserInformationOnMapDialog extends DialogFragment implements Choose
             this.user = (User) getArguments().getSerializable(ARG_PARAM);
         }
         this.signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
+
     }
 
     @Override
@@ -118,8 +119,30 @@ public class UserInformationOnMapDialog extends DialogFragment implements Choose
                 default:
                     throw new IllegalStateException("Unexpected value: " + selectedGame);
             }
+        });
 
+        if (signedInUser.getFriends()!=null)//ver se existe pelo menos 1 amigo
+        {
+            //ver se ja sao amigos
+            for (String other_user : signedInUser.getFriends()){
+                if (other_user.equals(user.getUserId())){
+                    ((TextView) v.findViewById(R.id.time_of_day)).setText("Already Friends");
+                    v.findViewById(R.id.sendFriendRequestButton).setVisibility(View.INVISIBLE);
+                    //Toast.makeText(v.getContext(), signedInUser.getUserName()+" e "+user.getUserName()+" já são amigos", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            }
+        }
 
+        v.findViewById(R.id.sendFriendRequestButton).setOnClickListener(v12 -> {
+            HomeActivity activity = (HomeActivity) getActivity();
+            FriendsInvite friendsInvite = new FriendsInvite(signedInUser.getUserName(), signedInUser.getUserId(),InviteState.SENT);
+            FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
+            DatabaseReference ref = database.getReference().child("friendInvite").child(user.getUserId());
+            String id = ref.push().getKey();
+            ref.child(id).setValue(friendsInvite);
+            DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
+            activity.setListenerFriendsInvite(id, inviteStateRef, user.getUserId());
         });
 
         ImageView photo = v.findViewById(R.id.dialogUserPhoto);

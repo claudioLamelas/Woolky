@@ -15,11 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
-import com.example.woolky.ui.games.escaperooms.EscapeRoomsFragment;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.FriendsListFragment;
+import com.example.woolky.ui.games.escaperooms.EscapeRoomsFragment;
 import com.example.woolky.ui.groups.GroupsListFragment;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +37,6 @@ public class HomeFragment extends Fragment {
 
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
-
     private void updateUiCurrentUser(View view) {
 
         String currentDate = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(new Date());

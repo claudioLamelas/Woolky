@@ -4,25 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.woolky.FriendsInvitesListener;
 import com.example.woolky.R;
+import com.example.woolky.domain.FriendsInvite;
+import com.example.woolky.domain.InviteState;
+import com.example.woolky.domain.User;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.games.GameInvitesListener;
-import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
-import com.example.woolky.domain.User;
 import com.example.woolky.ui.games.escaperooms.PlayEscapeRoomFragment;
-import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
+import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,12 +42,13 @@ public class HomeActivity extends AppCompatActivity {
     private Handler handler;
     private DatabaseReference databaseRef;
     private Context cx = this;
-    private GameInvitesListener listener;
+    private GameInvitesListener gameListener;
+    private FriendsInvitesListener friendListener;
     private User signedInUser;
     private BottomNavigationView bottomNav;
 
-    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
-    private List<User> users;
+    private List<User> users;    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,15 @@ public class HomeActivity extends AppCompatActivity {
 
         databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         DatabaseReference usersRef = databaseRef.child("users");
+        usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    User user = d.getValue(User.class);
+                    users.add(user);
+                }
+            }
+        });
         usersRef.child(userId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
@@ -72,11 +83,12 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(userId);
+        DatabaseReference friendInviteRef = databaseRef.child("friendInvite").child(userId);
 
-        listener = new GameInvitesListener(cx, getSupportFragmentManager());
-        gameInvitesRef.addChildEventListener(listener);
-
-
+        gameListener = new GameInvitesListener(cx, getSupportFragmentManager());
+        gameInvitesRef.addChildEventListener(gameListener);
+        friendListener = new FriendsInvitesListener(cx, getSupportFragmentManager());
+        friendInviteRef.addChildEventListener(friendListener);
     }
 
     @Override
@@ -86,7 +98,7 @@ public class HomeActivity extends AppCompatActivity {
         DatabaseReference userRef = databaseRef.child("users").child(signedInUser.getUserId());
         userRef.setValue(signedInUser);
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(signedInUser.getUserId());
-        gameInvitesRef.removeEventListener(listener);
+        gameInvitesRef.removeEventListener(gameListener);
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -122,6 +134,28 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
         finish();
     }
+    public void setListenerFriendsInvite(String inviteId, DatabaseReference inviteStateRef, String toUserId) {
+        inviteStateRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                InviteState inviteState = snapshot.getValue(InviteState.class);
+                if (inviteState != InviteState.SENT) {
+                    if (inviteState == InviteState.DECLINED) {
+                        Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                    if (inviteState == InviteState.ACCEPTED) {
+                        setupFriend(inviteId,false, toUserId);
+                    }
+                    inviteStateRef.removeEventListener(this);
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+
+        });
+    }
 
     public void setListenerToGameInvite(String inviteId, DatabaseReference inviteStateRef, GameInvite invite) {
         inviteStateRef.addValueEventListener(new ValueEventListener() {
@@ -151,6 +185,37 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+    }
+    public void setupFriend(String friendInviteID, boolean isReceiver, String toUserId) {
+
+        List<String> friends = signedInUser.getFriends();
+
+        if (friends == null){
+            friends = new ArrayList<>();
+        }
+
+        if (isReceiver) {
+            DatabaseReference friendRef = databaseRef.child("friendInvite").child(signedInUser.getUserId()).child(friendInviteID);
+            List<String> finalFriends = friends;
+            friendRef.get().addOnSuccessListener(dataSnapshot -> {
+                FriendsInvite friendsInvite = dataSnapshot.getValue(FriendsInvite.class);
+                finalFriends.add(friendsInvite.getFrom_id());
+                signedInUser.setFriends(finalFriends);
+                databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
+            });
+        }else{
+            DatabaseReference friendRef = databaseRef.child("friendInvite").child(toUserId).child(friendInviteID);
+            List<String> finalFriends = friends;
+            friendRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                @Override
+                public void onSuccess(DataSnapshot dataSnapshot) {
+                    FriendsInvite friendsInvite = dataSnapshot.getValue(FriendsInvite.class);
+                    finalFriends.add(toUserId);
+                    signedInUser.setFriends(finalFriends);
+                    databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
+                }
+            });
+        }
     }
 
     public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId, List<String> playersIds, boolean isReceiver) {
