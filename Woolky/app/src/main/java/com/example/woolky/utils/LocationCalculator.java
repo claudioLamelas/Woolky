@@ -3,6 +3,7 @@ package com.example.woolky.utils;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.geometry.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,5 +135,47 @@ public class LocationCalculator {
                 onlyLongitude.latitude, onlyLongitude.longitude, resultsLon);
 
         return new PairCustom<>(resultsLat[0] * latDif, resultsLon[0] * lonDif);
+    }
+
+    public static boolean doLineSegmentsIntersect(Point p, Point p2, Point q, Point q2) {
+        Point r = subtractPoints(p2, p);
+        Point s = subtractPoints(q2, q);
+
+        double uNumerator = crossProduct(subtractPoints(q, p), r);
+        double denominator = crossProduct(r, s);
+
+        if (denominator == 0) {
+            // lines are paralell
+            return false;
+        }
+
+        double u = uNumerator / denominator;
+        double t = crossProduct(subtractPoints(q, p), s) / denominator;
+
+        return (t >= 0) && (t <= 1) && (u >= 0) && (u <= 1);
+    }
+
+    /**
+     * Calculate the cross product of the two points.
+     *
+     * @param point1 point1 point object with x and y coordinates
+     * @param point2 point2 point object with x and y coordinates
+     *
+     * @return the cross product result as a float
+     */
+    private static double crossProduct(Point point1, Point point2) {
+        return point1.x * point2.y - point1.y * point2.x;
+    }
+
+    /**
+     * Subtract the second point from the first.
+     *
+     * @param point1 point1 point object with x and y coordinates
+     * @param point2 point2 point object with x and y coordinates
+     *
+     * @return the subtraction result as a point object
+     */
+    private static Point subtractPoints(Point point1, Point point2) {
+        return new Point(point1.x - point2.x, point1.y - point2.y);
     }
 }

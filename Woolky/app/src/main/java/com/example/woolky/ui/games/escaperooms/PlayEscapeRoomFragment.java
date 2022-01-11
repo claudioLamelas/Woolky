@@ -42,6 +42,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.database.DatabaseReference;
+import com.google.maps.android.PolyUtil;
 import com.google.maps.android.geometry.Point;
 
 import java.util.ArrayList;
@@ -58,6 +59,8 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         ShowQuizDialog.AnswerQuizListener {
 
     private static final int FINE_LOCATION_CODE = 114;
+    public static final int MINIMUM_DISTANCE_TO_WALL = 20;
+
     private DatabaseReference gameRef;
     private EscapeRoomGameListener escapeRoomGameListener;
     private EscapeRoomGame escapeRoomGame;
@@ -68,10 +71,9 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     private Marker userMarker;
     private List<Marker> otherPlayersMarkers;
     private User signedInUser;
+    private boolean mapDrawn;
 
-    public PlayEscapeRoomFragment() {
-        // Required empty public constructor
-    }
+    public PlayEscapeRoomFragment() {}
 
     public PlayEscapeRoomFragment(DatabaseReference gameRef, EscapeRoomGame escapeRoomGame) {
         this.gameRef = gameRef;
@@ -139,10 +141,16 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         mMap.setOnPolylineClickListener(polyline -> {
             if (admissibleChallengeWall(polyline, currentPosition)) {
                 Random random = new Random();
-                Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
-                        .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
-                ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
-                dialog.show(getChildFragmentManager(), "quiz");
+                int x = random.nextInt(2);
+                if (x == 0) {
+                    Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
+                            .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
+                    ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
+                    dialog.show(getChildFragmentManager(), "quiz");
+                } else {
+                    ImitateSequenceDialog dialog1 = new ImitateSequenceDialog();
+                    dialog1.show(getChildFragmentManager(), "seq");
+                }
             }
         });
     }
@@ -154,19 +162,9 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         if (polyline.getColor() != Color.RED && polyline.getColor() != Color.BLUE)
             return false;
 
-        //TODO: substituir pela PolyUtils.distanceToLine()
         Circle c1 = escapeRoomGame.getEscapeRoom().getVertex().get(triple.getFirst());
         Circle c2 = escapeRoomGame.getEscapeRoom().getVertex().get(triple.getSecond());
-        double hypotenuseMeters = LocationCalculator.distancePointToPoint(c1.getCenter(), c2.getCenter());
-        double oppositeMeters = LocationCalculator.distancePointToPoint(c2.getCenter(), currentPosition);
-        double adjacentMeters = LocationCalculator.distancePointToPoint(c1.getCenter(), currentPosition);;
-        double sin = oppositeMeters / hypotenuseMeters;
-
-        double distanceFromWall = sin * adjacentMeters;
-
-
-        //TODO: Fazer deste valor uma constante algures
-        return distanceFromWall <= 100;
+        return PolyUtil.distanceToLine(currentPosition, c1.getCenter(), c2.getCenter()) <= MINIMUM_DISTANCE_TO_WALL;
     }
 
     @Override
@@ -187,18 +185,30 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             for (String id : escapeRoomGame.getPlayersIds()) {
                 if (!id.equals(signedInUser.getUserId())) {
                     Marker m = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                            icon(Utils.BitmapFromVector(getUserDrawable(), Color.BLACK)));
+                            icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK)));
                     m.setTag(id);
                     otherPlayersMarkers.add(m);
                 }
             }
+            mapDrawn = true;
         }
         userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                icon(Utils.BitmapFromVector(getUserDrawable(), signedInUser.getColor())));
+                icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
 
         //Está a verificar se com a movimentação foram cruzadas algumas paredes e se sim movimenta a room conforme
         Point previous = new Point(previousPosition.latitude, previousPosition.longitude);
         Point current = new Point(currentPosition.latitude, currentPosition.longitude);
+        keepPlayerInside(previousPosition, previous, current);
+
+        //A calcular a posicao relativa da nossa movimentação em relacao ao ponto inicial da room
+        PairCustom<Double, Double> distancesDif =
+                LocationCalculator.diferenceBetweenPoints(escapeRoomGame.getEscapeRoom().getVertex().get(0).getCenter(),
+                        currentPosition);
+
+        gameRef.child(signedInUser.getUserId()).setValue(distancesDif);
+    }
+
+    private void keepPlayerInside(LatLng previousPosition, Point previous, Point current) {
         for (Triple<Integer, Integer, Integer> triple : escapeRoomGame.getEscapeRoom().getLinesCircles()) {
             Point p1 = new Point(escapeRoomGame.getEscapeRoom().getVertexPosition().get(triple.getFirst()).latitude,
                     escapeRoomGame.getEscapeRoom().getVertexPosition().get(triple.getFirst()).longitude);
@@ -206,7 +216,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             Point p2 = new Point(escapeRoomGame.getEscapeRoom().getVertexPosition().get(triple.getSecond()).latitude,
                     escapeRoomGame.getEscapeRoom().getVertexPosition().get(triple.getSecond()).longitude);
 
-            if (doLineSegmentsIntersect(previous, current, p1, p2)) {
+            if (LocationCalculator.doLineSegmentsIntersect(previous, current, p1, p2)) {
                 if (triple.getThird() != Color.GREEN) {
                     PairCustom<Double, Double> distancesDif =
                             LocationCalculator.diferenceBetweenPoints(previousPosition, escapeRoomGame.getEscapeRoom().getVertex().get(0).getCenter());
@@ -221,61 +231,6 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                 }
             }
         }
-
-
-        //A calcular a posicao relativa da nossa movimentação em relacao ao ponto inicial da room
-        PairCustom<Double, Double> distancesDif =
-                LocationCalculator.diferenceBetweenPoints(escapeRoomGame.getEscapeRoom().getVertex().get(0).getCenter(),
-                        currentPosition);
-
-        gameRef.child(signedInUser.getUserId()).setValue(distancesDif);
-    }
-
-    private Drawable getUserDrawable() {
-        return ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp);
-    }
-
-    boolean doLineSegmentsIntersect(Point p,Point p2,Point q,Point q2) {
-        Point r = subtractPoints(p2, p);
-        Point s = subtractPoints(q2, q);
-
-        double uNumerator = crossProduct(subtractPoints(q, p), r);
-        double denominator = crossProduct(r, s);
-
-        if (denominator == 0) {
-            // lines are paralell
-            return false;
-        }
-
-        double u = uNumerator / denominator;
-        double t = crossProduct(subtractPoints(q, p), s) / denominator;
-
-        return (t >= 0) && (t <= 1) && (u >= 0) && (u <= 1);
-
-    }
-
-    /**
-     * Calculate the cross product of the two points.
-     *
-     * @param point1 point1 point object with x and y coordinates
-     * @param point2 point2 point object with x and y coordinates
-     *
-     * @return the cross product result as a float
-     */
-    double crossProduct(Point point1, Point point2) {
-        return point1.x * point2.y - point1.y * point2.x;
-    }
-
-    /**
-     * Subtract the second point from the first.
-     *
-     * @param point1 point1 point object with x and y coordinates
-     * @param point2 point2 point object with x and y coordinates
-     *
-     * @return the subtraction result as a point object
-     */
-    Point subtractPoints(Point point1,Point point2) {
-        return new Point(point1.x - point2.x, point1.y - point2.y);
     }
 
     @Override
@@ -309,7 +264,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     }
 
     public void updatePlayerPosition(String movedPlayerId, PairCustom<Double, Double> value) {
-        if (!movedPlayerId.equals(signedInUser.getUserId())) {
+        if (!movedPlayerId.equals(signedInUser.getUserId()) && mapDrawn) {
             Marker m = null;
             for (Marker marker : otherPlayersMarkers) {
                 if (marker.getTag().equals(movedPlayerId)) {
@@ -327,7 +282,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
             m = mMap.addMarker(new MarkerOptions()
                     .position(newPlayerPosition)
-                    .icon(Utils.BitmapFromVector(getUserDrawable(), Color.BLACK)));
+                    .icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK)));
             m.setTag(movedPlayerId);
             otherPlayersMarkers.set(index, m);
         }

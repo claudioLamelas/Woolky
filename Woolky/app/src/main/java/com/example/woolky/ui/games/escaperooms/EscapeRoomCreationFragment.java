@@ -52,7 +52,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
     private GoogleMap mMap;
     private LatLng initialPosition;
-//    private FusedLocationProviderClient fusedLocationClient;
     private LocationManager locationManager;
 
     private Circle activeCircle;
@@ -106,7 +105,17 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 //        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> saveEscapeRoom());
+        view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> {
+//            if (escapeRoom.getBlueLine() == null)
+//                Toast.makeText(getActivity(), "You need to specify a finishing door (Blue)", Toast.LENGTH_SHORT).show();
+//            else if (escapeRoom.getUserStartPosition() == null)
+//                Toast.makeText(getActivity(), "You need to specify a starting position for the players", Toast.LENGTH_LONG).show();
+//            else
+//                saveEscapeRoom();
+
+            ImitateSequenceDialog dialog = new ImitateSequenceDialog();
+            dialog.show(getChildFragmentManager(), "seq");
+        });
 
         view.findViewById(R.id.addQuizButton).setOnClickListener(v -> {
             CreateNewQuizDialog dialog = CreateNewQuizDialog.newInstance("retirar", "retirar");

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="gameModes">
-        <item>Tic Tac Toe</item>
         <item>Escape Room</item>
-        <item>Quente e Frio</item>
-        <item>Batalha Naval</item>
+        <item>Tic Tac Toe</item>
     </string-array>
 </resources>

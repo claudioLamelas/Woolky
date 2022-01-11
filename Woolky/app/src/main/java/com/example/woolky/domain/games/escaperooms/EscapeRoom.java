@@ -21,7 +21,6 @@ public class EscapeRoom {
 
     //Na verdade é a posição do primeiro vértice da room relativa à posição escolhida para o user começar
     private PairCustom<Double, Double> userStartPosition;
-    private Circle startPositionCircle;
     private List<Triple<Integer, Integer, Integer>> linesCircles;
     private List<PairCustom<Double, Double>> circlesRelativePositions;
     private List<Quiz> quizzes;
@@ -36,7 +35,6 @@ public class EscapeRoom {
         vertex = new ArrayList<>();
         polylines = new ArrayList<>();
         userStartPosition = null;
-        startPositionCircle = null;
     }
 
     public EscapeRoom(List<Triple<Integer, Integer, Integer>> linesCircles,
@@ -49,7 +47,6 @@ public class EscapeRoom {
         this.vertex = new ArrayList<>();
         this.polylines = new ArrayList<>();
         this.userStartPosition = null;
-        this.startPositionCircle = null;
     }
 
 
@@ -144,11 +141,6 @@ public class EscapeRoom {
             list.add(center);
         }
         return list;
-    }
-
-    @Exclude
-    public Circle getStartPositionCircle() {
-        return startPositionCircle;
     }
 
 }
