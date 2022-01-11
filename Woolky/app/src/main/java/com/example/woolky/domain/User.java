@@ -2,6 +2,7 @@ package com.example.woolky.domain;
 
 import android.net.Uri;
 
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
@@ -9,11 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable {
+
+
     private String photoUrl;
     private String userId;
     private String userName;
     private int level, color;
-    private List<String> groups, friends;
+    private List<String> groupsIBelong, groupsIOwn, friends;
     private LatLngCustom currentPosition;
     private ShareLocationType visibilityType;
 
@@ -27,7 +30,10 @@ public class User implements Serializable {
         this.currentPosition = currentPosition;
         this.visibilityType = visibilityType;
 
-        this.groups = new ArrayList<>();
+        this.groupsIBelong = new ArrayList<>();
+        //groupsIBelong.add("nao vazio");
+        this.groupsIOwn = new ArrayList<>();
+        //groupsIOwn.add("nao vazio");
         this.friends = new ArrayList<>();
     }
 
@@ -39,7 +45,11 @@ public class User implements Serializable {
         this.visibilityType = visibilityType;
         this.photoUrl = photoUrl;
 
-        this.groups = new ArrayList<>();
+        this.groupsIBelong = new ArrayList<>();
+        //groupsIBelong.add("nao vazio");
+        this.groupsIOwn = new ArrayList<>();
+        //groupsIOwn.add("nao vazio");
+
         this.friends = new ArrayList<>();
     }
 
@@ -68,12 +78,20 @@ public class User implements Serializable {
         this.color = color;
     }
 
-    public List<String> getGroups() {
-        return groups;
+    public List<String> getGroupsIOwn() {
+        return (groupsIOwn== null ? new ArrayList() : groupsIOwn);
+    }
+    public List<String> getGroupsIBelong() {
+
+        return (groupsIBelong == null ? new ArrayList() : groupsIBelong);
     }
 
-    public void setGroups(List<String> groups) {
-        this.groups = groups;
+    public void setGroupsIOwn(List<String> groups) {
+        this.groupsIOwn = groups;
+    }
+
+    public void setGroupsIBelong(List<String> groups) {
+        this.groupsIBelong = groups;
     }
 
     public List<String> getFriends() {
@@ -118,10 +136,10 @@ public class User implements Serializable {
 
     public void createNewGroup(String key) {
 
-        if (groups == null){
-            groups = new ArrayList<>();
+        if (groupsIOwn == null){
+            groupsIOwn = new ArrayList<>();
         }
 
-        groups.add(key);
+        groupsIOwn.add(key);
     }
 }

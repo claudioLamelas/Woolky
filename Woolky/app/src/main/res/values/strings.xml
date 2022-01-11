@@ -30,4 +30,6 @@
     <string name="no_groups">You don\'t have any groups, yet!</string>
     <string name="play">Play</string>
     <string name="string_today">Today</string>
+    <string name="your_Groups">Your Groups</string>
+    <string name="members">Members</string>
 </resources>

@@ -6,6 +6,19 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/Groups_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:layout_marginBottom="129dp"
+        android:text="@string/your_Groups"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/groupListScroll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/no_groups_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,12 +29,12 @@
     <ScrollView
         android:id="@+id/groupListScroll"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:layout_marginBottom="39dp"
-        app:layout_constraintBottom_toTopOf="@+id/newGroup"
+        android:layout_height="400dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/Groups_textView">
 
         <LinearLayout
             android:id="@+id/scrollLayout"

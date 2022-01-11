@@ -43,6 +43,8 @@ public class GroupsListFragment extends Fragment {
     private User signedInUser;
     private DatabaseReference databaseRef;
 
+    private int indexLastButton = 1;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.fragment_groups_list, container, false);
@@ -121,18 +123,58 @@ public class GroupsListFragment extends Fragment {
 
     private void updateUI() {
 
-        List<String> groups = signedInUser.getGroups();
+        List<String> groupsIOwn = signedInUser.getGroupsIOwn();
+        List<String> groupsIBelong = signedInUser.getGroupsIBelong();
 
         LinearLayout layout = (LinearLayout) getView().findViewById(R.id.scrollLayout);
 
-        if (groups != null) {
-            // ver se tem a mensagem de nenhum grupo
-            for (String name : groups) {
+        /*
+        ESTA LINHA ELIMINA METADE IFS VERIFICACAO :((
+
+        NAO DEVE SER O MAIS CORRETO APAGAR TO_DO O LAYOUT E FAZER DE NOVO
+         */
+        layout.removeAllViews();
+
+
+        TextView noGroupsOwn = new TextView(getContext());
+        noGroupsOwn.setText("Não é dono de nenhum grupo");
+        noGroupsOwn.setTag("tv_no_groups_own");
+
+        TextView noGroupsBelong = new TextView(getContext());
+        noGroupsBelong.setText("Não pertence a nenhum grupo");
+        noGroupsBelong.setTag("tv_no_groups_belong");
+
+        TextView groupsOwn = new TextView(getContext());
+        groupsOwn.setText("Groups I Own");
+        groupsOwn.setTag("tv_own");
+
+        TextView groupsBelong = new TextView(getContext());
+        groupsBelong.setText("Groups I Belong");
+        groupsBelong.setTag("tv_belong");
+
+
+        if (!groupsIOwn.isEmpty()) {
+
+            TextView testNoGroups = layout.findViewWithTag("tv_no_groups_own");
+            if (testNoGroups != null) {
+                layout.removeView(noGroupsOwn);
+            }
+
+            TextView testOwn = layout.findViewWithTag("tv_own");
+            if (testOwn == null) {
+                layout.addView(groupsOwn);
+            }
+
+
+
+
+            // nao eh name eh ID
+            for (String id : groupsIOwn) {
 
                 Button btnTag = new Button(getContext());
 
 
-                databaseRef.child("groups").child(name).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                databaseRef.child("groups").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
                     @Override
                     public void onSuccess(DataSnapshot dataSnapshot) {
                         Group current = dataSnapshot.getValue(Group.class);
@@ -149,7 +191,55 @@ public class GroupsListFragment extends Fragment {
                 //add button to the layout
                 btnTag.setOnClickListener(v -> {
                     // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
-                    getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupFragment()).addToBackStack(null).commit();
+                    getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupFragment(id, databaseRef)).addToBackStack(null).commit();
+
+
+                });
+
+                layout.addView(btnTag);
+                //indexLastButton++;
+            }
+        }
+        else {
+
+            layout.addView(noGroupsOwn);
+
+        }
+
+
+
+
+        if (!groupsIBelong.isEmpty()) {
+
+            TextView test = layout.findViewWithTag("tv_no_groups_belong");
+            if (test != null) {
+                layout.removeView(noGroupsBelong);
+            }
+
+
+            TextView testBelong= layout.findViewWithTag("tv_belong");
+            if (testBelong == null) {
+                layout.addView(groupsBelong);
+            }
+
+
+            // ver se tem a mensagem de nenhum grupo
+            for (String name : groupsIBelong) {
+
+                Button btnTag = new Button(getContext());
+
+
+                databaseRef.child("groups").child(name).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                    @Override
+                    public void onSuccess(DataSnapshot dataSnapshot) {
+                        Group current = dataSnapshot.getValue(Group.class);
+                        btnTag.setText(current.getGroupName());
+                    }
+                });
+
+
+                btnTag.setOnClickListener(v -> {
+                    getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupFragment(name, databaseRef)).addToBackStack(null).commit();
 
 
                 });
@@ -158,12 +248,12 @@ public class GroupsListFragment extends Fragment {
             }
         }
         else {
-            TextView noGroups = new TextView(getContext());
-            noGroups.setText("Não pertence a nenhum grupo");
 
-            layout.addView(noGroups);
+            layout.addView(noGroupsBelong);
 
         }
+
+
 
 
 
