@@ -46,15 +46,14 @@ public class FriendsListFragment extends Fragment {
         users = homeActivity.getUsers();
         signedInUser = homeActivity.getSignedInUser();
         List<Friend> friends = new ArrayList<>();
-        if (signedInUser.getFriends()!=null)
-        {
-            for (String id : signedInUser.getFriends()){
-                for (User user : users){
-                    if (user.getUserId().equals(id)){
-                        Friend friend = new Friend(user.getUserName(), user.getPhotoUrl());
-                        friends.add(friend);
-                    }
+        if (signedInUser.getFriends() != null) {
+            for (User user : users) {
+                if (signedInUser.getFriends().contains(user.getUserId())) {
+                    Friend friend = new Friend(user.getUserName(), user.getPhotoUrl());
+                    friends.add(friend);
                 }
+                if (friends.size() == signedInUser.getFriends().size())
+                    break;
             }
         }
         adapter = new FriendsListAdapter(friends);

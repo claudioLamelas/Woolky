@@ -140,9 +140,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-                    if (inviteState == InviteState.DECLINED) {
-                        Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
                     if (inviteState == InviteState.ACCEPTED) {
                         setupFriend(inviteId,false, toUserId);
                     }

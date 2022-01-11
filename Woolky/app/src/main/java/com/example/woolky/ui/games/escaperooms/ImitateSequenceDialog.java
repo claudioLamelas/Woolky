@@ -92,7 +92,7 @@ public class ImitateSequenceDialog extends DialogFragment {
 
         v.findViewById(R.id.startSequence).setOnClickListener(v1 -> {
 
-           countDownTimer = new CountDownTimer(4000, 500) {
+           countDownTimer = new CountDownTimer(6000, 500) {
                 boolean red = false;
                 int index = 0;
                 Random random = new Random();
