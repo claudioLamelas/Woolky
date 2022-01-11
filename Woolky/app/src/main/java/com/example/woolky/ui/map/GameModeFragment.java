@@ -20,7 +20,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.woolky.GameListener;
+import com.example.woolky.HomeActivity;
 import com.example.woolky.domain.TicTacToe;
+import com.example.woolky.ui.dialogs.TicTacToeFinishDialog;
 import com.example.woolky.utils.Board;
 import com.example.woolky.R;
 import com.example.woolky.utils.Utils;
@@ -112,8 +114,7 @@ public class GameModeFragment extends Fragment implements LocationListener {
         view.findViewById(R.id.leaveGameButton).setOnClickListener(v -> {
             ticTacToe.setWinner(ticTacToe.opponentPiece());
             gameRef.setValue(ticTacToe);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, new VicinityMapFragment()).commitNow();
+            ((HomeActivity) getActivity()).changeToMap();
         });
 
         view.findViewById(R.id.confirmPlayButton).setOnClickListener(v -> {
@@ -153,15 +154,21 @@ public class GameModeFragment extends Fragment implements LocationListener {
 
     public void finishGame(TicTacToe.Piece value) {
         if (value == TicTacToe.Piece.Blank) {
-            Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
+            TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("It's a TIE");
+            dialog.show(getChildFragmentManager(), "dialog");
         } else if (value == this.ticTacToe.getMyPiece()) {
-            Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
+            TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("You've Won :D");
+            dialog.show(getChildFragmentManager(), "dialog");
         } else {
-            Toast.makeText(getActivity(), "You LOST the game", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getActivity(), "You LOST the game", Toast.LENGTH_LONG).show();
+            TicTacToeFinishDialog dialog = TicTacToeFinishDialog.newInstance("You've Lost :(");
+            dialog.show(getChildFragmentManager(), "dialog");
         }
 
-        new Handler().postDelayed(() -> getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, new VicinityMapFragment()).commitNow(), 2 * 1000);
+        /*new Handler().postDelayed(() -> getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment, new VicinityMapFragment()).commitNow(), 2 * 1000);*/
     }
 
     @Override

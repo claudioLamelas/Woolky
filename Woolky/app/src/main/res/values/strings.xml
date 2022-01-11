@@ -32,4 +32,6 @@
     <string name="string_today">Today</string>
     <string name="your_Groups">Your Groups</string>
     <string name="members">Members</string>
+    <string name="already_friends">Already Friends</string>
+    
 </resources>
