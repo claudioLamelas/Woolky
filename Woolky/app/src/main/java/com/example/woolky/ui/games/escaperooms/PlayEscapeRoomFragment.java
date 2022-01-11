@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -27,7 +25,7 @@ import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
 import com.example.woolky.domain.games.escaperooms.Quiz;
-import com.example.woolky.ui.games.tictactoe.FinishGameDialog;
+import com.example.woolky.ui.games.FinishGameDialog;
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
@@ -46,17 +44,15 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.android.geometry.Point;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallback, LocationListener,
-        ShowQuizDialog.AnswerQuizListener {
+        ShowQuizDialog.AnswerQuizListener, ImitateSequenceDialog.SequenceListener {
 
     private static final int FINE_LOCATION_CODE = 114;
     public static final int MINIMUM_DISTANCE_TO_WALL = 20;
@@ -72,12 +68,14 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     private List<Marker> otherPlayersMarkers;
     private User signedInUser;
     private boolean mapDrawn;
+    private int nextCodeDigitIndex;
 
     public PlayEscapeRoomFragment() {}
 
     public PlayEscapeRoomFragment(DatabaseReference gameRef, EscapeRoomGame escapeRoomGame) {
         this.gameRef = gameRef;
         this.escapeRoomGame = escapeRoomGame;
+        this.nextCodeDigitIndex = 0;
     }
     
     @Override
@@ -140,15 +138,16 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
         mMap.setOnPolylineClickListener(polyline -> {
             if (admissibleChallengeWall(polyline, currentPosition)) {
+                //TODO: Se for parede azul então mostrar caixa de texto para pôr o código final
                 Random random = new Random();
                 int x = random.nextInt(2);
-                if (x == 0) {
+                if (x == 0 && !escapeRoomGame.getEscapeRoom().getQuizzes().isEmpty()) {
                     Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
                             .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
                     ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
                     dialog.show(getChildFragmentManager(), "quiz");
                 } else {
-                    ImitateSequenceDialog dialog1 = new ImitateSequenceDialog();
+                    ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
                     dialog1.show(getChildFragmentManager(), "seq");
                 }
             }
@@ -236,21 +235,31 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, int chosenAnswer, Quiz quiz, Polyline polyline) {
         if (chosenAnswer == quiz.getIndexOfCorrectAnswer()) {
-            polyline.setColor(Color.GREEN);
-            int lineIndex = escapeRoomGame.getEscapeRoom().getPolylines().indexOf(polyline);
-            Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(lineIndex);
-            triple.setThird(Color.GREEN);
-            Toast.makeText(getActivity(), "Correct Answer", Toast.LENGTH_SHORT).show();
-
-            if (escapeRoomGame.isFinished() == 1) {
-                escapeRoomGame.setFinito(true);
-                gameRef.setValue(escapeRoomGame);
-            }
+            processCorrectAnswer(polyline);
+            escapeRoomGame.getEscapeRoom().getQuizzes().remove(quiz);
         } else
             Toast.makeText(getActivity(), "Wrong Answer", Toast.LENGTH_SHORT).show();
 
-
         dialog.dismiss();
+    }
+
+    private void processCorrectAnswer(Polyline polyline) {
+        polyline.setColor(Color.GREEN);
+        int lineIndex = escapeRoomGame.getEscapeRoom().getPolylines().indexOf(polyline);
+        Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(lineIndex);
+        triple.setThird(Color.GREEN);
+
+        Toast.makeText(getActivity(), "Correct Answer", Toast.LENGTH_SHORT).show();
+
+        if (escapeRoomGame.isFinished() == 1) {
+            escapeRoomGame.setFinito(true);
+            gameRef.setValue(escapeRoomGame);
+        } else {
+            char c = escapeRoomGame.getFinalCode().charAt(nextCodeDigitIndex);
+            CodeNumberDialog dialog = new CodeNumberDialog(c);
+            dialog.show(getChildFragmentManager(), "codeNumber");
+            nextCodeDigitIndex++;
+        }
     }
 
     public void finishGame(Boolean finishedGame) {
@@ -287,5 +296,11 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             otherPlayersMarkers.set(index, m);
         }
 
+    }
+
+    @Override
+    public void rightSequenceDone(DialogFragment dialog, Polyline polyline) {
+        processCorrectAnswer(polyline);
+        dialog.dismiss();
     }
 }

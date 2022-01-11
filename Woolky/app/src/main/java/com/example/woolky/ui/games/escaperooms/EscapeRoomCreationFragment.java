@@ -106,15 +106,15 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> {
-//            if (escapeRoom.getBlueLine() == null)
-//                Toast.makeText(getActivity(), "You need to specify a finishing door (Blue)", Toast.LENGTH_SHORT).show();
-//            else if (escapeRoom.getUserStartPosition() == null)
-//                Toast.makeText(getActivity(), "You need to specify a starting position for the players", Toast.LENGTH_LONG).show();
-//            else
-//                saveEscapeRoom();
+            if (escapeRoom.getBlueLine() == null)
+                Toast.makeText(getActivity(), "You need to specify a finishing door (Blue)", Toast.LENGTH_SHORT).show();
+            else if (escapeRoom.getUserStartPosition() == null)
+                Toast.makeText(getActivity(), "You need to specify a starting position for the players", Toast.LENGTH_LONG).show();
+            else
+                saveEscapeRoom();
 
-            ImitateSequenceDialog dialog = new ImitateSequenceDialog();
-            dialog.show(getChildFragmentManager(), "seq");
+//            ImitateSequenceDialog dialog = new ImitateSequenceDialog();
+//            dialog.show(getChildFragmentManager(), "seq");
         });
 
         view.findViewById(R.id.addQuizButton).setOnClickListener(v -> {

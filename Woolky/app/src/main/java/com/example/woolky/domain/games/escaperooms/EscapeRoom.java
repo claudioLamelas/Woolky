@@ -143,4 +143,13 @@ public class EscapeRoom {
         return list;
     }
 
+    public int countRedWalls() {
+        int count = 0;
+        for (Triple<Integer, Integer, Integer> triple : linesCircles) {
+            if (triple.getThird() == Color.RED) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

@@ -4,12 +4,15 @@ import com.example.woolky.domain.games.Game;
 import com.google.firebase.database.Exclude;
 
 import java.util.List;
+import java.util.Random;
 
 public class EscapeRoomGame extends Game {
 
     private EscapeRoom escapeRoom;
     private List<String> playersIds;
     private boolean isFinito;
+
+    private String finalCode;
 
     public EscapeRoomGame() {
         super(8);
@@ -20,6 +23,12 @@ public class EscapeRoomGame extends Game {
         this.escapeRoom = escapeRoom;
         this.isFinito = false;
         this.playersIds = playersIds;
+
+        Random random = new Random();
+        finalCode = "";
+        for (int i = 0; i < escapeRoom.countRedWalls(); i++) {
+            finalCode += "" + random.nextInt(10);
+        }
     }
 
     // -1 == não acabou
@@ -46,5 +55,10 @@ public class EscapeRoomGame extends Game {
     @Exclude
     public List<String> getPlayersIds() {
         return playersIds;
+    }
+
+    @Exclude
+    public String getFinalCode() {
+        return finalCode;
     }
 }

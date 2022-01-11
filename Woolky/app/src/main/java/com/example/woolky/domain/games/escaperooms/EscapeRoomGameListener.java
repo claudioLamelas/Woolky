@@ -3,9 +3,7 @@ package com.example.woolky.domain.games.escaperooms;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
 import com.example.woolky.ui.games.escaperooms.PlayEscapeRoomFragment;
-import com.example.woolky.ui.games.tictactoe.FinishGameDialog;
 import com.example.woolky.utils.PairCustom;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;

@@ -2,24 +2,24 @@ package com.example.woolky.ui.games.escaperooms;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.woolky.R;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,15 +28,25 @@ import java.util.Random;
 
 public class ImitateSequenceDialog extends DialogFragment {
 
+    private SequenceListener listener;
+
+    public interface SequenceListener {
+        void rightSequenceDone(DialogFragment dialog, Polyline polyline);
+    }
+
+    private Polyline polyline;
     private CountDownTimer countDownTimer;
     private List<FrameLayout> tiles;
     private List<Integer> sequence;
-    private boolean missed;
+    private Handler handler;
+    private boolean itsOver;
 
-    public ImitateSequenceDialog() {
+    public ImitateSequenceDialog(Polyline polyline) {
+        this.polyline = polyline;
         tiles = new ArrayList<>();
         sequence = new ArrayList<>();
-        missed = false;
+        itsOver = false;
+        handler = new Handler();
     }
 
 
@@ -57,6 +67,7 @@ public class ImitateSequenceDialog extends DialogFragment {
         super.onDestroyView();
         if (countDownTimer != null)
             countDownTimer.cancel();
+        handler.removeCallbacksAndMessages(this);
     }
 
     @NonNull
@@ -81,7 +92,7 @@ public class ImitateSequenceDialog extends DialogFragment {
 
         v.findViewById(R.id.startSequence).setOnClickListener(v1 -> {
 
-           countDownTimer = new CountDownTimer(4000, 1000) {
+           countDownTimer = new CountDownTimer(4000, 500) {
                 boolean red = false;
                 int index = 0;
                 Random random = new Random();
@@ -117,26 +128,42 @@ public class ImitateSequenceDialog extends DialogFragment {
     private void addListeners() {
         for (FrameLayout fl : tiles) {
             fl.setOnClickListener(v -> {
-                if (!missed) {
-                    Handler handler = new Handler();
+                if (!itsOver) {
                     int index = tiles.indexOf(fl);
 
                     if (index == sequence.get(0)) {
                         sequence.remove(0);
 
-                        if (sequence.isEmpty())
-                            missed = true;
+                        if (sequence.isEmpty()) {
+                            itsOver = true;
+                            listener.rightSequenceDone(this, this.polyline);
+                        }
 
                         fl.setBackgroundColor(Color.GREEN);
                         handler.postDelayed(() -> {
-                            fl.setBackgroundColor(getResources().getColor(R.color.alice_blue, null));
+                            try {
+                                fl.setBackgroundColor(getResources().getColor(R.color.alice_blue, null));
+                            } catch (IllegalStateException ignored) {}
                         }, 200);
                     } else {
                         fl.setBackgroundColor(Color.RED);
-                        missed = true;
+                        itsOver = true;
+                        Toast.makeText(getActivity(), "Wrong sequence mate", Toast.LENGTH_SHORT).show();
+                        this.dismiss();
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            listener = (SequenceListener) getParentFragment();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString()
+                    + " must implement SequenceListener");
         }
     }
 }

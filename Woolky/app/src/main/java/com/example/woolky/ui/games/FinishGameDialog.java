@@ -1,4 +1,4 @@
-package com.example.woolky.ui.games.tictactoe;
+package com.example.woolky.ui.games;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

@@ -2,19 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/finishGameLayout"
+    android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context=".ui.games.FinishGameDialog">
+    tools:context=".ui.games.escaperooms.CodeNumberDialog">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/finishGameMessage"
+        android:id="@+id/codeNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="YOU WON"
+        android:text="TextView"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,18 +22,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/returnToMapButton"
+        android:id="@+id/returnToGameButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/round_corners"
-        android:backgroundTint="#E8E8E8"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Return to map"
+        android:layout_marginTop="16dp"
+        android:text="Return to game"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finishGameMessage" />
-
+        app:layout_constraintTop_toBottomOf="@+id/codeNumber" />
 </androidx.constraintlayout.widget.ConstraintLayout>

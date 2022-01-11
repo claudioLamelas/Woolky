@@ -215,7 +215,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         if (userMarker != null) {
             userMarker.remove();
             userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                    icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), signedInUser.getColor())));
+                    icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
         }
         updateCurrentPositionOnBD(currentPosition);
     }
