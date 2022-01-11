@@ -18,12 +18,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.woolky.HomeActivity;
+
 import com.example.woolky.R;
 import com.example.woolky.domain.ShareLocationType;
 import com.example.woolky.domain.User;
 import com.example.woolky.domain.Group;
 
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.FriendsListFragment;
 import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.utils.MarginItemDecoration;

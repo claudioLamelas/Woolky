@@ -12,15 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.woolky.HomeActivity;
+
 import com.example.woolky.R;
 import com.example.woolky.domain.Group;
 import com.example.woolky.domain.User;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -84,9 +88,25 @@ public class GroupFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_group, container, false);
 
 
-        Log.d("nome", "teste");
+        ImageButton leaveGroup = view.findViewById(R.id.leftGroupBt);
+        leaveGroup.setOnClickListener(v -> {
+            leaveGroup();
+
+        });
+
 
         return view;
+    }
+
+    private void leaveGroup() {
+
+        signedInUser.leaveGroup(groupId);
+
+        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
+
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment, new HomeFragment()).commit();
+
+
     }
 
     @Override
@@ -106,14 +126,18 @@ public class GroupFragment extends Fragment {
 
                 updateMembersUI(view);
 
+                if (signedInUser.getUserId().equals(current.getOwnerId())){
+
+                    Button addFriends = view.findViewById(R.id.addFriendsGroupBt);
+                    addFriends.setVisibility(View.VISIBLE);
+                    addFriends.setOnClickListener(v -> {
+                        inviteFriendsToGroup();
+                    });
+                }
+
             }
         });
 
-        //name.setText(current.getGroupName());
-
-        //Log.d("nome", current.getGroupName());
-
-        /////!!!!!!!!!!!!!!!!!!!!!!!!!
 
         HomeActivity homeActivity = ((HomeActivity) getActivity());
         signedInUser = homeActivity.getSignedInUser();
@@ -122,7 +146,13 @@ public class GroupFragment extends Fragment {
 
 
 
+    }
 
+    private void inviteFriendsToGroup() {
+
+        FrameLayout addFriends = getView().findViewById(R.id.addFriendsGroupFragment);
+        addFriends.setVisibility(View.VISIBLE);
+        getParentFragmentManager().beginTransaction().replace(R.id.addFriendsGroupFragment, new addFriendsToGroup(groupId)).commit();
     }
 
     private void updateMembersUI(View view) {
@@ -140,6 +170,15 @@ public class GroupFragment extends Fragment {
                     User current = dataSnapshot.getValue(User.class);
 
                     ImageView photo = new ImageView(getContext());
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200,
+                            200);
+
+                    params.setMargins(25,10,10,10);
+
+
+                    photo.setLayoutParams(params);
+
+
                     //lp.setMargins(8,8,8,8));
                     //photo.setImageURI(null);
                     //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));

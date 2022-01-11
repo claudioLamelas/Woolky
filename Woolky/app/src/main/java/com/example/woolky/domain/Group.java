@@ -43,5 +43,11 @@ public class Group  implements Serializable  {
     }
 
 
+    public String getOwnerId() {
+        return members.get(0);
+    }
 
+    public void addMember(String id) {
+        members.add(id);
+    }
 }

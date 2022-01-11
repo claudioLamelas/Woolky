@@ -144,4 +144,19 @@ public class User implements Serializable {
 
         groupsIOwn.add(key);
     }
+
+    public void leaveGroup(String groupId) {
+
+        groupsIBelong.remove(groupId);
+
+    }
+
+    public void addNewGroup(String groupId) {
+
+        if (groupsIBelong== null){
+            groupsIBelong = new ArrayList<>();
+        }
+
+        groupsIBelong.add(groupId);
+    }
 }
