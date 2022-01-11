@@ -1,4 +1,4 @@
-package com.example.woolky.domain;
+package com.example.woolky.domain.games;
 
 public enum GameMode {
     TIC_TAC_TOE,

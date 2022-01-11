@@ -18,14 +18,11 @@ import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.example.woolky.HomeActivity;
-import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.LatLngCustom;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.utils.LatLngCustom;
 import com.example.woolky.domain.ShareLocationType;
 import com.example.woolky.domain.User;
-import com.example.woolky.ui.dialogs.ChallengesDialog;
 import com.example.woolky.R;
-import com.example.woolky.ui.dialogs.UserInformationOnMapDialog;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -130,8 +127,11 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         mMap = googleMap;
         final Context cx = getActivity();
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
+
+        //TODO: Mudar para o LocationManager.requestLocationUpdates()
         Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @SuppressLint("PotentialBehaviorOverride")
             @Override
             public void onSuccess(Location location) {
                 LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
@@ -215,23 +215,8 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         if (userMarker != null) {
             userMarker.remove();
             userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                    icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), signedInUser.getColor())));
+                    icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
         }
         updateCurrentPositionOnBD(currentPosition);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 }

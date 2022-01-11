@@ -1,4 +1,4 @@
-package com.example.woolky.domain;
+package com.example.woolky.domain.games;
 
 import com.google.firebase.database.Exclude;
 

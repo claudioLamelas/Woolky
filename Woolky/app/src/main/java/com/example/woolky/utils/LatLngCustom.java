@@ -1,4 +1,4 @@
-package com.example.woolky.domain;
+package com.example.woolky.utils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.Exclude;

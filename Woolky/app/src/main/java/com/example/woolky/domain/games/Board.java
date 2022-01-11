@@ -1,4 +1,4 @@
-package com.example.woolky.utils;
+package com.example.woolky.domain.games;
 
 import android.graphics.Color;
 

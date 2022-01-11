@@ -1,40 +1,41 @@
-package com.example.woolky;
+package com.example.woolky.ui;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.woolky.FriendsInvitesListener;
+import com.example.woolky.R;
 import com.example.woolky.domain.FriendsInvite;
-import com.example.woolky.domain.GameMode;
 import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.TicTacToe;
 import com.example.woolky.domain.User;
+import com.example.woolky.domain.games.EscapeRoomGameInvite;
+import com.example.woolky.domain.games.GameInvite;
+import com.example.woolky.domain.games.GameInvitesListener;
+import com.example.woolky.domain.games.escaperooms.EscapeRoom;
+import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
+import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
+import com.example.woolky.ui.games.escaperooms.PlayEscapeRoomFragment;
+import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
 import com.example.woolky.ui.home.HomeFragment;
-import com.example.woolky.ui.map.GameModeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -103,29 +104,26 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private BottomNavigationView.OnItemSelectedListener navListener =
-            new BottomNavigationView.OnItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selected = null;
+            item -> {
+                Fragment selected = null;
 
-                    switch (item.getItemId()) {
-                        case R.id.nav_home:
-                            selected = new HomeFragment();
-                            break;
+                switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        selected = new HomeFragment();
+                        break;
 
-                        case R.id.nav_map:
-                            selected = new VicinityMapFragment();
-                            break;
+                    case R.id.nav_map:
+                        selected = new VicinityMapFragment();
+                        break;
 
-                        case R.id.nav_profile:
-                            selected = new ProfileFragment();
-                            break;
-                    }
-
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
-
-                    return true;
+                    case R.id.nav_profile:
+                        selected = new ProfileFragment();
+                        break;
                 }
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
+
+                return true;
             };
 
     public void changeToMap() {
@@ -159,27 +157,33 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    public void setListenerToGameInvite(String inviteId, DatabaseReference inviteStateRef) {
+    public void setListenerToGameInvite(String inviteId, DatabaseReference inviteStateRef, GameInvite invite) {
         inviteStateRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-                    if (inviteState == InviteState.DECLINED) {
+                    if (inviteState == InviteState.DECLINED)
                         Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
-                    }
 
-                    if (inviteState == InviteState.ACCEPTED) {
-                        setupGame(inviteId, GameMode.TIC_TAC_TOE, false);
-                    }
+                    if (inviteState == InviteState.ACCEPTED)
+                        switch (invite.getGameMode()) {
+                            case TIC_TAC_TOE: {
+                                setupTicTacToeGame(inviteId, false);
+                                break;
+                            }
+                            case ESCAPE_ROOM: {
+                                setupEscapeRoomGame(inviteId, ((EscapeRoomGameInvite)invite).getEscapeRoomId(),
+                                        invite.getFromId(), ((EscapeRoomGameInvite)invite).getPlayersIds(), false);
+                                break;
+                            }
+                        }
                     inviteStateRef.removeEventListener(this);
                 }
             }
 
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
-
         });
     }
     public void setupFriend(String friendInviteID, boolean isReceiver, String toUserId) {
@@ -214,22 +218,36 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void setupGame(String gameInviteID, GameMode gameMode, boolean isReceiver) {
-        if (gameMode == GameMode.TIC_TAC_TOE) {
-            TicTacToe.Piece piece = isReceiver ? TicTacToe.Piece.X : TicTacToe.Piece.O;
-            TicTacToe ticTacToe = new TicTacToe(2, signedInUser.getCurrentPosition().getLatLng(), piece);
+    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId, List<String> playersIds, boolean isReceiver) {
+        DatabaseReference gameRef = databaseRef.child("games").child(inviteId);
 
-            DatabaseReference gameRef = databaseRef.child("games").child(gameInviteID);
+        databaseRef.child("escapeRooms").child(escapeRoomOwnerId).child(escapeRoomId)
+                .get().addOnSuccessListener(
+                        dataSnapshot -> {
+                            EscapeRoom escapeRoom = dataSnapshot.getValue(EscapeRoom.class);
+                            EscapeRoomGame escapeRoomGame = new EscapeRoomGame(escapeRoom, playersIds);
 
-            GameModeFragment gameModeFragment = new GameModeFragment(gameRef, ticTacToe);
-            /*gameModeFragment.setGameRef(gameRef);*/
+                            if (!isReceiver)
+                                gameRef.setValue(escapeRoomGame);
 
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("isReceiver", isReceiver);
-            gameModeFragment.setArguments(bundle);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment,
+                                new PlayEscapeRoomFragment(gameRef, escapeRoomGame)).commit();
+            });
+    }
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment, gameModeFragment).commitNow();
-        }
+    public void setupTicTacToeGame(String gameInviteID, boolean isReceiver) {
+        TicTacToeGame.Piece piece = isReceiver ? TicTacToeGame.Piece.X : TicTacToeGame.Piece.O;
+        TicTacToeGame ticTacToeGame = new TicTacToeGame(2, signedInUser.getCurrentPosition().getLatLng(), piece);
+
+        DatabaseReference gameRef = databaseRef.child("games").child(gameInviteID);
+
+        PlayTicTacToeFragment playTicTacToeFragment = new PlayTicTacToeFragment(gameRef, ticTacToeGame);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isReceiver", isReceiver);
+        playTicTacToeFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, playTicTacToeFragment).commitNow();
     }
 
     public DatabaseReference getDatabaseRef() {

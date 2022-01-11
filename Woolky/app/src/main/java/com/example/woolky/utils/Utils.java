@@ -8,7 +8,9 @@ import android.graphics.drawable.Drawable;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
+import com.example.woolky.R;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
@@ -36,5 +38,9 @@ public class Utils {
 
         // after generating our bitmap we are returning our bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    public static Drawable getUserDrawable(FragmentActivity activity) {
+        return ContextCompat.getDrawable(activity, R.drawable.ic_android_24dp);
     }
 }

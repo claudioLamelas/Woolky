@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.woolky.domain.FriendsInvite;
-import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.InviteState;
+import com.example.woolky.ui.HomeActivity;
 import com.google.firebase.database.DatabaseReference;
 
 /**

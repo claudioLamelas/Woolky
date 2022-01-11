@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.woolky.domain.FriendsInvite;
-import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.InviteState;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
