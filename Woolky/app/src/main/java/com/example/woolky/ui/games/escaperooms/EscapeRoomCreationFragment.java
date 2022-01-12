@@ -18,7 +18,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.woolky.ui.HomeActivity;
@@ -47,7 +49,7 @@ import java.util.List;
 
 
 public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCallback,
-        CreateNewQuizDialog.CreateNewQuizListener, LocationListener {
+        CreateNewQuizDialog.CreateNewQuizListener, LocationListener, InputDataDialog.OnDataSubmitted {
     private static final int FINE_LOCATION_CODE = 114;
 
     private GoogleMap mMap;
@@ -58,6 +60,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private Circle previousActiveCircle;
     private Circle userStartPosition;
     private boolean choosingStartPosition;
+    private boolean erasingWalls;
     private Triple<Integer, Integer, Integer> blueLine;
 
     private EscapeRoom escapeRoom = null;
@@ -82,6 +85,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         this.previousActiveCircle = null;
         this.initialPosition = null;
         this.choosingStartPosition = false;
+        this.erasingWalls = false;
         this.userStartPosition = null;
         this.blueLine = null;
     }
@@ -110,8 +114,11 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                 Toast.makeText(getActivity(), "You need to specify a finishing door (Blue)", Toast.LENGTH_SHORT).show();
             else if (escapeRoom.getUserStartPosition() == null)
                 Toast.makeText(getActivity(), "You need to specify a starting position for the players", Toast.LENGTH_LONG).show();
-            else
-                saveEscapeRoom();
+            else {
+                InputDataDialog dialog = new InputDataDialog("Give your escape room a name",
+                        escapeRoom.getName(),"Hardest Room Ever", EditorInfo.TYPE_CLASS_TEXT);
+                dialog.show(getChildFragmentManager(), "roomName");
+            }
 
 //            ImitateSequenceDialog dialog = new ImitateSequenceDialog();
 //            dialog.show(getChildFragmentManager(), "seq");
@@ -122,11 +129,23 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             dialog.show(getChildFragmentManager(), "quiz");
         });
 
+        view.findViewById(R.id.helpButton).setOnClickListener(v -> {
+            CreationTutorialDialog dialog = new CreationTutorialDialog();
+            dialog.show(getChildFragmentManager(), "tutorial");
+        });
+
         Button chooseStartPositionButton = view.findViewById(R.id.chooseStartPositionButton);
         chooseStartPositionButton.setOnClickListener(v -> {
             int color = choosingStartPosition ? R.color.white : R.color.colorPrimary;
             chooseStartPositionButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(color, null)));
             choosingStartPosition = !choosingStartPosition;
+        });
+
+        ImageButton eraseWallButton = view.findViewById(R.id.deleteWallButton);
+        eraseWallButton.setOnClickListener(v ->  {
+            int color = erasingWalls ? R.color.white : R.color.colorPrimary;
+            eraseWallButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(color, null)));
+            erasingWalls = !erasingWalls;
         });
     }
 
@@ -206,27 +225,46 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         });
 
         mMap.setOnPolylineClickListener(polyline -> {
-            int index = escapeRoom.getPolylines().indexOf(polyline);
-            Triple<Integer, Integer, Integer> triple = escapeRoom.getLinesCircles().get(index);
+            if (!erasingWalls) {
+                int index = escapeRoom.getPolylines().indexOf(polyline);
+                Triple<Integer, Integer, Integer> triple = escapeRoom.getLinesCircles().get(index);
 
-            if (triple.getThird() == Color.BLACK) {
-                polyline.setColor(Color.RED);
-                triple.setThird(Color.RED);
-            } else if (triple.getThird() == Color.RED) {
-                polyline.setColor(Color.BLUE);
-                triple.setThird(Color.BLUE);
-                if (blueLine == null)
-                    blueLine = triple;
-                else {
-                    int index2 = escapeRoom.getLinesCircles().indexOf(blueLine);
-                    escapeRoom.getPolylines().get(index2).setColor(Color.BLACK);
-                    blueLine.setThird(Color.BLACK);
-                    blueLine = triple;
+                if (triple.getThird() == Color.BLACK) {
+                    polyline.setColor(Color.RED);
+                    triple.setThird(Color.RED);
+                } else if (triple.getThird() == Color.RED) {
+                    polyline.setColor(Color.BLUE);
+                    triple.setThird(Color.BLUE);
+                    if (blueLine == null)
+                        blueLine = triple;
+                    else {
+                        int index2 = escapeRoom.getLinesCircles().indexOf(blueLine);
+                        escapeRoom.getPolylines().get(index2).setColor(Color.BLACK);
+                        blueLine.setThird(Color.BLACK);
+                        blueLine = triple;
+                    }
+                } else {
+                    blueLine = null;
+                    polyline.setColor(Color.BLACK);
+                    triple.setThird(Color.BLACK);
                 }
             } else {
-                blueLine = null;
-                polyline.setColor(Color.BLACK);
-                triple.setThird(Color.BLACK);
+                int index = escapeRoom.getPolylines().indexOf(polyline);
+                Triple<Integer, Integer, Integer> triple = escapeRoom.getLinesCircles().remove(index);
+                escapeRoom.getPolylines().remove(polyline);
+                polyline.remove();
+                blueLine = escapeRoom.getBlueLine();
+                List<Circle> lonelyPoints = escapeRoom.getLonelyPoints(triple.getFirst(), triple.getSecond());
+                for (Circle c : lonelyPoints) {
+                    int i = escapeRoom.getVertex().indexOf(c);
+                    escapeRoom.getVertex().remove(c);
+                    escapeRoom.updateTriples(i);
+                    if (activeCircle == c) {
+                        changeActiveCircle(escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1));
+                        previousActiveCircle = activeCircle;
+                    }
+                    c.remove();
+                }
             }
         });
     }
@@ -254,6 +292,9 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         }
 
         escapeRoom.setCirclesRelativePositions(circlesRelativePositions);
+
+        escapeRoom.setUserStartPosition(LocationCalculator.diferenceBetweenPoints(userStartPosition.getCenter(),
+                escapeRoom.getVertex().get(0).getCenter()));
 
         HomeActivity homeActivity = (HomeActivity) getActivity();
         User signedInUser = homeActivity.getSignedInUser();
@@ -303,5 +344,16 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
         //Para que receba apenas uma vez e pare
         locationManager.removeUpdates(this);
+    }
+
+    @Override
+    public void processData(DialogFragment dialogFragment, String inputData) {
+        if (inputData.trim().length() > 0) {
+            dialogFragment.dismiss();
+            escapeRoom.setName(inputData);
+            saveEscapeRoom();
+        } else {
+            Toast.makeText(getActivity(), "You need to choose a name", Toast.LENGTH_LONG).show();
+        }
     }
 }

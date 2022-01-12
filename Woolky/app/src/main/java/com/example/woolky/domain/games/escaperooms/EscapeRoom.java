@@ -14,11 +14,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class EscapeRoom {
 
+    private String name;
     //Na verdade é a posição do primeiro vértice da room relativa à posição escolhida para o user começar
     private PairCustom<Double, Double> userStartPosition;
     private List<Triple<Integer, Integer, Integer>> linesCircles;
@@ -29,6 +31,7 @@ public class EscapeRoom {
     private List<Polyline> polylines;
 
     public EscapeRoom() {
+        name = "";
         linesCircles = new ArrayList<>();
         circlesRelativePositions = new ArrayList<>();
         quizzes = new ArrayList<>();
@@ -40,6 +43,7 @@ public class EscapeRoom {
     public EscapeRoom(List<Triple<Integer, Integer, Integer>> linesCircles,
                       List<PairCustom<Double, Double>> circlesRelativePositions,
                       List<Quiz> quizzes) {
+        this.name = "";
         this.linesCircles = linesCircles;
         this.circlesRelativePositions = circlesRelativePositions;
         this.quizzes = quizzes;
@@ -47,47 +51,6 @@ public class EscapeRoom {
         this.vertex = new ArrayList<>();
         this.polylines = new ArrayList<>();
         this.userStartPosition = null;
-    }
-
-
-    public List<Triple<Integer, Integer, Integer>> getLinesCircles() {
-        return linesCircles;
-    }
-
-    public void setLinesCircles(List<Triple<Integer, Integer, Integer>> linesCircles) {
-        this.linesCircles = linesCircles;
-    }
-
-    public List<PairCustom<Double, Double>> getCirclesRelativePositions() {
-        return circlesRelativePositions;
-    }
-
-    public void setCirclesRelativePositions(List<PairCustom<Double, Double>> circlesRelativePositions) {
-        this.circlesRelativePositions = circlesRelativePositions;
-    }
-
-    public List<Quiz> getQuizzes() {
-        return quizzes;
-    }
-
-    public void setQuizzes(List<Quiz> quizzes) {
-        this.quizzes = quizzes;
-    }
-
-    @Exclude
-    public List<Circle> getVertex() {
-        return vertex;
-    }
-
-    @Exclude
-    public List<Polyline> getPolylines() { return polylines; }
-
-    public PairCustom<Double, Double> getUserStartPosition() {
-        return userStartPosition;
-    }
-
-    public void setUserStartPosition(PairCustom<Double, Double> userStartPosition) {
-        this.userStartPosition = userStartPosition;
     }
 
     public void drawEscapeRoom(LatLng initialPosition, GoogleMap mMap) {
@@ -151,5 +114,83 @@ public class EscapeRoom {
             }
         }
         return count;
+    }
+
+    public List<Circle> getLonelyPoints(int vertex1, int vertex2) {
+        List<Circle> lonelyPoints = new ArrayList<>();
+        lonelyPoints.add(vertex.get(vertex1));
+        lonelyPoints.add(vertex.get(vertex2));
+
+        for (Triple<Integer, Integer, Integer> t : linesCircles) {
+            if (lonelyPoints.isEmpty())
+                break;
+
+            if (vertex1 == t.getFirst() || vertex1 == t.getSecond()) {
+                lonelyPoints.remove(vertex.get(vertex1));
+            }
+            if (vertex2 == t.getFirst() || vertex2 == t.getSecond()) {
+                lonelyPoints.remove(vertex.get(vertex2));
+            }
+        }
+        return lonelyPoints;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Triple<Integer, Integer, Integer>> getLinesCircles() {
+        return linesCircles;
+    }
+
+    public void setLinesCircles(List<Triple<Integer, Integer, Integer>> linesCircles) {
+        this.linesCircles = linesCircles;
+    }
+
+    public List<PairCustom<Double, Double>> getCirclesRelativePositions() {
+        return circlesRelativePositions;
+    }
+
+    public void setCirclesRelativePositions(List<PairCustom<Double, Double>> circlesRelativePositions) {
+        this.circlesRelativePositions = circlesRelativePositions;
+    }
+
+    public List<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(List<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
+
+    @Exclude
+    public List<Circle> getVertex() {
+        return vertex;
+    }
+
+    @Exclude
+    public List<Polyline> getPolylines() { return polylines; }
+
+    public PairCustom<Double, Double> getUserStartPosition() {
+        return userStartPosition;
+    }
+
+    public void setUserStartPosition(PairCustom<Double, Double> userStartPosition) {
+        this.userStartPosition = userStartPosition;
+    }
+
+    public void updateTriples(int i) {
+        for (Triple<Integer, Integer, Integer> t : linesCircles) {
+            if (t.getFirst() > i)
+                t.setFirst(t.getFirst() - 1);
+
+            if (t.getSecond() > i)
+                t.setSecond(t.getSecond() - 1);
+        }
     }
 }

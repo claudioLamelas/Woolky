@@ -20,16 +20,21 @@ import com.example.woolky.R;
 
 public class InputDataDialog extends DialogFragment {
 
+
     public interface OnDataSubmitted {
         void processData(DialogFragment dialogFragment, String inputData);
     }
 
     private OnDataSubmitted listener;
     private String title;
+    private String text;
+    private String hint;
     private int inputType;
 
-    public InputDataDialog(String title, int inputType) {
+    public InputDataDialog(String title, String text, String hint, int inputType) {
         this.title = title;
+        this.text = text;
+        this.hint = hint;
         this.inputType = inputType;
     }
 
@@ -51,9 +56,11 @@ public class InputDataDialog extends DialogFragment {
         super.onCreateDialog(savedInstanceState);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.fragment_imitate_sequence_dialog, null);
+        View v = inflater.inflate(R.layout.fragment_input_data_dialog, null);
 
         EditText input = v.findViewById(R.id.inputField);
+        input.setText(text);
+        input.setHint(hint);
         input.setInputType(inputType);
 
         builder.setView(v)

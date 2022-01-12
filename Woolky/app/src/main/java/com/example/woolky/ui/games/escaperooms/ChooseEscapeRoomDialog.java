@@ -63,13 +63,15 @@ public class ChooseEscapeRoomDialog extends DialogFragment {
         ListView lv = v.findViewById(R.id.escapeRoomsList);
         DatabaseReference ref = homeActivity.getDatabaseRef();
         List<String> escapeRoomIds = new ArrayList<>();
+        List<String> escapeRoomNames = new ArrayList<>();
         ref.child("escapeRooms").child(homeActivity.getSignedInUser().getUserId()).get().addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot != null) {
                 for (DataSnapshot er : dataSnapshot.getChildren()) {
                     escapeRoomIds.add(er.getKey());
+                    escapeRoomNames.add(er.getValue(EscapeRoom.class).getName());
                 }
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>
-                    (getActivity(), android.R.layout.simple_list_item_1, escapeRoomIds);
+                    (getActivity(), android.R.layout.simple_list_item_1, escapeRoomNames);
             lv.setAdapter(arrayAdapter);
             }
         });
