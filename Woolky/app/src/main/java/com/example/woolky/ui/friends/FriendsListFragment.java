@@ -18,12 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
 import com.example.woolky.utils.MarginItemDecoration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FriendsListFragment extends Fragment {
@@ -46,15 +48,14 @@ public class FriendsListFragment extends Fragment {
         users = homeActivity.getUsers();
         signedInUser = homeActivity.getSignedInUser();
         List<Friend> friends = new ArrayList<>();
-        if (signedInUser.getFriends()!=null)
-        {
-            for (String id : signedInUser.getFriends()){
-                for (User user : users){
-                    if (user.getUserId().equals(id)){
-                        Friend friend = new Friend(user.getUserName(), user.getPhotoUrl());
-                        friends.add(friend);
-                    }
+        if (signedInUser.getFriends() != null) {
+            for (User user : users) {
+                if (signedInUser.getFriends().contains(user.getUserId())) {
+                    Friend friend = new Friend(user.getUserId(), user.getUserName(), user.getPhotoUrl());
+                    friends.add(friend);
                 }
+                if (friends.size() == signedInUser.getFriends().size())
+                    break;
             }
         }
         adapter = new FriendsListAdapter(friends);
@@ -84,8 +85,12 @@ public class FriendsListFragment extends Fragment {
             );
             //viewHolder.avatar = ...
             holder.name.setText(friends.get(position).name);
-            holder.playButton.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), "Play with " + holder.name.getText(), Toast.LENGTH_SHORT).show()
+            holder.playButton.setOnClickListener(view -> {
+                HomeActivity homeActivity = (HomeActivity) getActivity();
+                new GameInviteSender(homeActivity,
+                        Arrays.asList(homeActivity.getSignedInUser().getUserId(), friends.get(position).id, "0JewKzGVxkhXXTWBQcsa9Cet6rI3"),
+                        null, null).createGameInvite();
+            }
             );
             Glide.with(getActivity()).load(Uri.parse(friends.get(position).photoUrl)).circleCrop().into(holder.avatar);
         }

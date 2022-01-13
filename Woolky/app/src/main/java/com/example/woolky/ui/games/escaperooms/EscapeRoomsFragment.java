@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class EscapeRoomsFragment extends Fragment {
 
     private ArrayList<String> escapeRoomIds;
+    private ArrayList<String> escapeRoomNames;
     private ArrayList<EscapeRoom> escapeRooms;
     private ArrayAdapter<String> arrayAdapter;
 
@@ -35,6 +36,7 @@ public class EscapeRoomsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         escapeRoomIds = new ArrayList<>();
+        escapeRoomNames = new ArrayList<>();
         escapeRooms = new ArrayList<>();
     }
 
@@ -51,6 +53,7 @@ public class EscapeRoomsFragment extends Fragment {
 
         escapeRooms.clear();
         escapeRoomIds.clear();
+        escapeRoomNames.clear();
 
         HomeActivity homeActivity = (HomeActivity) getActivity();
         DatabaseReference ref = homeActivity.getDatabaseRef();
@@ -60,6 +63,7 @@ public class EscapeRoomsFragment extends Fragment {
                     escapeRoomIds.add(er.getKey());
                     EscapeRoom escapeRoom = er.getValue(EscapeRoom.class);
                     escapeRooms.add(escapeRoom);
+                    escapeRoomNames.add(escapeRoom.getName());
                 }
                 arrayAdapter.notifyDataSetChanged();
             }
@@ -67,13 +71,13 @@ public class EscapeRoomsFragment extends Fragment {
 
         ListView lv = view.findViewById(R.id.escapeRoomsList);
         arrayAdapter = new ArrayAdapter<>
-                (getActivity(), android.R.layout.simple_list_item_1, escapeRoomIds);
+                (getActivity(), android.R.layout.simple_list_item_1, escapeRoomNames);
         lv.setAdapter(arrayAdapter);
 
         lv.setOnItemClickListener((parent, v, position, id) -> {
             EscapeRoom chosenEscapeRoom = escapeRooms.get(position);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment,
-                    new EscapeRoomCreationFragment(chosenEscapeRoom, (String) parent.getItemAtPosition(position)))
+                    new EscapeRoomCreationFragment(chosenEscapeRoom, escapeRoomIds.get(position)))
                     .addToBackStack(null).commit();
         });
 

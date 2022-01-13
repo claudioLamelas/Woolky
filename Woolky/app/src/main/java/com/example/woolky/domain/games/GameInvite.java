@@ -7,19 +7,20 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 
 public class GameInvite implements Serializable {
-    private String from, to, fromId;
+    private String from, to, fromId, gameId;
     private GameMode gameMode;
     private InviteState inviteState;
     private Timestamp validUntil;
 
     public GameInvite(){}
 
-    public GameInvite(String from, String fromId, String to, GameMode gameMode, InviteState inviteState) {
+    public GameInvite(String from, String fromId, String to, GameMode gameMode, InviteState inviteState, String gameId) {
         this.from = from;
         this.to = to;
         this.fromId = fromId;
         this.gameMode = gameMode;
         this.inviteState = inviteState;
+        this.gameId = gameId;
     }
 
     public static GameInvite deserialize(HashMap<String, Object> o) {
@@ -77,5 +78,13 @@ public class GameInvite implements Serializable {
 
     public void setFromId(String fromId) {
         this.fromId = fromId;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 }

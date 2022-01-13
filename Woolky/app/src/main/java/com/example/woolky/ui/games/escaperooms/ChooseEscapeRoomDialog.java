@@ -3,13 +3,11 @@ package com.example.woolky.ui.games.escaperooms;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.woolky.R;
+import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
-import com.example.woolky.domain.games.escaperooms.Quiz;
 import com.example.woolky.ui.HomeActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -35,8 +33,9 @@ public class ChooseEscapeRoomDialog extends DialogFragment {
 
     private OnChosenEscapeRoomListener listener;
 
-    public ChooseEscapeRoomDialog() {
+    public ChooseEscapeRoomDialog(GameInviteSender gameInviteSender) {
         // Required empty public constructor
+        listener = gameInviteSender;
     }
 
     @Override
@@ -63,13 +62,15 @@ public class ChooseEscapeRoomDialog extends DialogFragment {
         ListView lv = v.findViewById(R.id.escapeRoomsList);
         DatabaseReference ref = homeActivity.getDatabaseRef();
         List<String> escapeRoomIds = new ArrayList<>();
+        List<String> escapeRoomNames = new ArrayList<>();
         ref.child("escapeRooms").child(homeActivity.getSignedInUser().getUserId()).get().addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot != null) {
                 for (DataSnapshot er : dataSnapshot.getChildren()) {
                     escapeRoomIds.add(er.getKey());
+                    escapeRoomNames.add(er.getValue(EscapeRoom.class).getName());
                 }
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>
-                    (getActivity(), android.R.layout.simple_list_item_1, escapeRoomIds);
+                    (getActivity(), android.R.layout.simple_list_item_1, escapeRoomNames);
             lv.setAdapter(arrayAdapter);
             }
         });
@@ -83,16 +84,5 @@ public class ChooseEscapeRoomDialog extends DialogFragment {
                 .setTitle("Choose an Escape Room")
                 .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
         return builder.create();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        try {
-            listener = (OnChosenEscapeRoomListener) getParentFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString()
-                    + " must implement OnChosenEscapeRoomListener");
-        }
     }
 }
