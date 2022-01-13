@@ -32,6 +32,8 @@ import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
 import com.example.woolky.utils.Utils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,7 +66,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     private EscapeRoomGameListener escapeRoomGameListener;
     private EscapeRoomGame escapeRoomGame;
     private GoogleMap mMap;
-    //private FusedLocationProviderClient fusedLocationClient;
+    private FusedLocationProviderClient fusedLocationClient;
     private LocationManager locationManager;
     private LatLng currentPosition;
     private Marker userMarker;
@@ -72,6 +74,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     private User signedInUser;
     private boolean mapDrawn;
     private int nextCodeDigitIndex;
+    private boolean permissionsGranted;
 
     public PlayEscapeRoomFragment() {}
 
@@ -84,9 +87,17 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
-        //fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        HomeActivity activity = (HomeActivity) getActivity();
+        permissionsGranted = activity.isPermissionsGranted();
+        if (!permissionsGranted) {
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+            if (permissionsGranted)
+                activity.setPermissionsGranted(true);
+        }
+
+        signedInUser = activity.getSignedInUser();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         escapeRoomGameListener = new EscapeRoomGameListener(this);
         gameRef.addChildEventListener(escapeRoomGameListener);
 
@@ -120,25 +131,22 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.mMap = googleMap;
-        //Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        //SystemClock.sleep(2000);
-//        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-//            @Override
-//            public void onSuccess(Location location) {
-//
-//
-//                currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
-//
-//                Drawable myVectorDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp).mutate();
-//                userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(Utils.BitmapFromVector(myVectorDrawable, signedInUser.getColor())));
-//
-//                escapeRoom.drawEscapeRoom(currentPosition, mMap);
-//            }
-//        });
 
-        Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        if (permissionsGranted) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+               if (location != null) {
+                   currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                   drawEscapeRoomAndPlayers();
+                   userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
+                           icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
+               }
+
+               locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0.5f, this);
+            });
+        }
+        else
+            Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
+                    Toast.LENGTH_SHORT).show();
 
         mMap.setOnPolylineClickListener(polyline -> {
             if (admissibleChallengeWall(polyline, currentPosition)) {
@@ -184,21 +192,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         if (userMarker != null) {
             userMarker.remove();
         } else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
-            LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(currentPosition,
-                    Collections.singletonList(escapeRoomGame.getEscapeRoom().getUserStartPosition())).get(0);
-            escapeRoomGame.getEscapeRoom().drawEscapeRoom(escapeRoomInitialPosition, mMap);
-
-            //Desenha no mapa os markers dos outros players
-            for (String id : escapeRoomGame.getPlayersIds()) {
-                if (!id.equals(signedInUser.getUserId())) {
-                    Marker m = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                            icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK)));
-                    m.setTag(id);
-                    otherPlayersMarkers.add(m);
-                }
-            }
-            mapDrawn = true;
+            drawEscapeRoomAndPlayers();
         }
         userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
                 icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
@@ -214,6 +208,32 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                         currentPosition);
 
         gameRef.child(signedInUser.getUserId()).setValue(distancesDif);
+    }
+
+    private void drawEscapeRoomAndPlayers() {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+        LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(currentPosition,
+                Collections.singletonList(escapeRoomGame.getEscapeRoom().getUserStartPosition())).get(0);
+        escapeRoomGame.getEscapeRoom().drawEscapeRoom(escapeRoomInitialPosition, mMap);
+
+        //Desenha no mapa os markers dos outros players
+        for (String id : escapeRoomGame.getPlayersIds()) {
+            if (!id.equals(signedInUser.getUserId())) {
+                Marker m = mMap.addMarker(new MarkerOptions().position(currentPosition).
+                        icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK)));
+                m.setTag(id);
+                otherPlayersMarkers.add(m);
+            }
+        }
+        mapDrawn = true;
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {}
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
     }
 
     private void keepPlayerInside(LatLng previousPosition, Point previous, Point current) {
@@ -239,17 +259,6 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                 }
             }
         }
-    }
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog, int chosenAnswer, Quiz quiz, Polyline polyline) {
-        if (chosenAnswer == quiz.getIndexOfCorrectAnswer()) {
-            processCorrectAnswer(polyline);
-            escapeRoomGame.getEscapeRoom().getQuizzes().remove(quiz);
-        } else
-            Toast.makeText(getActivity(), "Wrong Answer", Toast.LENGTH_SHORT).show();
-
-        dialog.dismiss();
     }
 
     private void processCorrectAnswer(Polyline polyline) {
@@ -305,6 +314,17 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             otherPlayersMarkers.set(index, m);
         }
 
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, int chosenAnswer, Quiz quiz, Polyline polyline) {
+        if (chosenAnswer == quiz.getIndexOfCorrectAnswer()) {
+            processCorrectAnswer(polyline);
+            escapeRoomGame.getEscapeRoom().getQuizzes().remove(quiz);
+        } else
+            Toast.makeText(getActivity(), "Wrong Answer", Toast.LENGTH_SHORT).show();
+
+        dialog.dismiss();
     }
 
     @Override

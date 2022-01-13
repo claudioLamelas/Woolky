@@ -54,6 +54,8 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
     private LatLng currentPosition;
     private Marker userMarker;
 
+    private boolean permissionsGranted;
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         @SuppressLint("MissingPermission")
@@ -63,22 +65,21 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
             final Context cx = getActivity();
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
 
-            //TODO: Mudar para o LocationManager.requestLocationUpdates()
-            Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
-            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
-                    currentPosition = posicaoInicial;
+            if (permissionsGranted) {
+                fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                   if (location != null) {
+                       currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+                       ticTacToeGame.getBoard().drawBoard(mMap);
+                       userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition)
+                               .icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), R.color.user_default_color)));
+                   }
 
-                    userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp), R.color.user_default_color)));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
-
-                    ticTacToeGame.getBoard().drawBoard(mMap);
-                }
-            });
-            Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 2, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0.5f, locationListener);
+                });
+            } else
+                Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
+                        Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -95,6 +96,14 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
         }
         ticTacToeGameListener = new TicTacToeGameListener(this);
         gameRef.addChildEventListener(ticTacToeGameListener);
+
+        HomeActivity activity = (HomeActivity) getActivity();
+        permissionsGranted = activity.isPermissionsGranted();
+        if (!permissionsGranted) {
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
+            if (permissionsGranted)
+                activity.setPermissionsGranted(true);
+        }
     }
 
     @Nullable
@@ -167,9 +176,6 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
             FinishGameDialog dialog = FinishGameDialog.newInstance("You've Lost :(");
             dialog.show(getChildFragmentManager(), "dialog");
         }
-
-        /*new Handler().postDelayed(() -> getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, new VicinityMapFragment()).commitNow(), 2 * 1000);*/
     }
 
     @Override
@@ -177,9 +183,21 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
         currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         if (userMarker != null) {
             userMarker.remove();
-            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), R.color.user_default_color)));
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+            ticTacToeGame.getBoard().drawBoard(mMap);
         }
+        userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition)
+                .icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), R.color.user_default_color)));
     }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {}
 
     public TicTacToeGame getTicTacToe() {
         return ticTacToeGame;

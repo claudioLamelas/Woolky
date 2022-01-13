@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -16,10 +17,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class Utils {
 
-    public static void checkPermission(Activity context, String permission, int code) {
+    public static boolean checkPermission(Activity context, String permission, int code) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(context, new String[]{permission}, code);
-        }
+            return false;
+        } else
+            return true;
     }
 
     public static BitmapDescriptor BitmapFromVector(Drawable vectorDrawable, int color) {

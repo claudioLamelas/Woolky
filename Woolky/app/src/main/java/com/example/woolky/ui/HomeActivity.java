@@ -1,5 +1,6 @@
 package com.example.woolky.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
 import com.example.woolky.ui.home.HomeFragment;
 import com.example.woolky.ui.map.VicinityMapFragment;
 import com.example.woolky.ui.profile.ProfileFragment;
+import com.example.woolky.utils.Utils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +41,8 @@ import java.util.List;
 
 
 public class HomeActivity extends AppCompatActivity {
+    private static final int FINE_LOCATION_CODE = 114;
+
     private Handler handler;
     private DatabaseReference databaseRef;
     private Context cx = this;
@@ -48,13 +52,16 @@ public class HomeActivity extends AppCompatActivity {
     public boolean isPlaying;
     private BottomNavigationView bottomNav;
 
-    private List<User> users;    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
+    private List<User> users;
+    private boolean permissionsGranted;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        permissionsGranted = Utils.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
 
         handler = new Handler();
         users = new ArrayList<>();
@@ -88,6 +95,7 @@ public class HomeActivity extends AppCompatActivity {
 
         gameListener = new GameInvitesListener(cx, getSupportFragmentManager());
         gameInvitesRef.addChildEventListener(gameListener);
+
         friendListener = new FriendsInvitesListener(cx, getSupportFragmentManager());
         friendInviteRef.addChildEventListener(friendListener);
     }
@@ -271,5 +279,13 @@ public class HomeActivity extends AppCompatActivity {
 
     public DatabaseReference getDatabaseReference() {
         return databaseRef;
+    }
+
+    public boolean isPermissionsGranted() {
+        return permissionsGranted;
+    }
+
+    public void setPermissionsGranted(boolean permissionsGranted) {
+        this.permissionsGranted = permissionsGranted;
     }
 }

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,6 +33,8 @@ import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
 import com.example.woolky.utils.Utils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -55,6 +58,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private GoogleMap mMap;
     private LatLng initialPosition;
     private LocationManager locationManager;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private Circle activeCircle;
     private Circle previousActiveCircle;
@@ -66,6 +70,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private EscapeRoom escapeRoom = null;
     private String escapeRoomId;
     private List<PairCustom<Double, Double>> circlesRelativePositions;
+
+    private boolean permissionsGranted;
 
 
     public EscapeRoomCreationFragment() {
@@ -88,6 +94,14 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         this.erasingWalls = false;
         this.userStartPosition = null;
         this.blueLine = null;
+
+        HomeActivity activity = (HomeActivity) getActivity();
+        permissionsGranted = activity.isPermissionsGranted();
+        if (!permissionsGranted) {
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+            if (permissionsGranted)
+                activity.setPermissionsGranted(true);
+        }
     }
 
     @Override
@@ -106,7 +120,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> {
@@ -119,9 +133,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                         escapeRoom.getName(),"Hardest Room Ever", EditorInfo.TYPE_CLASS_TEXT);
                 dialog.show(getChildFragmentManager(), "roomName");
             }
-
-//            ImitateSequenceDialog dialog = new ImitateSequenceDialog();
-//            dialog.show(getChildFragmentManager(), "seq");
         });
 
         view.findViewById(R.id.addQuizButton).setOnClickListener(v -> {
@@ -154,37 +165,16 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.mMap = googleMap;
 
-        //TODO: Mudar para o LocationManager.requestLocationUpdates()
-        Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-//        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-//            @Override
-//            public void onSuccess(Location location) {
-//                SystemClock.sleep(2000);
-//                initialPosition = new LatLng(location.getLatitude(), location.getLongitude());
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16));
-//
-//                if (escapeRoom == null) {
-//                    escapeRoom = new EscapeRoom();
-//
-//                    Circle initialCircle = mMap.addCircle(new CircleOptions().fillColor(Color.RED)
-//                            .strokeColor(Color.RED).radius(6).center(initialPosition).clickable(true));
-//
-//                    escapeRoom.getVertex().add(initialCircle);
-//                    activeCircle = initialCircle;
-//                    previousActiveCircle = initialCircle;
-//                } else {
-//                    LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(initialPosition,
-//                            Collections.singletonList(escapeRoom.getUserStartPosition())).get(0);
-//                    escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap);
-//                    activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
-//                    changeActiveCircle(activeCircle);
-//                    userStartPosition = mMap.addCircle(new CircleOptions().center(initialPosition).radius(6)
-//                            .fillColor(Color.GREEN).clickable(false));
-//                }
-//            }
-//        });
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        if (permissionsGranted) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null)
+                    setupCreationMap(location);
+                else
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0.1f, this);
+            });
+        } else
+            Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
+                    Toast.LENGTH_SHORT).show();
 
         mMap.setOnMapLongClickListener(latLng -> {
 
@@ -311,14 +301,12 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog, Quiz quiz) {
-        escapeRoom.getQuizzes().add(quiz);
-        dialog.dismiss();
-        Toast.makeText(getActivity(), "Quiz added", Toast.LENGTH_SHORT).show();
+    public void onLocationChanged(@NonNull Location location) {
+        setupCreationMap(location);
+        locationManager.removeUpdates(this);
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
+    private void setupCreationMap(@NonNull Location location) {
         initialPosition = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16));
 
@@ -341,9 +329,22 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             userStartPosition = mMap.addCircle(new CircleOptions().center(initialPosition).radius(5)
                     .fillColor(Color.GREEN).clickable(false));
         }
+    }
 
-        //Para que receba apenas uma vez e pare
-        locationManager.removeUpdates(this);
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {}
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        if (initialPosition == null)
+            Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, Quiz quiz) {
+        escapeRoom.getQuizzes().add(quiz);
+        dialog.dismiss();
+        Toast.makeText(getActivity(), "Quiz added", Toast.LENGTH_SHORT).show();
     }
 
     @Override
