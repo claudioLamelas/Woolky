@@ -19,11 +19,11 @@ public class Board<T> {
     private List<Polyline> boardLines;
     private List<T> positions;
 
-    public Board(int dim, int sizeOfSquareSide, LatLng initialPosition) {
+    public Board(int dim, int sizeOfSquareSide) {
         this.dim = dim;
         this.sizeOfSquareSide = sizeOfSquareSide;
         //faz com que o utilizador comece no meio do tabuleiro
-        this.initialPosition = getInitialPositionToTopLeft(initialPosition, sizeOfSquareSide);
+        //this.initialPosition = getInitialPositionToTopLeft(initialPosition, sizeOfSquareSide);
         this.boardLines = new ArrayList<>();
     }
 

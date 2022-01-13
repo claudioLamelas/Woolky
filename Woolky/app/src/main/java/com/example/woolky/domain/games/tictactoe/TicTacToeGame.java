@@ -21,10 +21,10 @@ public class TicTacToeGame extends Game {
     private Piece currentPlayer;
     private Piece winner;
 
-    public TicTacToeGame(int numParticipants, LatLng boardInitialPosition, Piece myPiece) {
+    public TicTacToeGame(int numParticipants, Piece myPiece) {
         super(numParticipants);
 
-        board = new Board<>(3, 30, boardInitialPosition);
+        board = new Board<>(3, 30);
         List<Piece> initialPositions = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             initialPositions.add(Piece.Blank);
