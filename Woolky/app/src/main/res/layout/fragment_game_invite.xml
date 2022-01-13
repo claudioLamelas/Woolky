@@ -15,7 +15,7 @@
         android:paddingBottom="5dp"
         android:text="Trocar isto pela mensagem certa"
         android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,12 +26,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="8dp"
         android:background="@drawable/round_corners"
         android:backgroundTint="@color/forest_green"
         android:text="Accept"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/declineButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,4 +49,13 @@
         app:layout_constraintStart_toEndOf="@+id/acceptButton"
         app:layout_constraintTop_toTopOf="@+id/acceptButton"
         app:layout_constraintVertical_bias="0.0" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

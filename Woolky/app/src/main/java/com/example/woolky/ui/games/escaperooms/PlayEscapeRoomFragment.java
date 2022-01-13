@@ -111,6 +111,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((HomeActivity) getActivity()).isPlaying = false;
         gameRef.removeEventListener(escapeRoomGameListener);
         locationManager.removeUpdates(this);
     }

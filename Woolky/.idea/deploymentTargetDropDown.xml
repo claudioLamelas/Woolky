@@ -6,20 +6,21 @@
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="L2N0219921002818" />
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\claud\.android\avd\Pixel_4_API_R.avd" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2022-01-12T13:36:55.245395500Z" />
+    <timeTargetWasSelectedWithDropDown value="2022-01-13T00:25:47.915558900Z" />
+    <multipleDevicesSelectedInDropDown value="true" />
     <runningDeviceTargetsSelectedWithDialog>
       <Target>
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\PC\.android\avd\Pixel_2_API_29.avd" />
+            <type value="SERIAL_NUMBER" />
+            <value value="L2N0219921002818" />
           </Key>
         </deviceKey>
       </Target>

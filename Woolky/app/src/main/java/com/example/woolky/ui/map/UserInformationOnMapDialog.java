@@ -2,14 +2,12 @@ package com.example.woolky.ui.map;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,6 +24,7 @@ import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.User;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
+import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.escaperooms.ChooseEscapeRoomDialog;
@@ -41,7 +40,7 @@ import java.util.List;
  * Use the {@link UserInformationOnMapDialog#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UserInformationOnMapDialog extends DialogFragment implements ChooseEscapeRoomDialog.OnChosenEscapeRoomListener {
+public class UserInformationOnMapDialog extends DialogFragment {
 
     private static final String ARG_PARAM = "user";
 
@@ -96,29 +95,12 @@ public class UserInformationOnMapDialog extends DialogFragment implements Choose
 
         v.findViewById(R.id.inviteToPlayButton).setOnClickListener(v1 -> {
             String selectedGame = (String) gamesSpinner.getSelectedItem();
+            HomeActivity activity = (HomeActivity) getActivity();
 
-            GameInvite gameInvite;
-            switch (selectedGame) {
-                case "Tic Tac Toe": {
-                    HomeActivity activity = (HomeActivity) getActivity();
-                    DatabaseReference ref = activity.getDatabaseRef().child("gameInvites").child(user.getUserId());
-                    String id = ref.push().getKey();
-                    gameInvite = new GameInvite(signedInUser.getUserName(), signedInUser.getUserId(),
-                            user.getUserId(), GameMode.TIC_TAC_TOE, InviteState.SENT);
-                    ref.child(id).setValue(gameInvite);
-
-                    DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
-                    activity.setListenerToGameInvite(id, inviteStateRef, gameInvite);
-                    break;
-                }
-                case "Escape Room": {
-                    ChooseEscapeRoomDialog dialog = new ChooseEscapeRoomDialog();
-                    dialog.show(getChildFragmentManager(), "choose");
-                    break;
-                }
-                default:
-                    throw new IllegalStateException("Unexpected value: " + selectedGame);
-            }
+            GameMode gameMode = selectedGame.equals("Tic Tac Toe") ? GameMode.TIC_TAC_TOE : GameMode.ESCAPE_ROOM;
+            GameInviteSender senderManager = new GameInviteSender(activity,
+                    Arrays.asList(signedInUser.getUserId(), user.getUserId()), gameMode, null);
+            senderManager.createGameInvite();
         });
 
         if (signedInUser.getFriends()!=null)//ver se existe pelo menos 1 amigo
@@ -155,30 +137,7 @@ public class UserInformationOnMapDialog extends DialogFragment implements Choose
         gamesSpinner = v.findViewById(R.id.gameModeSpinner);
         gamesSpinner.setAdapter(gameModesAdapter);
         builder.setView(v)
-                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                       dialog.dismiss();
-                    }
-                });
+                .setPositiveButton("Close", (dialog, id) -> dialog.dismiss());
         return builder.create();
-    }
-
-    @Override
-    public void onEscapeRoomChosen(DialogFragment dialog, String escapeRoomId) {
-        dialog.dismiss();
-
-        List<String> playersIds = Arrays.asList(signedInUser.getUserId(), user.getUserId());
-
-        HomeActivity activity = (HomeActivity) getActivity();
-        DatabaseReference ref = activity.getDatabaseRef().child("gameInvites").child(user.getUserId());
-        String id = ref.push().getKey();
-
-        GameInvite gameInvite = new EscapeRoomGameInvite(signedInUser.getUserName(), signedInUser.getUserId(),
-                user.getUserId(), InviteState.SENT, escapeRoomId, playersIds);
-        ref.child(id).setValue(gameInvite);
-
-        DatabaseReference inviteStateRef = ref.child(id).child("inviteState");
-        activity.setListenerToGameInvite(id, inviteStateRef, gameInvite);
     }
 }

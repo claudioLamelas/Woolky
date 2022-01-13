@@ -12,8 +12,8 @@ public class EscapeRoomGameInvite extends GameInvite{
     public EscapeRoomGameInvite() {}
 
     public EscapeRoomGameInvite(String from, String fromId, String to, InviteState inviteState,
-                                String escapeRoomId, List<String> playersIds) {
-        super(from, fromId, to, GameMode.ESCAPE_ROOM, inviteState);
+                                String escapeRoomId, List<String> playersIds, String gameId) {
+        super(from, fromId, to, GameMode.ESCAPE_ROOM, inviteState, gameId);
         this.escapeRoomId = escapeRoomId;
         this.playersIds = playersIds;
     }

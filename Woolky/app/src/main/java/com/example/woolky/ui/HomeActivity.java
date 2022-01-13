@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
     private GameInvitesListener gameListener;
     private FriendsInvitesListener friendListener;
     private User signedInUser;
+    public boolean isPlaying;
     private BottomNavigationView bottomNav;
 
     private List<User> users;    //Talvez não seja a classe mais indicada para ter isto, mas por agora fica aqui
@@ -155,7 +156,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    public void setListenerToGameInvite(String inviteId, DatabaseReference inviteStateRef, GameInvite invite) {
+    public void setListenerToGameInvite(String gameId, DatabaseReference inviteStateRef, GameInvite invite) {
         inviteStateRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -164,18 +165,20 @@ public class HomeActivity extends AppCompatActivity {
                     if (inviteState == InviteState.DECLINED)
                         Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
 
-                    if (inviteState == InviteState.ACCEPTED)
+                    if (inviteState == InviteState.ACCEPTED && !isPlaying) {
+                        isPlaying = true;
                         switch (invite.getGameMode()) {
                             case TIC_TAC_TOE: {
-                                setupTicTacToeGame(inviteId, false);
+                                setupTicTacToeGame(gameId, false);
                                 break;
                             }
                             case ESCAPE_ROOM: {
-                                setupEscapeRoomGame(inviteId, ((EscapeRoomGameInvite)invite).getEscapeRoomId(),
-                                        invite.getFromId(), ((EscapeRoomGameInvite)invite).getPlayersIds(), false);
+                                setupEscapeRoomGame(gameId, ((EscapeRoomGameInvite) invite).getEscapeRoomId(),
+                                        invite.getFromId(), ((EscapeRoomGameInvite) invite).getPlayersIds(), false);
                                 break;
                             }
                         }
+                    }
                     inviteStateRef.removeEventListener(this);
                 }
             }
@@ -216,8 +219,8 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void setupEscapeRoomGame(String inviteId, String escapeRoomId, String escapeRoomOwnerId, List<String> playersIds, boolean isReceiver) {
-        DatabaseReference gameRef = databaseRef.child("games").child(inviteId);
+    public void setupEscapeRoomGame(String gameId, String escapeRoomId, String escapeRoomOwnerId, List<String> playersIds, boolean isReceiver) {
+        DatabaseReference gameRef = databaseRef.child("games").child(gameId);
 
         databaseRef.child("escapeRooms").child(escapeRoomOwnerId).child(escapeRoomId)
                 .get().addOnSuccessListener(
@@ -233,11 +236,11 @@ public class HomeActivity extends AppCompatActivity {
             });
     }
 
-    public void setupTicTacToeGame(String gameInviteID, boolean isReceiver) {
+    public void setupTicTacToeGame(String gameID, boolean isReceiver) {
         TicTacToeGame.Piece piece = isReceiver ? TicTacToeGame.Piece.X : TicTacToeGame.Piece.O;
         TicTacToeGame ticTacToeGame = new TicTacToeGame(2, signedInUser.getCurrentPosition().getLatLng(), piece);
 
-        DatabaseReference gameRef = databaseRef.child("games").child(gameInviteID);
+        DatabaseReference gameRef = databaseRef.child("games").child(gameID);
 
         PlayTicTacToeFragment playTicTacToeFragment = new PlayTicTacToeFragment(gameRef, ticTacToeGame);
 

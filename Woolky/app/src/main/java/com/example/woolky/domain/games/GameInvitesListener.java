@@ -42,7 +42,7 @@ public class GameInvitesListener implements ChildEventListener {
             DatabaseReference inviteReference = snapshot.getRef();
 
             if (invite.getInviteState() == InviteState.SENT) {
-                GameInviteFragment gif = GameInviteFragment.newInstance(invite, lastInviteKey);
+                GameInviteFragment gif = GameInviteFragment.newInstance(invite, invite.getGameId());
                 gif.setInviteReference(inviteReference);
                 fragmentManager.beginTransaction().replace(R.id.inviteFragment, gif).commitNow();
             }

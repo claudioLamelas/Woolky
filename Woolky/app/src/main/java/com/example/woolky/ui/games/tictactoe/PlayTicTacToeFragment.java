@@ -148,6 +148,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((HomeActivity) getActivity()).isPlaying = false;
         gameRef.removeEventListener(ticTacToeGameListener);
         locationManager.removeUpdates(locationListener);
     }
