@@ -163,7 +163,7 @@ public class addFriendsToGroup extends Fragment {
             public void onSuccess(DataSnapshot dataSnapshot) {
                 Group current = dataSnapshot.getValue(Group.class);
                 current.addMember(id);
-                databaseRef.child("group").child(groupId).setValue(current);
+                databaseRef.child("groups").child(groupId).setValue(current);
 
                 databaseRef.child("users").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
                     @Override

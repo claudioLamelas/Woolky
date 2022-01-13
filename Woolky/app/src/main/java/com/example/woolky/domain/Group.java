@@ -50,4 +50,12 @@ public class Group  implements Serializable  {
     public void addMember(String id) {
         members.add(id);
     }
+
+    public int getNumberMembers() {
+        return members.size();
+    }
+
+    public void deleteOwner() {
+        members.remove(0);
+    }
 }

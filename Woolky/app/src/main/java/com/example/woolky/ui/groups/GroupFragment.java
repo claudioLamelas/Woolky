@@ -100,14 +100,64 @@ public class GroupFragment extends Fragment {
 
     private void leaveGroup() {
 
-        signedInUser.leaveGroup(groupId);
+        if (current.getNumberMembers() == 1) {
+            signedInUser.leaveGroupIOwn(groupId);
+            deleteGroup();
+        }
 
-        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
 
-        getParentFragmentManager().beginTransaction().replace(R.id.fragment, new HomeFragment()).commit();
+        else if (current.getOwnerId().equals(signedInUser.getUserId())) {
+
+            signedInUser.leaveGroupIOwn(groupId);
+            updateUser(signedInUser.getUserId(), signedInUser);
+            current.deleteOwner();
+            String newGroupOwnerID = current.getOwnerId();
+
+            databaseRef.child("users").child(newGroupOwnerID).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                @Override
+                public void onSuccess(DataSnapshot dataSnapshot) {
+                    User newOwner = dataSnapshot.getValue(User.class);
+                    newOwner.changeFromBelongToOwn(groupId);
+                    updateUser(newOwner.getUserId(), newOwner);
+                    updateGroup();
+                    goodbye();
+                }
+            });
+
+
+        }
+        else {
+
+            signedInUser.leaveGroup(groupId);
+            updateUser(signedInUser.getUserId(), signedInUser);
+            updateGroup();
+
+
+
+        }
 
 
     }
+
+    private void updateGroup() {
+        databaseRef.child("groups").child(groupId).setValue(current);
+
+    }
+
+    private void updateUser(String id, User user) {
+        databaseRef.child("users").child(id).setValue(user);
+    }
+
+    private void deleteGroup() {
+        databaseRef.child("groups").child(groupId).removeValue();
+        goodbye();
+
+    }
+
+    private void goodbye() {
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment, new HomeFragment()).commit();
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

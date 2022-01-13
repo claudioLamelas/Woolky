@@ -33,5 +33,7 @@
     <string name="your_Groups">Your Groups</string>
     <string name="members">Members</string>
     <string name="already_friends">Already Friends</string>
+    <string name="groups_name">Group\'s Name</string>
+    <string name="create_group">Create new Group</string>
 
 </resources>

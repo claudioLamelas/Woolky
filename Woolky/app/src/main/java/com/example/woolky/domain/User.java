@@ -153,10 +153,21 @@ public class User implements Serializable {
 
     public void addNewGroup(String groupId) {
 
-        if (groupsIBelong== null){
+        if (groupsIBelong == null){
             groupsIBelong = new ArrayList<>();
         }
 
         groupsIBelong.add(groupId);
+    }
+
+    public void leaveGroupIOwn(String groupId) {
+
+        groupsIOwn.remove(groupId);
+    }
+
+    public void changeFromBelongToOwn(String groupId) {
+        createNewGroup(groupId);
+        leaveGroup(groupId);
+
     }
 }

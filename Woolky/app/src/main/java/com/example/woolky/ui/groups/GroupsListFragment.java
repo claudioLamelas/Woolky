@@ -1,5 +1,6 @@
 package com.example.woolky.ui.groups;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,7 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Arrays;
 import java.util.List;
 
-public class GroupsListFragment extends Fragment {
+public class GroupsListFragment extends Fragment{
     private RecyclerView recyclerView;
     //private GroupsListAdapter adapter;
     private TextView noGroupsMessage;
@@ -84,21 +86,31 @@ public class GroupsListFragment extends Fragment {
 
     }
 
+    private void updateUI() {
+
+        databaseRef.child("users").child(signedInUser.getUserId()).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                signedInUser = dataSnapshot.getValue(User.class);
+                updateUIList();
+            }
+        });
+
+    }
+
     private void createNewGroup() {
 
-        String nome = "Grupo1Teste";
-        Group newGroup = new Group(nome,signedInUser.getUserId() );
-        //update user
+        FragmentManager fm = getParentFragmentManager();
+        AddNewGroupFragment addNewGroup = AddNewGroupFragment.newInstance("Add Group");
+        // SETS the target fragment for use later when sending results
+        addNewGroup.setTargetFragment(GroupsListFragment.this, 300);
+        //fm.putFragment();
+        addNewGroup.show(fm, "fragment_edit_name");
 
-        DatabaseReference groupsRef = databaseRef.child("groups");
-        DatabaseReference push = groupsRef.push();
-        String key = push.getKey();
-        groupsRef.child(key).setValue(newGroup);
 
-        signedInUser.createNewGroup(key);
-        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
 
-        updateUI();
+
+        //updateUI();
 
 //        usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
 //            @Override
@@ -122,7 +134,7 @@ public class GroupsListFragment extends Fragment {
 
     }
 
-    private void updateUI() {
+    private void updateUIList() {
 
         List<String> groupsIOwn = signedInUser.getGroupsIOwn();
         List<String> groupsIBelong = signedInUser.getGroupsIBelong();
@@ -309,6 +321,16 @@ public class GroupsListFragment extends Fragment {
     }*/
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == 0) {
+            updateUI();
+            Toast.makeText(getView().getContext(), "New Group created", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     private void showMessageIfNoGroups(List<Group> groups) {
         if (groups.isEmpty()) {
@@ -316,4 +338,6 @@ public class GroupsListFragment extends Fragment {
             recyclerView.setVisibility(View.GONE);
         }
     }
+
+
 }
