@@ -102,6 +102,7 @@ public class GroupFragment extends Fragment {
 
         if (current.getNumberMembers() == 1) {
             signedInUser.leaveGroupIOwn(groupId);
+            updateUser(signedInUser.getUserId(), signedInUser);
             deleteGroup();
         }
 
