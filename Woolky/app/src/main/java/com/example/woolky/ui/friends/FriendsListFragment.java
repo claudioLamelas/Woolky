@@ -88,7 +88,7 @@ public class FriendsListFragment extends Fragment {
             holder.playButton.setOnClickListener(view -> {
                 HomeActivity homeActivity = (HomeActivity) getActivity();
                 new GameInviteSender(homeActivity,
-                        Arrays.asList(homeActivity.getSignedInUser().getUserId(), friends.get(position).id, "0JewKzGVxkhXXTWBQcsa9Cet6rI3"),
+                        Arrays.asList(homeActivity.getSignedInUser().getUserId(), friends.get(position).id),
                         null, null).createGameInvite();
             }
             );

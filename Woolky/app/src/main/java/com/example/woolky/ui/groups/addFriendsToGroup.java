@@ -91,7 +91,7 @@ public class addFriendsToGroup extends Fragment {
             for (User friend: users) {
                 if (friendsId.contains(friend.getUserId())){
 
-                    friends.add(new Friend(friend.getUserName(), friend.getPhotoUrl(), friend.getUserId()));
+                    friends.add(new Friend(friend.getUserId(), friend.getUserName(), friend.getPhotoUrl()));
                 }
 
             }

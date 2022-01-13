@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="650dp"
         android:layout_marginBottom="13dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/inviteToGroupGameButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -82,7 +82,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/inviteToGroupGameButton"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="79dp"

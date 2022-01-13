@@ -23,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.example.woolky.R;
 import com.example.woolky.domain.Group;
 import com.example.woolky.domain.User;
+import com.example.woolky.domain.games.GameInviteSender;
+import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -92,6 +94,12 @@ public class GroupFragment extends Fragment {
         leaveGroup.setOnClickListener(v -> {
             leaveGroup();
 
+        });
+
+        view.findViewById(R.id.inviteToGroupGameButton).setOnClickListener(v -> {
+            GameInviteSender sender = new GameInviteSender((HomeActivity) getActivity(), current.getMembers(),
+                    GameMode.ESCAPE_ROOM, null);
+            sender.createGameInvite();
         });
 
 
