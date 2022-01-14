@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GroupsListFragment extends Fragment{
@@ -168,10 +169,12 @@ public class GroupsListFragment extends Fragment{
 
         if (!groupsIOwn.isEmpty()) {
 
-            TextView testNoGroups = layout.findViewWithTag("tv_no_groups_own");
+            Collections.reverse(groupsIOwn);
+
+/*            TextView testNoGroups = layout.findViewWithTag("tv_no_groups_own");
             if (testNoGroups != null) {
                 layout.removeView(noGroupsOwn);
-            }
+            }*/
 
             TextView testOwn = layout.findViewWithTag("tv_own");
             if (testOwn == null) {
@@ -180,9 +183,9 @@ public class GroupsListFragment extends Fragment{
 
 
 
-
             // nao eh name eh ID
             for (String id : groupsIOwn) {
+
 
                 Button btnTag = new Button(getContext());
 
@@ -224,10 +227,12 @@ public class GroupsListFragment extends Fragment{
 
         if (!groupsIBelong.isEmpty()) {
 
-            TextView test = layout.findViewWithTag("tv_no_groups_belong");
+            Collections.reverse(groupsIBelong);
+
+/*            TextView test = layout.findViewWithTag("tv_no_groups_belong");
             if (test != null) {
                 layout.removeView(noGroupsBelong);
-            }
+            }*/
 
 
             TextView testBelong= layout.findViewWithTag("tv_belong");

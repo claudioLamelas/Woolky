@@ -1,15 +1,17 @@
 package com.example.woolky.ui.groups;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,6 @@ import com.example.woolky.domain.Group;
 import com.example.woolky.domain.User;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.Friend;
-import com.example.woolky.ui.friends.FriendsListFragment;
 import com.example.woolky.utils.MarginItemDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -35,11 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class addFriendsToGroup extends Fragment {
+public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
 
     private final String groupId;
-    private List<String> currentMembers;
 
     private RecyclerView recyclerView;
 
@@ -47,66 +47,33 @@ public class addFriendsToGroup extends Fragment {
 
     private User signedInUser;
 
-    private addFriendsToGroup.FriendsListGroupAdapter adapter;
+    private AddFriendsToGroupDialogFragment.FriendsListGroupAdapter adapter;
 
     private HomeActivity homeActivity;
 
     private DatabaseReference databaseRef;
 
-    public addFriendsToGroup(String groupId) {
+    public AddFriendsToGroupDialogFragment(String groupId) {
         this.groupId = groupId;
+    }
+
+
+    public static AddFriendsToGroupDialogFragment newInstance(String title, String groupId) {
+        AddFriendsToGroupDialogFragment frag = new AddFriendsToGroupDialogFragment(groupId);
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        frag.setArguments(args);
+        return frag;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        //trocar aqui
         RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_add_friends_to_group, container, false);
-
-        //trocar aqui
-        recyclerView = view.findViewById(R.id.listFriendsToAdd);
-        noFriendsMessage = view.findViewById(R.id.no_friends_message);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
-
-        // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
-
-        HomeActivity homeActivity = ((HomeActivity) getActivity());
-
-        signedInUser = homeActivity.getSignedInUser();
-
-        List<Friend> friends = new ArrayList<>();
-
-
-        //adapter.notifyDataSetChanged();
-
-         homeActivity = (HomeActivity) getActivity();
-         databaseRef = homeActivity.getDatabaseRef();
-         List<User> users = homeActivity.getUsers();
-         List<String> friendsId = signedInUser.getFriends();
-
-        if (signedInUser.getFriends()!=null)    {
-
-            for (User friend: users) {
-                if (friendsId.contains(friend.getUserId())){
-
-                    friends.add(new Friend(friend.getUserId(), friend.getUserName(), friend.getPhotoUrl()));
-                }
-
-            }
-
-        }
-
-        adapter = new addFriendsToGroup.FriendsListGroupAdapter(friends);
-        //adapter = new addFriendsToGroup.FriendsListGroupAdapter(friends);
-        //adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
-        //showMessageIfNoFriends(friends);
         return view;
     }
 
-    class FriendsListGroupAdapter extends RecyclerView.Adapter<addFriendsToGroup.FriendsListGroupAdapter.ViewHolder> {
+    class FriendsListGroupAdapter extends RecyclerView.Adapter<AddFriendsToGroupDialogFragment.FriendsListGroupAdapter.ViewHolder> {
         private List<Friend> friends;
 
         public FriendsListGroupAdapter(List<Friend> friends) {
@@ -115,13 +82,13 @@ public class addFriendsToGroup extends Fragment {
 
         @NonNull
         @Override
-        public addFriendsToGroup.FriendsListGroupAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public AddFriendsToGroupDialogFragment.FriendsListGroupAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.friend_list_item, parent, false);
-            return new addFriendsToGroup.FriendsListGroupAdapter.ViewHolder(view);
+            return new AddFriendsToGroupDialogFragment.FriendsListGroupAdapter.ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull addFriendsToGroup.FriendsListGroupAdapter.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull AddFriendsToGroupDialogFragment.FriendsListGroupAdapter.ViewHolder holder, int position) {
             holder.itemView.setOnClickListener(view ->
                     Toast.makeText(view.getContext(), holder.name.getText() + "'s profile", Toast.LENGTH_SHORT).show()
             );
@@ -130,7 +97,7 @@ public class addFriendsToGroup extends Fragment {
             holder.playButton.setText("Invite");
             holder.playButton.setOnClickListener(view ->{
                    addFriendToGroup(friends.get(position).id);
-            Toast.makeText(view.getContext(), holder.name.getText() + "'added friend", Toast.LENGTH_SHORT).show(); });
+            Toast.makeText(view.getContext(), holder.name.getText() + " added to group!", Toast.LENGTH_SHORT).show(); });
             Glide.with(getActivity()).load(Uri.parse(friends.get(position).photoUrl)).circleCrop().into(holder.avatar);
 
         }
@@ -171,15 +138,8 @@ public class addFriendsToGroup extends Fragment {
                         User friend = dataSnapshot.getValue(User.class);
                         friend.addNewGroup(groupId);
                         databaseRef.child("users").child(friend.getUserId()).setValue(friend);
-
-
-
-
                     }
                 });
-
-
-
             }
         });
     }
@@ -190,4 +150,52 @@ public class addFriendsToGroup extends Fragment {
             recyclerView.setVisibility(View.GONE);
         }
     }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        super.onCreateDialog(savedInstanceState);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_add_friends_to_group, null);
+
+
+
+        recyclerView = view.findViewById(R.id.listFriendsToAdd);
+        noFriendsMessage = view.findViewById(R.id.no_friends_message);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
+
+        homeActivity = (HomeActivity) getActivity();
+
+        signedInUser = homeActivity.getSignedInUser();
+
+        List<Friend> friends = new ArrayList<>();
+
+        databaseRef = homeActivity.getDatabaseRef();
+        List<User> users = homeActivity.getUsers();
+        List<String> friendsId = signedInUser.getFriends();
+
+        if (signedInUser.getFriends()!=null)
+            for (User friend: users) {
+                if (friendsId.contains(friend.getUserId()))
+                    friends.add(new Friend(friend.getUserId(), friend.getUserName(), friend.getPhotoUrl()));
+            }
+
+
+        adapter = new AddFriendsToGroupDialogFragment.FriendsListGroupAdapter(friends);
+        recyclerView.setAdapter(adapter);
+
+
+
+        builder.setView(view)
+                .setTitle("Add friends to Group")
+                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+        return builder.create();
+    }
+
+
+
 }

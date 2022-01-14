@@ -1,22 +1,24 @@
 package com.example.woolky.ui.groups;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -92,7 +94,14 @@ public class GroupFragment extends Fragment {
 
         ImageButton leaveGroup = view.findViewById(R.id.leftGroupBt);
         leaveGroup.setOnClickListener(v -> {
-            leaveGroup();
+
+            FragmentManager fm = getParentFragmentManager();
+            LeaveGroupConfirmationDialogFragment leaveGroupDF = LeaveGroupConfirmationDialogFragment.newInstance();
+            // SETS the target fragment for use later when sending results
+            leaveGroupDF.setTargetFragment(GroupFragment.this, 300);
+            //fm.putFragment();
+            leaveGroupDF.show(fm, "fragment_add_friends");
+
 
         });
 
@@ -209,9 +218,17 @@ public class GroupFragment extends Fragment {
 
     private void inviteFriendsToGroup() {
 
-        FrameLayout addFriends = getView().findViewById(R.id.addFriendsGroupFragment);
+        /*FrameLayout addFriends = getView().findViewById(R.id.addFriendsGroupFragment);
         addFriends.setVisibility(View.VISIBLE);
-        getParentFragmentManager().beginTransaction().replace(R.id.addFriendsGroupFragment, new addFriendsToGroup(groupId)).commit();
+        getParentFragmentManager().beginTransaction().replace(R.id.addFriendsGroupFragment, new AddFriendsToGroupDialogFragment(groupId)).commit();
+*/
+
+        FragmentManager fm = getParentFragmentManager();
+        AddFriendsToGroupDialogFragment addNewGroup = AddFriendsToGroupDialogFragment.newInstance("Add Friends", groupId);
+        // SETS the target fragment for use later when sending results
+        addNewGroup.setTargetFragment(GroupFragment.this, 300);
+        //fm.putFragment();
+        addNewGroup.show(fm, "fragment_add_friends");
     }
 
     private void updateMembersUI(View view) {
@@ -253,6 +270,19 @@ public class GroupFragment extends Fragment {
         }
 
 
+
+    }
+
+    /*
+    Usado para deixar o grupo
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == 0) {
+            leaveGroup();
+        }
 
     }
 }
