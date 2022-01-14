@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +17,8 @@ import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.User;
 import com.google.firebase.auth.FirebaseAuth;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class ProfileFragment extends Fragment {
 
@@ -48,6 +51,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUiProfile(View view) {
+
         TextView name = view.findViewById(R.id.userName_profile);
         name.setText(signedInUser.getUserName());
 
@@ -55,6 +59,37 @@ public class ProfileFragment extends Fragment {
         //photo.setImageURI(null);
         //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
         Glide.with(getActivity()).load(Uri.parse(signedInUser.getPhotoUrl())).circleCrop().into(photo);
+
+        changeUserColor(view);
+
+        ConstraintLayout changeUserColor = view.findViewById(R.id.change_user_color_layout);
+        changeUserColor.setOnClickListener(v -> openColorPicker(signedInUser.getColor()));
+    }
+
+    private void changeUserColor(View view) {
+        ImageView userIcon = view.findViewById(R.id.user_icon);
+        userIcon.setColorFilter(signedInUser.getColor());
+
+    }
+
+    private void openColorPicker(int lateColor) {
+
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this.getActivity(), lateColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+               signedInUser.setColor(color);
+               changeUserColor(getView());
+
+            }
+        });
+
+        colorPicker.show();
+
     }
 
     @Override

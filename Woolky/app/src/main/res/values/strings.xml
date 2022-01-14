@@ -57,4 +57,5 @@
             <li><b>Save</b> - Don\'t forget to save your escape room with a cool name :D</li>
         </ul>
     </string>
+    <string name="user_color">User color on the map</string>
 </resources>

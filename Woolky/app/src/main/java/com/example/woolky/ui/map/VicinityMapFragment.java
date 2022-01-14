@@ -162,6 +162,8 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void drawUsers(LatLng posicaoInicial, Context cx) {
+
+
         Drawable myVectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
         userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(myVectorDrawable, signedInUser.getColor())));
 
