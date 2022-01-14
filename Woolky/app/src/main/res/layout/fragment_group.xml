@@ -85,13 +85,11 @@
         android:id="@+id/inviteToGroupGameButton"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="79dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Button"
+        android:layout_marginBottom="12dp"
+        android:text="@string/play_escape"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/addFriendsGroupBt"
         app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
 
@@ -99,15 +97,15 @@
         android:id="@+id/addFriendsGroupBt"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="19dp"
         android:text="addFriends"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/inviteToGroupGameButton"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView3"
-        app:layout_constraintVertical_bias="0.555" />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
 
     <FrameLayout
         android:id="@+id/addFriendsGroupFragment"
