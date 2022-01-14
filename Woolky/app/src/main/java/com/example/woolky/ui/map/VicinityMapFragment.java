@@ -112,18 +112,21 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         view.findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
+                if (currentPosition != null)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
             }
         });
 
         view.findViewById(R.id.refreshButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                usersRef.child("users").get().addOnSuccessListener(dataSnapshot -> {
-                    users = getRecentUsers(dataSnapshot, true);
-                    mMap.clear();
-                    drawUsers(currentPosition, getContext());
-                });
+                if (currentPosition != null) {
+                    usersRef.child("users").get().addOnSuccessListener(dataSnapshot -> {
+                        users = getRecentUsers(dataSnapshot, true);
+                        mMap.clear();
+                        drawUsers(currentPosition, getContext());
+                    });
+                }
             }
         });
 

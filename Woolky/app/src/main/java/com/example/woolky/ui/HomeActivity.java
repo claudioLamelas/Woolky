@@ -246,7 +246,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void setupTicTacToeGame(String gameID, boolean isReceiver) {
         TicTacToeGame.Piece piece = isReceiver ? TicTacToeGame.Piece.X : TicTacToeGame.Piece.O;
-        TicTacToeGame ticTacToeGame = new TicTacToeGame(2, signedInUser.getCurrentPosition().getLatLng(), piece);
+        TicTacToeGame ticTacToeGame = new TicTacToeGame(2, piece);
 
         DatabaseReference gameRef = databaseRef.child("games").child(gameID);
 

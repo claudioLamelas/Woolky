@@ -70,6 +70,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
                    if (location != null) {
                        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+                       ticTacToeGame.getBoard().setInitialPosition(currentPosition);
                        ticTacToeGame.getBoard().drawBoard(mMap);
                        userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition)
                                .icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), R.color.user_default_color)));
@@ -127,16 +128,18 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
         });
 
         view.findViewById(R.id.confirmPlayButton).setOnClickListener(v -> {
-            List<Integer> playedPosition = ticTacToeGame.getBoard().getPositionInBoard(currentPosition);
-            if (ticTacToeGame.isPlayValid(playedPosition)) {
-                ticTacToeGame.makePlay(playedPosition, mMap);
-                int finishState = ticTacToeGame.isFinished();
-                if (finishState != -1) {
-                    ticTacToeGame.finishGame(finishState);
+            if (currentPosition != null) {
+                List<Integer> playedPosition = ticTacToeGame.getBoard().getPositionInBoard(currentPosition);
+                if (ticTacToeGame.isPlayValid(playedPosition)) {
+                    ticTacToeGame.makePlay(playedPosition, mMap);
+                    int finishState = ticTacToeGame.isFinished();
+                    if (finishState != -1) {
+                        ticTacToeGame.finishGame(finishState);
+                    }
+                    gameRef.setValue(ticTacToeGame);
+                } else {
+                    Toast.makeText(getActivity(), "You can't make this move", Toast.LENGTH_SHORT).show();
                 }
-                gameRef.setValue(ticTacToeGame);
-            } else {
-                Toast.makeText(getActivity(), "You can't make this move", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -185,6 +188,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
             userMarker.remove();
         } else {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+            ticTacToeGame.getBoard().setInitialPosition(currentPosition);
             ticTacToeGame.getBoard().drawBoard(mMap);
         }
         userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition)

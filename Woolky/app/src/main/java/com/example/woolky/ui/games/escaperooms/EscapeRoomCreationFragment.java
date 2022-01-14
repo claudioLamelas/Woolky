@@ -336,8 +336,11 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-        if (initialPosition == null)
+        if (initialPosition == null) {
+            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            getActivity().getSupportFragmentManager().popBackStack();
             Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
