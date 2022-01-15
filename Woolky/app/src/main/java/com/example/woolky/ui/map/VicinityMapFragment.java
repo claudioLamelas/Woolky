@@ -185,14 +185,15 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     private List<User> getRecentUsers(DataSnapshot dataSnapshot, boolean isForcedUpdate) {
         HomeActivity homeActivity = (HomeActivity) getActivity();
         List<User> recentUsers = new ArrayList<>();
-        if (homeActivity.getUsers().isEmpty() || isForcedUpdate) {
-            for (DataSnapshot d : dataSnapshot.getChildren()) {
-                recentUsers.add(d.getValue(User.class));
-            }
-            homeActivity.setUsers(recentUsers);
-        } else {
-            recentUsers = homeActivity.getUsers();
+        for (DataSnapshot d : dataSnapshot.getChildren()) {
+            recentUsers.add(d.getValue(User.class));
         }
+        homeActivity.setUsers(recentUsers);
+//        if (homeActivity.getUsers().isEmpty() || isForcedUpdate) {
+//            homeActivity.setUsers(recentUsers);
+//        } else {
+//            recentUsers = homeActivity.getUsers();
+//        }
         return recentUsers;
     }
 

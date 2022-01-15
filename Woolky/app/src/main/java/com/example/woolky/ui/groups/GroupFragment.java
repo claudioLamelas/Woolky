@@ -148,8 +148,9 @@ public class GroupFragment extends Fragment {
 
             signedInUser.leaveGroup(groupId);
             updateUser(signedInUser.getUserId(), signedInUser);
+            current.deleteMember(signedInUser.getUserId());
             updateGroup();
-
+            goodbye();
 
 
         }

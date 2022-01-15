@@ -151,11 +151,11 @@ public class GroupsListFragment extends Fragment{
 
 
         TextView noGroupsOwn = new TextView(getContext());
-        noGroupsOwn.setText("Não é dono de nenhum grupo");
+        noGroupsOwn.setText("You don't own any group");
         noGroupsOwn.setTag("tv_no_groups_own");
 
         TextView noGroupsBelong = new TextView(getContext());
-        noGroupsBelong.setText("Não pertence a nenhum grupo");
+        noGroupsBelong.setText("You don't belong to any group");
         noGroupsBelong.setTag("tv_no_groups_belong");
 
         TextView groupsOwn = new TextView(getContext());

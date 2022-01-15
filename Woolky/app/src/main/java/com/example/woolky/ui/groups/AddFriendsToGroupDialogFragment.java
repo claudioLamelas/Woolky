@@ -94,7 +94,7 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
             );
             //viewHolder.avatar = ...
             holder.name.setText(friends.get(position).name);
-            holder.playButton.setText("Invite");
+            holder.playButton.setText("Add");
             holder.playButton.setOnClickListener(view ->{
                    addFriendToGroup(friends.get(position).id);
             Toast.makeText(view.getContext(), holder.name.getText() + " added to group!", Toast.LENGTH_SHORT).show(); });
@@ -192,7 +192,7 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
         builder.setView(view)
                 .setTitle("Add friends to Group")
-                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+                .setNegativeButton("Close", (dialog, id) -> dialog.dismiss());
         return builder.create();
     }
 

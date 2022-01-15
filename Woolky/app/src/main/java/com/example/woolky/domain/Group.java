@@ -58,4 +58,8 @@ public class Group  implements Serializable  {
     public void deleteOwner() {
         members.remove(0);
     }
+
+    public void deleteMember(String memberId) {
+        members.remove(memberId);
+    }
 }

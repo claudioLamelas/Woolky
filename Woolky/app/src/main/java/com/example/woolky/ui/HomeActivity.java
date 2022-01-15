@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.woolky.FriendsInvitesListener;
 import com.example.woolky.R;
@@ -130,8 +131,12 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                 }
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
+                for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
+                    getSupportFragmentManager().popBackStack();
+                    overridePendingTransition(0, 0);
+                }
 
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
                 return true;
             };
 
@@ -156,7 +161,6 @@ public class HomeActivity extends AppCompatActivity {
                     inviteStateRef.removeEventListener(this);
                 }
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
@@ -195,6 +199,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
+
     public void setupFriend(String friendInviteID, boolean isReceiver, String toUserId) {
 
         List<String> friends = signedInUser.getFriends();
@@ -271,10 +276,11 @@ public class HomeActivity extends AppCompatActivity {
 
     public void setUsers(List<User> users) {
         this.users = users;
-        int secondsDelayed = 15;
-        handler.postDelayed(() -> {
-            this.users.clear();
-        }, secondsDelayed * 1000);
+//        int secondsDelayed = 15;
+//        handler.postDelayed(() -> {
+//            if (bottomNav.getSelectedItemId() == R.id.nav_map)
+//                this.users.clear();
+//        }, secondsDelayed * 1000);
     }
 
     public DatabaseReference getDatabaseReference() {

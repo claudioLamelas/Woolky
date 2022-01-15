@@ -1,5 +1,7 @@
 package com.example.woolky.ui.groups;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -52,31 +54,42 @@ public class AddNewGroupFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_add_new_group, container, false);
-
-        Button newGroup = view.findViewById(R.id.create_new_group);
-        newGroup.setOnClickListener(v -> createNewGroup(view));
-
-        return view;
+        return inflater.inflate(R.layout.fragment_add_new_group, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Point size = new Point();
-        // Store dimensions of the screen in `size`
-        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
-        display.getSize(size);
-
-        getDialog().getWindow().setLayout((int)(size.x * 0.85),(int)(size.y * 0.60));
+//        Point size = new Point();
+//        // Store dimensions of the screen in `size`
+//        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
+//        display.getSize(size);
+//
+//        getDialog().getWindow().setLayout((int)(size.x * 0.85),(int)(size.y * 0.60));
     }
 
-    private void createNewGroup(View view) {
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        super.onCreateDialog(savedInstanceState);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View v = inflater.inflate(R.layout.fragment_add_new_group, null);
+
+        Button newGroup = v.findViewById(R.id.create_new_group);
+        newGroup.setOnClickListener(view -> createNewGroup(v));
+
+        builder.setView(v);
+        return builder.create();
+    }
+
+    public void createNewGroup(View view) {
         EditText groupNameET = view.findViewById(R.id.groupsNameInput);
         String groupName = groupNameET.getText().toString();
 
-        if(!groupName.isEmpty()){
+        if (!groupName.isEmpty()) {
             HomeActivity ha = (HomeActivity) getActivity();
             DatabaseReference databaseRef = ha.getDatabaseRef();
             User owner = ha.getSignedInUser();
@@ -93,11 +106,6 @@ public class AddNewGroupFragment extends DialogFragment {
 
             sendBack();
         }
-
-
-
-
-
     }
 
 

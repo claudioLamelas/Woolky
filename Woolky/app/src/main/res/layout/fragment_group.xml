@@ -11,9 +11,7 @@
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="match_parent"
-        android:layout_height="650dp"
-        android:layout_marginBottom="13dp"
-        app:layout_constraintBottom_toTopOf="@+id/inviteToGroupGameButton"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,12 +22,13 @@
 
             <TextView
                 android:id="@+id/groupName_TV"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="24dp"
-                android:text="@string/hello_blank_fragment"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toStartOf="@+id/leftGroupBt"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,37 +36,32 @@
                 android:id="@+id/leftGroupBt"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="315dp"
-                android:layout_marginEnd="47dp"
-                android:layout_marginBottom="23dp"
+                android:layout_marginEnd="24dp"
                 android:background="#00FFFFFF"
                 android:scaleType="fitStart"
                 android:src="@drawable/close"
-                app:layout_constraintBottom_toTopOf="@+id/members_TV"
+                app:layout_constraintBottom_toBottomOf="@+id/groupName_TV"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/groupName_TV" />
+                app:layout_constraintTop_toTopOf="@+id/groupName_TV" />
 
             <TextView
                 android:id="@+id/members_TV"
-                android:layout_width="344dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="31dp"
-                android:layout_marginBottom="1dp"
+                android:layout_marginTop="40dp"
                 android:text="@string/members"
-                android:textSize="16sp"
-                android:translationX="20dp"
-                app:layout_constraintBottom_toTopOf="@+id/members_scroll"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/leftGroupBt" />
+                app:layout_constraintTop_toBottomOf="@+id/groupName_TV" />
 
             <HorizontalScrollView
                 android:id="@+id/members_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/members_TV">
 
@@ -83,29 +77,26 @@
 
     <Button
         android:id="@+id/inviteToGroupGameButton"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="24dp"
         android:text="@string/play_escape"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/addFriendsGroupBt"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
+        app:layout_constraintStart_toEndOf="@+id/addFriendsGroupBt" />
 
     <Button
         android:id="@+id/addFriendsGroupBt"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="19dp"
-        android:text="addFriends"
+        android:text="add Friends"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteToGroupGameButton"
         app:layout_constraintEnd_toStartOf="@+id/inviteToGroupGameButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
+        app:layout_constraintTop_toTopOf="@+id/inviteToGroupGameButton" />
 
     <FrameLayout
         android:id="@+id/addFriendsGroupFragment"
