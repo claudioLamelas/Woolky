@@ -111,6 +111,8 @@ public class GroupFragment extends Fragment {
             sender.createGameInvite();
         });
 
+        view.findViewById(R.id.groupBackButton).setOnClickListener(v -> getActivity().onBackPressed());
+
 
         return view;
     }
@@ -247,8 +249,8 @@ public class GroupFragment extends Fragment {
                     User current = dataSnapshot.getValue(User.class);
 
                     ImageView photo = new ImageView(getContext());
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200,
-                            200);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(170,
+                            170);
 
                     params.setMargins(25,10,10,10);
 

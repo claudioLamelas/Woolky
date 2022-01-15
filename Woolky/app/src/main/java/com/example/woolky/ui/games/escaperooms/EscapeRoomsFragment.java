@@ -55,6 +55,8 @@ public class EscapeRoomsFragment extends Fragment {
         escapeRoomIds.clear();
         escapeRoomNames.clear();
 
+        view.findViewById(R.id.escapeRoomsBackButton).setOnClickListener(v -> getActivity().onBackPressed());
+
         HomeActivity homeActivity = (HomeActivity) getActivity();
         DatabaseReference ref = homeActivity.getDatabaseRef();
         ref.child("escapeRooms").child(homeActivity.getSignedInUser().getUserId()).get().addOnSuccessListener(dataSnapshot -> {

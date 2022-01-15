@@ -18,7 +18,7 @@
         android:drawableTint="@color/black"
         android:text="Create New Escape Room"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/escapeRoomsBackButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
@@ -26,4 +26,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/escapeRoomsBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:backgroundTint="#00FFFFFF"
+        android:minHeight="48dp"
+        android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
+        app:layout_constraintBottom_toBottomOf="@+id/newEscapeRoomButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/newEscapeRoomButton"
+        tools:ignore="SpeakableTextPresentCheck"
+        app:tint="#000000" />
 </androidx.constraintlayout.widget.ConstraintLayout>

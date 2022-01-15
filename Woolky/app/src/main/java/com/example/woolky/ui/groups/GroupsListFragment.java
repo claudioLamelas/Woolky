@@ -51,21 +51,9 @@ public class GroupsListFragment extends Fragment{
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.fragment_groups_list, container, false);
-        //recyclerView = view.findViewById(R.id.groups_list);
+        View view = inflater.inflate(R.layout.fragment_groups_list, container, false);
 
-        //noGroupsMessage = view.findViewById(R.id.no_groups_message);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        //recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
-        // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
-
-
-
-
-        //List<Group> groups = Arrays.asList(new Group("Group 1"), new Group("Group 2"));
-        //adapter = new GroupsListAdapter(groups);
-        //recyclerView.setAdapter(adapter);
-        //showMessageIfNoGroups(groups);
+        view.findViewById(R.id.groupsBackButton).setOnClickListener(v -> getActivity().onBackPressed());
         return view;
     }
 

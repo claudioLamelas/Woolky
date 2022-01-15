@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,12 +38,13 @@ public class FriendsListFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_friends_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_friends_list, container, false);
         recyclerView = view.findViewById(R.id.friends_list);
         noFriendsMessage = view.findViewById(R.id.no_friends_message);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
-        // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
+
+        view.findViewById(R.id.friendsBackButton).setOnClickListener(v -> getActivity().onBackPressed());
 
         HomeActivity homeActivity = ((HomeActivity) getActivity());
         users = homeActivity.getUsers();

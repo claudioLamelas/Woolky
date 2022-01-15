@@ -49,6 +49,7 @@ import com.google.maps.android.geometry.Point;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -71,6 +72,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     private LatLng currentPosition;
     private Marker userMarker;
     private List<Marker> otherPlayersMarkers;
+    private HashMap<String, String> idsMapNames;
     private User signedInUser;
     private boolean mapDrawn;
     private int nextCodeDigitIndex;
@@ -102,6 +104,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         gameRef.addChildEventListener(escapeRoomGameListener);
 
         otherPlayersMarkers = new ArrayList<>();
+        idsMapNames = new HashMap<>();
     }
 
     @Override
@@ -180,7 +183,12 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
         Circle c1 = escapeRoomGame.getEscapeRoom().getVertex().get(triple.getFirst());
         Circle c2 = escapeRoomGame.getEscapeRoom().getVertex().get(triple.getSecond());
-        return PolyUtil.distanceToLine(currentPosition, c1.getCenter(), c2.getCenter()) <= MINIMUM_DISTANCE_TO_WALL;
+
+        boolean admissible = PolyUtil.distanceToLine(currentPosition, c1.getCenter(), c2.getCenter()) <= MINIMUM_DISTANCE_TO_WALL;
+        if (!admissible)
+            Toast.makeText(getActivity(), "Too far from the wall", Toast.LENGTH_SHORT).show();
+
+        return admissible;
     }
 
     @Override
@@ -217,12 +225,18 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         escapeRoomGame.getEscapeRoom().drawEscapeRoom(escapeRoomInitialPosition, mMap);
 
         //Desenha no mapa os markers dos outros players
+        DatabaseReference usersRef = ((HomeActivity) getActivity()).getDatabaseRef().child("users");
         for (String id : escapeRoomGame.getPlayersIds()) {
             if (!id.equals(signedInUser.getUserId())) {
-                Marker m = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                        icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK)));
-                m.setTag(id);
-                otherPlayersMarkers.add(m);
+                usersRef.child(id).child("userName").get().addOnSuccessListener(dataSnapshot -> {
+                    String userName = dataSnapshot.getValue(String.class);
+                    Marker m = mMap.addMarker(new MarkerOptions().position(currentPosition).
+                            icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK))
+                            .title(userName));
+                    m.setTag(id);
+                    otherPlayersMarkers.add(m);
+                    idsMapNames.put(id, userName);
+                });
             }
         }
         mapDrawn = true;
@@ -307,9 +321,11 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                     LocationCalculator.calculatePositions(escapeRoomGame.getEscapeRoom().getVertex().get(0).getCenter(),
                     Collections.singletonList(value)).get(0);
 
+            String userName = idsMapNames.get(movedPlayerId);
             m = mMap.addMarker(new MarkerOptions()
                     .position(newPlayerPosition)
-                    .icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK)));
+                    .icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), Color.BLACK))
+                    .title(userName));
             m.setTag(movedPlayerId);
             otherPlayersMarkers.set(index, m);
         }

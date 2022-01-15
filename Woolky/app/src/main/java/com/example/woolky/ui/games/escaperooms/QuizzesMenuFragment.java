@@ -42,6 +42,8 @@ public class QuizzesMenuFragment extends Fragment implements CreateNewQuizDialog
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        view.findViewById(R.id.quizzesBackButton).setOnClickListener(v -> getActivity().onBackPressed());
+
         view.findViewById(R.id.createNewQuizButton).setOnClickListener(v -> {
             CreateNewQuizDialog dialog = new CreateNewQuizDialog(null, -1);
             dialog.show(getChildFragmentManager(), "quiz");

@@ -124,6 +124,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
+        view.findViewById(R.id.roomCreationBackButton).setOnClickListener(v -> getActivity().onBackPressed());
+
         view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> {
             if (escapeRoom.getBlueLine() == null)
                 Toast.makeText(getActivity(), "You need to specify a finishing door (Blue)", Toast.LENGTH_SHORT).show();
