@@ -93,10 +93,10 @@ public class HomeActivity extends AppCompatActivity {
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(userId);
         DatabaseReference friendInviteRef = databaseRef.child("friendInvite").child(userId);
 
-        gameListener = new GameInvitesListener(cx, getSupportFragmentManager());
+        gameListener = new GameInvitesListener(cx, this);
         gameInvitesRef.addChildEventListener(gameListener);
 
-        friendListener = new FriendsInvitesListener(cx, getSupportFragmentManager());
+        friendListener = new FriendsInvitesListener(cx, this);
         friendInviteRef.addChildEventListener(friendListener);
     }
 
