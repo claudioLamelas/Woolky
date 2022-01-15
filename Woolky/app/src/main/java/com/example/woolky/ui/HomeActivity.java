@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.woolky.FriendsInvitesListener;
 import com.example.woolky.R;
+import com.example.woolky.UserChangesListener;
 import com.example.woolky.domain.FriendsInvite;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.User;
@@ -49,6 +50,7 @@ public class HomeActivity extends AppCompatActivity {
     private Context cx = this;
     private GameInvitesListener gameListener;
     private FriendsInvitesListener friendListener;
+    private UserChangesListener userListener;
     private User signedInUser;
     public boolean isPlaying;
     private BottomNavigationView bottomNav;
@@ -83,12 +85,14 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
-        usersRef.child(userId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                signedInUser = dataSnapshot.getValue(User.class);
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
-            }
+
+        usersRef.child(userId).get().addOnSuccessListener(dataSnapshot -> {
+            signedInUser = dataSnapshot.getValue(User.class);
+            DatabaseReference userReference = databaseRef.child("users").child(signedInUser.getUserId());
+            userListener = new UserChangesListener(this);
+            userReference.addValueEventListener(userListener);
+
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
         });
 
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(userId);
@@ -106,9 +110,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
         signedInUser.setCurrentPosition(null);
         DatabaseReference userRef = databaseRef.child("users").child(signedInUser.getUserId());
+        userRef.removeEventListener(userListener);
         userRef.setValue(signedInUser);
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(signedInUser.getUserId());
         gameInvitesRef.removeEventListener(gameListener);
+        DatabaseReference friendInvitesRef = databaseRef.child("friendInvite").child(signedInUser.getUserId());
+        friendInvitesRef.removeEventListener(friendListener);
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -266,6 +273,10 @@ public class HomeActivity extends AppCompatActivity {
 
     public DatabaseReference getDatabaseRef() {
         return databaseRef;
+    }
+
+    public void setSignedInUser(User signedInUser) {
+        this.signedInUser = signedInUser;
     }
 
     public User getSignedInUser() {

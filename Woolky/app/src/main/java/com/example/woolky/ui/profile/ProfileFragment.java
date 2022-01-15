@@ -1,10 +1,12 @@
 package com.example.woolky.ui.profile;
 
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -56,20 +58,23 @@ public class ProfileFragment extends Fragment {
         name.setText(signedInUser.getUserName());
 
         ImageView photo = view.findViewById(R.id.image_profile);
-        //photo.setImageURI(null);
-        //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
         Glide.with(getActivity()).load(Uri.parse(signedInUser.getPhotoUrl())).circleCrop().into(photo);
 
         changeUserColor(view);
 
-        ConstraintLayout changeUserColor = view.findViewById(R.id.change_user_color_layout);
-        changeUserColor.setOnClickListener(v -> openColorPicker(signedInUser.getColor()));
+//        ConstraintLayout changeUserColor = view.findViewById(R.id.change_user_color_layout);
+//        changeUserColor.setOnClickListener(v -> openColorPicker(signedInUser.getColor()));
+
+        Button colorButton = view.findViewById(R.id.userColorButton);
+        colorButton.setOnClickListener(v -> openColorPicker(signedInUser.getColor()));
     }
 
     private void changeUserColor(View view) {
-        ImageView userIcon = view.findViewById(R.id.user_icon);
-        userIcon.setColorFilter(signedInUser.getColor());
+//        ImageView userIcon = view.findViewById(R.id.user_icon);
+//        userIcon.setColorFilter(signedInUser.getColor());
 
+        Button colorButton = view.findViewById(R.id.userColorButton);
+        colorButton.setBackgroundTintList(ColorStateList.valueOf(signedInUser.getColor()));
     }
 
     private void openColorPicker(int lateColor) {
