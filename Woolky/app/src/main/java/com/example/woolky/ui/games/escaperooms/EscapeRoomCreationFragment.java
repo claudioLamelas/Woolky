@@ -51,8 +51,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCallback,
-        CreateNewQuizDialog.CreateNewQuizListener, LocationListener, InputDataDialog.OnDataSubmitted {
+public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCallback, LocationListener, InputDataDialog.OnDataSubmitted {
     private static final int FINE_LOCATION_CODE = 114;
 
     private GoogleMap mMap;
@@ -72,6 +71,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     private List<PairCustom<Double, Double>> circlesRelativePositions;
 
     private boolean permissionsGranted;
+    private boolean isMapDrawn;
 
 
     public EscapeRoomCreationFragment() {
@@ -118,7 +118,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.escapeRoomCreationMap);
         assert mapFragment != null;
-        mapFragment.getMapAsync(this);
+        if (!isMapDrawn)
+            mapFragment.getMapAsync(this);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -136,8 +137,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         });
 
         view.findViewById(R.id.addQuizButton).setOnClickListener(v -> {
-            CreateNewQuizDialog dialog = CreateNewQuizDialog.newInstance("retirar", "retirar");
-            dialog.show(getChildFragmentManager(), "quiz");
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment,
+                    new QuizzesMenuFragment(escapeRoom)).addToBackStack("quizzes").commit();
         });
 
         view.findViewById(R.id.helpButton).setOnClickListener(v -> {
@@ -146,6 +147,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         });
 
         Button chooseStartPositionButton = view.findViewById(R.id.chooseStartPositionButton);
+        int buttonColor = choosingStartPosition ? R.color.colorPrimary : R.color.white;
+        chooseStartPositionButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(buttonColor, null)));
         chooseStartPositionButton.setOnClickListener(v -> {
             int color = choosingStartPosition ? R.color.white : R.color.colorPrimary;
             chooseStartPositionButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(color, null)));
@@ -153,6 +156,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         });
 
         ImageButton eraseWallButton = view.findViewById(R.id.deleteWallButton);
+        int eraseButtonColor = erasingWalls ? R.color.colorPrimary : R.color.white;
+        eraseWallButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(eraseButtonColor, null)));
         eraseWallButton.setOnClickListener(v ->  {
             int color = erasingWalls ? R.color.white : R.color.colorPrimary;
             eraseWallButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(color, null)));
@@ -246,14 +251,16 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                 blueLine = escapeRoom.getBlueLine();
                 List<Circle> lonelyPoints = escapeRoom.getLonelyPoints(triple.getFirst(), triple.getSecond());
                 for (Circle c : lonelyPoints) {
-                    int i = escapeRoom.getVertex().indexOf(c);
-                    escapeRoom.getVertex().remove(c);
-                    escapeRoom.updateTriples(i);
-                    if (activeCircle == c) {
-                        changeActiveCircle(escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1));
-                        previousActiveCircle = activeCircle;
+                    if (escapeRoom.getVertex().size() > 1) {
+                        int i = escapeRoom.getVertex().indexOf(c);
+                        escapeRoom.getVertex().remove(c);
+                        escapeRoom.updateTriples(i);
+                        if (activeCircle.equals(c)) {
+                            changeActiveCircle(escapeRoom.getVertexDifferentFrom(c));
+                            previousActiveCircle = activeCircle;
+                        }
+                        c.remove();
                     }
-                    c.remove();
                 }
             }
         });
@@ -269,19 +276,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     }
 
     private void saveEscapeRoom() {
-        for (int i = 0; i < escapeRoom.getVertex().size(); i++) {
-            if (i == 0) {
-                circlesRelativePositions.add(new PairCustom<>(0.0, 0.0));
-            } else {
-                Circle previousCircle = escapeRoom.getVertex().get(i-1);
-                Circle currentCircle = escapeRoom.getVertex().get(i);
-
-                circlesRelativePositions.add(LocationCalculator.diferenceBetweenPoints(previousCircle.getCenter(),
-                        currentCircle.getCenter()));
-            }
-        }
-
-        escapeRoom.setCirclesRelativePositions(circlesRelativePositions);
+        saveRelativePositions();
 
         escapeRoom.setUserStartPosition(LocationCalculator.diferenceBetweenPoints(userStartPosition.getCenter(),
                 escapeRoom.getVertex().get(0).getCenter()));
@@ -296,7 +291,22 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
         ref.child(roomID).setValue(escapeRoom).addOnSuccessListener(unused ->
                 Toast.makeText(homeActivity, "Escape Room Saved", Toast.LENGTH_SHORT).show());
+    }
 
+    private void saveRelativePositions() {
+        for (int i = 0; i < escapeRoom.getVertex().size(); i++) {
+            if (i == 0) {
+                circlesRelativePositions.add(new PairCustom<>(0.0, 0.0));
+            } else {
+                Circle previousCircle = escapeRoom.getVertex().get(i-1);
+                Circle currentCircle = escapeRoom.getVertex().get(i);
+
+                circlesRelativePositions.add(LocationCalculator.diferenceBetweenPoints(previousCircle.getCenter(),
+                        currentCircle.getCenter()));
+            }
+        }
+
+        escapeRoom.setCirclesRelativePositions(new ArrayList<>(circlesRelativePositions));
         circlesRelativePositions.clear();
     }
 
@@ -323,12 +333,14 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             blueLine = escapeRoom.getBlueLine();
             LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(initialPosition,
                     Collections.singletonList(escapeRoom.getUserStartPosition())).get(0);
+
             escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap);
             activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
             changeActiveCircle(activeCircle);
-            userStartPosition = mMap.addCircle(new CircleOptions().center(initialPosition).radius(5)
+            userStartPosition =mMap.addCircle(new CircleOptions().center(initialPosition).radius(5)
                     .fillColor(Color.GREEN).clickable(false));
         }
+        isMapDrawn = true;
     }
 
     @Override
@@ -341,13 +353,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             getActivity().getSupportFragmentManager().popBackStack();
             Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog, Quiz quiz) {
-        escapeRoom.getQuizzes().add(quiz);
-        dialog.dismiss();
-        Toast.makeText(getActivity(), "Quiz added", Toast.LENGTH_SHORT).show();
     }
 
     @Override

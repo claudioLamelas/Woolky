@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.woolky.domain.InviteDispatcher;
+import com.example.woolky.domain.InviteFragment;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
@@ -25,7 +28,7 @@ import com.google.firebase.database.DatabaseReference;
  * Use the {@link GameInviteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GameInviteFragment extends Fragment {
+public class GameInviteFragment extends InviteFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,14 +91,19 @@ public class GameInviteFragment extends Fragment {
                 ((HomeActivity) getActivity()).setupTicTacToeGame(gameInviteID, true);
             }
 
-            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commitNow();
+            HomeActivity activity = (HomeActivity) requireActivity();
+            activity.isPlaying = true;
+            activity.getSupportFragmentManager().beginTransaction().remove(this).commitNow();
+            signalFragmentExit(activity);
         });
 
         Button declineButton = v.findViewById(R.id.declineButton);
         declineButton.setOnClickListener((view) -> {
             handler.removeCallbacksAndMessages(null);
             inviteReference.child("inviteState").setValue(InviteState.DECLINED);
-            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commitNow();
+            HomeActivity activity = (HomeActivity) requireActivity();
+            activity.getSupportFragmentManager().beginTransaction().remove(this).commitNow();
+            signalFragmentExit(activity);
         });
         return v;
     }
@@ -108,12 +116,18 @@ public class GameInviteFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             public void run() {
                 inviteReference.child("inviteState").setValue(InviteState.DECLINED);
-                requireActivity().getSupportFragmentManager().beginTransaction().remove(thisFragment).commitNow();
+                HomeActivity activity = (HomeActivity) requireActivity();
+                activity.getSupportFragmentManager().beginTransaction().remove(thisFragment).commitNow();
+                signalFragmentExit(activity);
             }
         }, secondsDelayed * 1000);
     }
 
     public void setInviteReference(DatabaseReference inviteReference) {
         this.inviteReference = inviteReference;
+    }
+
+    private void signalFragmentExit(HomeActivity activity) {
+        InviteDispatcher.getInstance(activity).signalToShowNextInvite();
     }
 }

@@ -193,4 +193,12 @@ public class EscapeRoom {
                 t.setSecond(t.getSecond() - 1);
         }
     }
+
+    public Circle getVertexDifferentFrom(Circle c) {
+        for (Circle circle : vertex) {
+            if (!circle.equals(c))
+                return circle;
+        }
+        return null;
+    }
 }

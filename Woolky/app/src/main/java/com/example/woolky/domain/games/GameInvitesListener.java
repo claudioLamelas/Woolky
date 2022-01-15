@@ -1,12 +1,17 @@
 package com.example.woolky.domain.games;
 
 import android.content.Context;
+import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.woolky.domain.InviteDispatcher;
+import com.example.woolky.domain.InviteFragment;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.GameInviteFragment;
 import com.example.woolky.R;
 import com.example.woolky.domain.InviteState;
@@ -15,18 +20,20 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
+import java.time.Instant;
 import java.util.HashMap;
 
 public class GameInvitesListener implements ChildEventListener {
 
     Context cx;
-    FragmentManager fragmentManager;
+    HomeActivity activity;
 
-    public GameInvitesListener(Context cx, FragmentManager fragmentManager) {
+    public GameInvitesListener(Context cx, HomeActivity activity) {
         this.cx = cx;
-        this.fragmentManager = fragmentManager;
+        this.activity = activity;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
         if (snapshot.getValue() != null) {
@@ -41,10 +48,12 @@ public class GameInvitesListener implements ChildEventListener {
             }
             DatabaseReference inviteReference = snapshot.getRef();
 
-            if (invite.getInviteState() == InviteState.SENT) {
+            if (invite.getInviteState() == InviteState.SENT && Instant.parse(invite.getValidUntil()).isAfter(Instant.now())) {
                 GameInviteFragment gif = GameInviteFragment.newInstance(invite, invite.getGameId());
                 gif.setInviteReference(inviteReference);
-                fragmentManager.beginTransaction().replace(R.id.inviteFragment, gif).commitNow();
+
+                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance(activity);
+                inviteDispatcher.addPendingInvite(gif);
             }
         }
     }
