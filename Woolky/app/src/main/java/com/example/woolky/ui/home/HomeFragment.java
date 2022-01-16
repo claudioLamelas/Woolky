@@ -70,9 +70,10 @@ public class HomeFragment extends Fragment {
         name.setText(signedInUser.getUserName());
 
         ImageView photo = view.findViewById(R.id.photo);
-        //photo.setImageURI(null);
-        //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
         Glide.with(getActivity()).load(Uri.parse(signedInUser.getPhotoUrl())).circleCrop().into(photo);
+
+        TextView numberOfWins = view.findViewById(R.id.numberOfWinsText);
+        numberOfWins.setText("" + signedInUser.getStats().getTotalWins());
     }
 
     @Override
