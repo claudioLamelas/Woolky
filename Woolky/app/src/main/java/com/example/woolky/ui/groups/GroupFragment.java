@@ -176,7 +176,9 @@ public class GroupFragment extends Fragment {
     }
 
     private void goodbye() {
-        getParentFragmentManager().beginTransaction().replace(R.id.fragment, new HomeFragment()).commit();
+//        getParentFragmentManager().beginTransaction().replace(R.id.fragment, new HomeFragment()).commit();
+        getParentFragmentManager().beginTransaction().remove(this).commitNow();
+        getParentFragmentManager().popBackStack();
     }
 
 

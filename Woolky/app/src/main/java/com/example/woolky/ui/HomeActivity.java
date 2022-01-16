@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.woolky.FriendsInvitesListener;
 import com.example.woolky.R;
@@ -119,7 +118,6 @@ public class HomeActivity extends AppCompatActivity {
         handler.removeCallbacksAndMessages(null);
     }
 
-
     private BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
                 Fragment selected = null;
@@ -138,14 +136,21 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                 }
 
-                for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
-                    getSupportFragmentManager().popBackStack();
-                    overridePendingTransition(0, 0);
-                }
+                clearBackStack();
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
                 return true;
             };
+
+    private void clearBackStack() {
+        int until = getSupportFragmentManager().getBackStackEntryCount();
+        for (int i = 0; i < until; i++) {
+            getSupportFragmentManager().popBackStack();
+            overridePendingTransition(0, 0);
+        }
+    }
+
+    public void changeToHome() { bottomNav.setSelectedItemId(R.id.home); }
 
     public void changeToMap() {
         bottomNav.setSelectedItemId(R.id.nav_map);
@@ -155,6 +160,7 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
         finish();
     }
+
     public void setListenerFriendsInvite(String inviteId, DatabaseReference inviteStateRef, String toUserId) {
         inviteStateRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -251,6 +257,7 @@ public class HomeActivity extends AppCompatActivity {
                             if (!isReceiver)
                                 gameRef.setValue(escapeRoomGame);
 
+                            clearBackStack();
                             getSupportFragmentManager().beginTransaction().replace(R.id.fragment,
                                 new PlayEscapeRoomFragment(gameRef, escapeRoomGame)).commit();
             });
@@ -268,7 +275,8 @@ public class HomeActivity extends AppCompatActivity {
         bundle.putBoolean("isReceiver", isReceiver);
         playTicTacToeFragment.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, playTicTacToeFragment).commitNow();
+        clearBackStack();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, playTicTacToeFragment).commit();
     }
 
     public DatabaseReference getDatabaseRef() {
@@ -287,11 +295,6 @@ public class HomeActivity extends AppCompatActivity {
 
     public void setUsers(List<User> users) {
         this.users = users;
-//        int secondsDelayed = 15;
-//        handler.postDelayed(() -> {
-//            if (bottomNav.getSelectedItemId() == R.id.nav_map)
-//                this.users.clear();
-//        }, secondsDelayed * 1000);
     }
 
     public DatabaseReference getDatabaseReference() {
