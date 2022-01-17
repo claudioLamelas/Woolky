@@ -4,12 +4,21 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.example.woolky.R;
 import com.example.woolky.domain.ShareLocationType;
@@ -18,6 +27,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -56,14 +66,63 @@ public class LoginActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        SignInButton google = findViewById(R.id.sign_in_button);
+
+        google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signIn();
             }
         });
 
+        TextView textView = (TextView) google.getChildAt(0);
+        textView.setText("Sign In");
 
+        VideoView video = findViewById(R.id.login_video);
+        video.setVideoPath("android.resource://" + getPackageName() + "/" +R.raw.login);
+        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+        video.start();
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
+        height = (int) (height);
+
+
+        Button b = findViewById(R.id.login_UI_BT);
+        //b.setHeight((int) dpHeight);
+
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) b.getLayoutParams();
+
+// change height of the params e.g. 480dp
+        params.height = (int) (height * 0.45);
+
+// initialize new parameters for my element
+        b.setLayoutParams(new ConstraintLayout.LayoutParams(params));
+
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VideoView video = findViewById(R.id.login_video);
+        video.setVideoPath("android.resource://" + getPackageName() + "/" +R.raw.login);
+        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+        video.start();
     }
 
     @Override
