@@ -62,13 +62,24 @@ public class FriendsListFragment extends Fragment {
         noFriendsMessage = view.findViewById(R.id.no_friends_message);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
-        // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
+
         view.findViewById(R.id.friendsBackButton).setOnClickListener(v -> getActivity().onBackPressed());
+
         HomeActivity homeActivity = ((HomeActivity) getActivity());
         databaseRef = homeActivity.getDatabaseRef();
-        signedInUser = homeActivity.getSignedInUser();
         users = homeActivity.getUsers();
-        updateUser(signedInUser.getUserId(),signedInUser);
+        signedInUser = homeActivity.getSignedInUser();
+        friends = new ArrayList<>();
+        if (signedInUser.getFriends() != null) {
+            for (User user : users) {
+                if (signedInUser.getFriends().contains(user.getUserId())) {
+                    Friend friend = new Friend(user.getUserId(), user.getUserName(), user.getPhotoUrl());
+                    friends.add(friend);
+                }
+                if (friends.size() == signedInUser.getFriends().size())
+                    break;
+            }
+        }
         adapter = new FriendsListAdapter(friends);
         recyclerView.setAdapter(adapter);
         showMessageIfNoFriends(friends);
@@ -77,8 +88,6 @@ public class FriendsListFragment extends Fragment {
 
         return view;
     }
-    Friend friend;
-    String friend_name;
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -88,17 +97,8 @@ public class FriendsListFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getBindingAdapterPosition();
-            friend = friends.get(position);
-            friend_name = friend.getName();
             removeFriend(friends.get(position).getId(),position);//apagar da base de dados
-            adapter.notifyDataSetChanged();
-            Snackbar.make(recyclerView,friend_name,Snackbar.LENGTH_LONG).setAction("Ok", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    friends.add(position,friend);
-                    adapter.notifyDataSetChanged();
-                }
-            }).show();
+
         }
         @Override
         public void onChildDraw (Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,float dX, float dY,int actionState, boolean isCurrentlyActive){
@@ -114,67 +114,41 @@ public class FriendsListFragment extends Fragment {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
-    private void removeFriendFromLists(int position){
+    private void removeFriendFromLists(String id,int position){
         //Apagar do outro user
-
-        for (User user : users){
-            if (user.getFriends()!=null)
-            {
-                if (user.getUserId().equals(signedInUser.getFriends().get(position))){
-                    for (String friend : user.getFriends()){
-                        if (friend.equals(signedInUser.getUserId())){
-                            user.getFriends().remove(friend);
-                            updateUser(user.getUserId(), user);
-                            break;
-                        }
-                    }
-                }
+        databaseRef.child("users").child(id).get().addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot != null){
+                User user = dataSnapshot.getValue(User.class);
+                user.getFriends().remove(signedInUser.getUserId());
+                databaseRef.child("users").child(id).setValue(user);
             }
-        }
+        });
         //Apaga do user em que estamos
         signedInUser.getFriends().remove(position);
         friends.remove(position);
+        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser).addOnCompleteListener(task -> adapter.notifyDataSetChanged());
     }
 
     private void removeFriend(String id,int position) {
-        if (friends.size() == 1) {
-            removeFriendFromLists(position);
-            updateUser(signedInUser.getUserId(), signedInUser);
-            deleteFriend(signedInUser.getUserId(),id);
-            deleteGroup(signedInUser.getUserId());
-            //friends.clear();
-        }/*
-        else if (current.getOwnerId().equals(signedInUser.getUserId())) {
-
-            signedInUser.leaveGroupIOwn(groupId);
-            updateUser(signedInUser.getUserId(), signedInUser);
-            current.deleteOwner();
-            String newGroupOwnerID = current.getOwnerId();
-
-            databaseRef.child("users").child(newGroupOwnerID).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                @Override
-                public void onSuccess(DataSnapshot dataSnapshot) {
-                    User newOwner = dataSnapshot.getValue(User.class);
-                    newOwner.changeFromBelongToOwn(groupId);
-                    updateUser(newOwner.getUserId(), newOwner);
-                    updateGroup();
-                    goodbye();
-                }
-            });
-        }
-        else {
-            signedInUser.leaveGroup(groupId);
-            updateUser(signedInUser.getUserId(), signedInUser);
-            updateGroup();
-        }*/
+        databaseRef.child("users").child(id).get().addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot != null){
+                User user = dataSnapshot.getValue(User.class);
+                user.getFriends().remove(signedInUser.getUserId());
+                databaseRef.child("users").child(id).setValue(user);
+            }
+        });
+        //Apaga do user em que estamos
+        signedInUser.getFriends().remove(position);
+        friends.remove(position);
+        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
+        adapter.notifyDataSetChanged();
     }
-    private void deleteFriend(String userID,String id){
+    /*private void deleteFriend(String userID,String id){
         databaseRef.child("users").child(userID).child("friends").child(id).removeValue();
-    }
+    }*/
 
-    private void updateUser(String userID,User user){
+    /*private void updateUser(String userID,User user){
         friends = new ArrayList<>();
-        databaseRef.child("users").child(userID).setValue(user);
         List<Friend> friends = new ArrayList<>();
         if (signedInUser.getFriends() != null) {
             for (User user1 : users) {
@@ -186,12 +160,11 @@ public class FriendsListFragment extends Fragment {
                     break;
             }
         }
+        databaseRef.child("users").child(userID).setValue(user);
 
-    }
+    }*/
 
-    private void deleteGroup(String userID){
-        databaseRef.child("users").child(userID).child("friends").removeValue();
-    }
+
 
 
 

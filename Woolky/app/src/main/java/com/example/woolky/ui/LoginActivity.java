@@ -108,8 +108,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        FirebaseAuth.getInstance().signOut();
-//        mGoogleSignInClient.signOut();
+        //FirebaseAuth.getInstance().signOut();
+        //mGoogleSignInClient.signOut();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
 
