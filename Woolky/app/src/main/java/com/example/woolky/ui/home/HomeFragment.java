@@ -74,6 +74,9 @@ public class HomeFragment extends Fragment {
 
         TextView numberOfWins = view.findViewById(R.id.numberOfWinsText);
         numberOfWins.setText("" + signedInUser.getStats().getTotalWins());
+
+        TextView stepsTaken = view.findViewById(R.id.stepsTaken);
+        stepsTaken.setText("" + ((HomeActivity) getActivity()).pedometer.getCurrentSteps());
     }
 
     @Override
