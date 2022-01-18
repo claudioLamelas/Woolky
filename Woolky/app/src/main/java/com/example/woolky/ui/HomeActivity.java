@@ -13,13 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.woolky.FriendsInvitesListener;
+import com.example.woolky.domain.friends.FriendsInvitesListener;
 import com.example.woolky.R;
-import com.example.woolky.UserChangesListener;
-import com.example.woolky.domain.FriendsInvite;
+import com.example.woolky.domain.user.UserChangesListener;
+import com.example.woolky.domain.friends.FriendsInvite;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.Pedometer;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.games.GameInvitesListener;
@@ -69,11 +69,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        permissionsGranted = Utils.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-
+        String[] permissions = new String[2];
+        permissions[0] = Manifest.permission.ACCESS_FINE_LOCATION;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Utils.checkPermission(this, Manifest.permission.ACTIVITY_RECOGNITION, ACTIVITY_RECOGNITION_CODE);
+            permissions[1] = Manifest.permission.ACTIVITY_RECOGNITION;
         }
+        permissionsGranted = Utils.askForPermission(this, permissions, FINE_LOCATION_CODE);
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             pedometer = new Pedometer(this);
@@ -90,13 +92,10 @@ public class HomeActivity extends AppCompatActivity {
 
         databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         DatabaseReference usersRef = databaseRef.child("users");
-        usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    User user = d.getValue(User.class);
-                    users.add(user);
-                }
+        usersRef.get().addOnSuccessListener(dataSnapshot -> {
+            for (DataSnapshot d : dataSnapshot.getChildren()) {
+                User user = d.getValue(User.class);
+                users.add(user);
             }
         });
 

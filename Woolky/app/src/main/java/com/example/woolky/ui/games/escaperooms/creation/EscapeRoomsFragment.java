@@ -1,4 +1,4 @@
-package com.example.woolky.ui.games.escaperooms;
+package com.example.woolky.ui.games.escaperooms.creation;
 
 import android.os.Bundle;
 
@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;

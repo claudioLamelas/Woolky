@@ -5,7 +5,7 @@
     android:id="@+id/groupLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.games.escaperooms.EscapeRoomsFragment">
+    tools:context=".ui.games.escaperooms.creation.EscapeRoomsFragment">
 
     <Button
         android:id="@+id/newEscapeRoomButton"

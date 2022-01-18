@@ -5,7 +5,7 @@
     android:id="@+id/inputSomethingLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.games.escaperooms.InputDataDialog">
+    tools:context=".ui.games.escaperooms.challenges.InputDataDialog">
 
     <EditText
         android:id="@+id/inputField"

@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Handler;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -72,7 +73,9 @@ public class Pedometer implements SensorEventListener {
     }
 
     public void startCounter() {
-        this.sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        if (!this.sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST)) {
+            new Handler().postDelayed(this::startCounter, 15000);
+        }
     }
 
     @Override

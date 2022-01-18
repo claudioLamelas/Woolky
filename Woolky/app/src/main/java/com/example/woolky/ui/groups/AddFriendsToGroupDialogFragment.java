@@ -2,7 +2,6 @@ package com.example.woolky.ui.groups;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -24,7 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.woolky.R;
 import com.example.woolky.domain.Group;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.Friend;
 import com.example.woolky.utils.MarginItemDecoration;

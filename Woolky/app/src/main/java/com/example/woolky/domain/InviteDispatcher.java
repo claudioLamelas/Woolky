@@ -2,6 +2,7 @@ package com.example.woolky.domain;
 
 import com.example.woolky.R;
 import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.ui.InviteFragment;
 import com.example.woolky.ui.games.GameInviteFragment;
 
 import java.util.ArrayList;

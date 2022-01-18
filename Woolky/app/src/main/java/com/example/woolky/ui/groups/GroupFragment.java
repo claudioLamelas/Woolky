@@ -20,17 +20,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
 import com.example.woolky.R;
 import com.example.woolky.domain.Group;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.ui.HomeActivity;
-import com.example.woolky.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;

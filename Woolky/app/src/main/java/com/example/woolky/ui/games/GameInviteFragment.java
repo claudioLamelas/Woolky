@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -15,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.woolky.domain.InviteDispatcher;
-import com.example.woolky.domain.InviteFragment;
+import com.example.woolky.ui.InviteFragment;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;

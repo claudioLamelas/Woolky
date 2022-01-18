@@ -1,4 +1,4 @@
-package com.example.woolky.ui.games.escaperooms;
+package com.example.woolky.ui.games.escaperooms.creation;
 
 import android.os.Bundle;
 

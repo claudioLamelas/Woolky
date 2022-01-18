@@ -122,19 +122,18 @@
                 android:id="@+id/peso_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
                 android:layout_marginTop="70dp"
-                android:text="User Color"
+                android:text="Map Icon Color"
                 android:textColor="#000000"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView25"
                 app:layout_constraintTop_toBottomOf="@+id/userName_profile" />
 
             <Button
                 android:id="@+id/userColorButton"
                 android:layout_width="75dp"
                 android:layout_height="59dp"
-                android:layout_marginEnd="60dp"
+                android:layout_marginEnd="32dp"
                 android:background="@drawable/shape_profile"
                 android:backgroundTint="#EC3535"
                 android:elevation="10dp"
@@ -160,18 +159,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="78dp"
+                android:layout_marginTop="75dp"
                 android:text="@string/visbility_map"
+                android:textColor="#000000"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/peso_profile" />
 
             <Spinner
                 android:id="@+id/visibility_spinner"
-                android:layout_width="202dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView25"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/userColorButton"
                 app:layout_constraintTop_toTopOf="@+id/textView25" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,12 +17,22 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class Utils {
 
-    public static boolean checkPermission(Activity context, String permission, int code) {
-        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(context, new String[]{permission}, code);
-            return false;
-        } else
-            return true;
+    public static boolean askForPermission(Activity context, String[] permissions, int code) {
+        boolean allGranted = true;
+        for (String s : permissions) {
+            if (ContextCompat.checkSelfPermission(context, s) == PackageManager.PERMISSION_DENIED) {
+                allGranted = false;
+                break;
+            }
+        }
+        if (!allGranted)
+            ActivityCompat.requestPermissions(context, permissions, code);
+
+        return allGranted;
+    }
+
+    public static boolean checkPermission(Activity context, String permission) {
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static BitmapDescriptor BitmapFromVector(Drawable vectorDrawable, int color) {

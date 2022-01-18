@@ -2,18 +2,14 @@ package com.example.woolky.domain.games;
 
 import android.content.Context;
 import android.os.Build;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.woolky.domain.InviteDispatcher;
-import com.example.woolky.domain.InviteFragment;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.GameInviteFragment;
-import com.example.woolky.R;
 import com.example.woolky.domain.InviteState;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;

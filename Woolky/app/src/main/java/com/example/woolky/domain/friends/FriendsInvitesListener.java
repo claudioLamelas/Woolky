@@ -1,4 +1,4 @@
-package com.example.woolky;
+package com.example.woolky.domain.friends;
 
 import android.content.Context;
 import android.os.Build;
@@ -6,12 +6,12 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.woolky.domain.FriendsInvite;
+import com.example.woolky.domain.friends.FriendsInvite;
 import com.example.woolky.domain.InviteDispatcher;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.ui.friends.FriendsInviteFragment;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

@@ -1,4 +1,4 @@
-package com.example.woolky;
+package com.example.woolky.ui.friends;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,11 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.woolky.domain.FriendsInvite;
+import com.example.woolky.R;
+import com.example.woolky.domain.friends.FriendsInvite;
 import com.example.woolky.domain.InviteDispatcher;
-import com.example.woolky.domain.InviteFragment;
+import com.example.woolky.ui.InviteFragment;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.ui.HomeActivity;
 import com.google.firebase.database.DatabaseReference;

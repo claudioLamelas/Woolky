@@ -1,11 +1,9 @@
-package com.example.woolky;
+package com.example.woolky.domain.user;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
