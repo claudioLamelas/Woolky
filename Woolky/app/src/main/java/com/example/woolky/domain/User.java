@@ -1,6 +1,8 @@
 package com.example.woolky.domain;
 
 import android.net.Uri;
+import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -8,8 +10,13 @@ import com.example.woolky.utils.LatLngCustom;
 
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class User implements Serializable {
 
@@ -21,6 +28,9 @@ public class User implements Serializable {
     private LatLngCustom currentPosition;
     private ShareLocationType visibilityType;
     private Statistics stats;
+
+
+
 
     public User() {}
 
@@ -37,6 +47,8 @@ public class User implements Serializable {
         this.groupsIOwn = new ArrayList<>();
         //groupsIOwn.add("nao vazio");
         this.friends = new ArrayList<>();
+
+
     }
 
     public User(String userId, String userName, int level, int color, ShareLocationType visibilityType, String photoUrl) {
@@ -53,6 +65,7 @@ public class User implements Serializable {
         //groupsIOwn.add("nao vazio");
 
         this.friends = new ArrayList<>();
+
     }
 
 
@@ -177,6 +190,21 @@ public class User implements Serializable {
     public void changeFromBelongToOwn(String groupId) {
         createNewGroup(groupId);
         leaveGroup(groupId);
+
+    }
+
+    public void updateStepsAndDistance (int steps, double distance ) {
+
+        stats.updateStepsAndDistance(steps,distance);
+    }
+
+    /*
+    Por semana
+     */
+    public int getTotalNumberSteps(int week) {
+
+        return stats.getTotalNumberSteps(week);
+
 
     }
 }

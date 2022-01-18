@@ -122,9 +122,10 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            pedometer.saveData();
-        }
+        if (signedInUser != null)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                pedometer.saveData();
+            }
     }
 
     @Override
@@ -347,5 +348,16 @@ public class HomeActivity extends AppCompatActivity {
 
         if (tv2 != null)
             tv2.setText(distanceTravelled + " km");
+    }
+
+
+    public void updateUser() {
+        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
+    }
+
+    public void updateStepsDistanceBD(int currentSteps, double distanceTravelled) {
+        signedInUser.updateStepsAndDistance(currentSteps, distanceTravelled);
+        updateUser();
+
     }
 }

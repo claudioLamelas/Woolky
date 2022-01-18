@@ -62,4 +62,5 @@
     <string name="welcome_login">Welcome to Woolky</string>
     <string name="sign_in">Sign in</string>
     <string name="visbility_map">Visibility on Map</string>
+    <string name="estatisticas_top3">Mais passos - Top 3</string>
 </resources>

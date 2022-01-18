@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 
@@ -47,6 +54,7 @@ public class GroupFragment extends Fragment {
     private DatabaseReference databaseRef;
     private Group current;
     private User signedInUser;
+    private HomeActivity homeActivity;
 
 
     // TODO: Rename and change types of parameters
@@ -62,6 +70,15 @@ public class GroupFragment extends Fragment {
         Log.d("id", groupId);
         this.databaseRef = databaseRef;
 
+
+    }
+
+
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         databaseRef.child("groups").child(groupId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
@@ -71,18 +88,6 @@ public class GroupFragment extends Fragment {
 
             }
         });
-    }
-
-
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -212,13 +217,105 @@ public class GroupFragment extends Fragment {
         });
 
 
-        HomeActivity homeActivity = ((HomeActivity) getActivity());
+        homeActivity = ((HomeActivity) getActivity());
         signedInUser = homeActivity.getSignedInUser();
 
+        databaseRef.child("groups").child(groupId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                current = dataSnapshot.getValue(Group.class);
+
+                ListView topMembersSteps = view.findViewById(R.id.top3_members);
+                TopMembersGroupAdapter adapter = new TopMembersGroupAdapter(homeActivity, topMembersMostSteps(), getWeekDay());
+                topMembersSteps.setAdapter(adapter);
+
+            }
+        });
 
 
 
 
+
+
+    }
+
+    private int getWeekDay() {
+        Calendar now = Calendar.getInstance();
+        //SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
+
+        ArrayList<String> days = new ArrayList<>(7);
+        int week = -now.get(GregorianCalendar.DAY_OF_WEEK) + 2; //add 2 if your week start on monday
+
+        return week;
+    }
+
+    private int share;
+
+    private List<User> topMembersMostSteps() {
+
+        ArrayList<User> top3Members = new ArrayList<>(3);
+
+        List<String> copyMembers = current.getMembers();
+        int week = getWeekDay();
+        int max1 = 0, max2 = 0, max3 = 0;
+
+        List<Pair<User, Integer>> membersSteps = new ArrayList<>();
+
+        share = 0;
+        List<User> all = homeActivity.getUsers();
+
+        for (User user: all) {
+
+            if (copyMembers.contains(user.getUserId()))
+                membersSteps.add(new Pair<>(user, user.getTotalNumberSteps(week)));
+
+
+/*            databaseRef.child("users").child(userId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                @Override
+                public void onSuccess(DataSnapshot dataSnapshot) {
+
+                    User user = dataSnapshot.getValue(User.class);
+
+                    updateShare();
+
+
+                }
+            });*/
+
+
+        }
+
+
+
+        for ( Pair<User, Integer> user : membersSteps) {
+
+            if (user.second > max1){
+                top3Members.add(0, user.first);
+                max3 = max2;
+                max2 = max1;
+                max1 = user.second;
+            }
+            else if(user.second > max2){
+                top3Members.add(1, user.first);
+                max3 = max2;
+                max2 = user.second;
+
+            }
+            else if(user.second > max3){
+                top3Members.add(2, user.first);
+                max3 = user.second;
+            }
+
+        }
+
+
+
+        return top3Members;
+
+    }
+
+    private void updateShare() {
+        share++;
     }
 
     private void inviteFriendsToGroup() {

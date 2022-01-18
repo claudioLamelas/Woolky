@@ -96,12 +96,15 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemSelec
         switch (chosen) {
             case ALL:
                 spin.setSelection(0);
+                break;
 
             case FRIENDS_ONLY:
                 spin.setSelection(1);
+                break;
 
             case NOBODY:
                 spin.setSelection(2);
+                break;
 
         }
 

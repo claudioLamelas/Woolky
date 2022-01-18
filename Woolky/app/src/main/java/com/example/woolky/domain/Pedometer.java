@@ -66,6 +66,9 @@ public class Pedometer implements SensorEventListener {
         }
         editor.putInt(CURRENT_DAY, LocalDateTime.now().getDayOfMonth());
         editor.apply();
+
+        activity.updateStepsDistanceBD(currentSteps, getDistanceTravelled());
+
     }
 
     public void startCounter() {
