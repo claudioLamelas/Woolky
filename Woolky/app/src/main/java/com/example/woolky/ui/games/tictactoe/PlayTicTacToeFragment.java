@@ -100,7 +100,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
         HomeActivity activity = (HomeActivity) getActivity();
         permissionsGranted = activity.isPermissionsGranted();
         if (!permissionsGranted) {
-            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 114);
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionsGranted)
                 activity.setPermissionsGranted(true);
         }

@@ -27,6 +27,11 @@ import com.example.woolky.R;
 import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.escaperooms.Quiz;
 import com.example.woolky.ui.games.FinishGameDialog;
+import com.example.woolky.ui.games.escaperooms.challenges.CodeNumberDialog;
+import com.example.woolky.ui.games.escaperooms.challenges.FastClickDialog;
+import com.example.woolky.ui.games.escaperooms.challenges.ImitateSequenceDialog;
+import com.example.woolky.ui.games.escaperooms.challenges.InputDataDialog;
+import com.example.woolky.ui.games.escaperooms.challenges.ShowQuizDialog;
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
@@ -92,7 +97,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         HomeActivity activity = (HomeActivity) getActivity();
         permissionsGranted = activity.isPermissionsGranted();
         if (!permissionsGranted) {
-            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionsGranted)
                 activity.setPermissionsGranted(true);
         }
@@ -158,17 +163,19 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                             "", EditorInfo.TYPE_CLASS_NUMBER);
                     inputDataDialog.show(getChildFragmentManager(), "finalCode");
                 } else {
-                    Random random = new Random();
-                    int x = random.nextInt(2);
-                    if (x == 0 && !escapeRoomGame.getEscapeRoom().getQuizzes().isEmpty()) {
-                        Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
-                                .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
-                        ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
-                        dialog.show(getChildFragmentManager(), "quiz");
-                    } else {
-                        ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
-                        dialog1.show(getChildFragmentManager(), "seq");
-                    }
+                    FastClickDialog fastClickDialog = new FastClickDialog(polyline);
+                    fastClickDialog.show(getChildFragmentManager(), "fast");
+//                    Random random = new Random();
+//                    int x = random.nextInt(2);
+//                    if (x == 0 && !escapeRoomGame.getEscapeRoom().getQuizzes().isEmpty()) {
+//                        Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
+//                                .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
+//                        ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
+//                        dialog.show(getChildFragmentManager(), "quiz");
+//                    } else {
+//                        ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
+//                        dialog1.show(getChildFragmentManager(), "seq");
+//                    }
                 }
             }
         });

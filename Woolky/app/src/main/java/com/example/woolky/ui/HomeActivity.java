@@ -69,11 +69,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        permissionsGranted = Utils.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-
+        String[] permissions = new String[2];
+        permissions[0] = Manifest.permission.ACCESS_FINE_LOCATION;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Utils.checkPermission(this, Manifest.permission.ACTIVITY_RECOGNITION, ACTIVITY_RECOGNITION_CODE);
+            permissions[1] = Manifest.permission.ACTIVITY_RECOGNITION;
         }
+        permissionsGranted = Utils.askForPermission(this, permissions, FINE_LOCATION_CODE);
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             pedometer = new Pedometer(this);

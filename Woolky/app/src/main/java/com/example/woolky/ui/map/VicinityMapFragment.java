@@ -69,7 +69,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
 
         permissionsGranted = activity.isPermissionsGranted();
         if (!permissionsGranted) {
-            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionsGranted)
                 activity.setPermissionsGranted(true);
         }

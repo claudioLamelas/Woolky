@@ -19,7 +19,7 @@ import com.example.woolky.R;
 import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.FriendsListFragment;
-import com.example.woolky.ui.games.escaperooms.EscapeRoomsFragment;
+import com.example.woolky.ui.games.escaperooms.creation.EscapeRoomsFragment;
 import com.example.woolky.ui.groups.GroupsListFragment;
 
 import java.text.SimpleDateFormat;

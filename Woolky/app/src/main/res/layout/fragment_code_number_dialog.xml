@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark"
-    tools:context=".ui.games.escaperooms.CodeNumberDialog">
+    tools:context=".ui.games.escaperooms.challenges.CodeNumberDialog">
 
     <TextView
         android:id="@+id/codeNumber"

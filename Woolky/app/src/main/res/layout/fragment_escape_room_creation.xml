@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="10dp"
-    tools:context=".ui.games.escaperooms.EscapeRoomCreationFragment">
+    tools:context=".ui.games.escaperooms.creation.EscapeRoomCreationFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/escapeRoomCreationMap"

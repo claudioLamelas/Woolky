@@ -1,4 +1,4 @@
-package com.example.woolky.ui.games.escaperooms;
+package com.example.woolky.ui.games.escaperooms.creation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,6 +27,7 @@ import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.user.User;
+import com.example.woolky.ui.games.escaperooms.challenges.InputDataDialog;
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
 import com.example.woolky.utils.Triple;
@@ -97,7 +98,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         HomeActivity activity = (HomeActivity) getActivity();
         permissionsGranted = activity.isPermissionsGranted();
         if (!permissionsGranted) {
-            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionsGranted)
                 activity.setPermissionsGranted(true);
         }

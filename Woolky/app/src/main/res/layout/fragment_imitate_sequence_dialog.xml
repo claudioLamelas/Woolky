@@ -5,7 +5,7 @@
     android:id="@+id/agrupadorDeTiles"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.games.escaperooms.ImitateSequenceDialog">
+    tools:context=".ui.games.escaperooms.challenges.ImitateSequenceDialog">
 
     <FrameLayout
         android:id="@+id/tile0"
