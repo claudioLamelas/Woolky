@@ -6,18 +6,33 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
+import com.example.woolky.R;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class Utils {
 
-    public static void checkPermission(Activity context, String permission, int code) {
-        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(context, new String[]{permission}, code);
+    public static boolean askForPermission(Activity context, String[] permissions, int code) {
+        boolean allGranted = true;
+        for (String s : permissions) {
+            if (ContextCompat.checkSelfPermission(context, s) == PackageManager.PERMISSION_DENIED) {
+                allGranted = false;
+                break;
+            }
         }
+        if (!allGranted)
+            ActivityCompat.requestPermissions(context, permissions, code);
+
+        return allGranted;
+    }
+
+    public static boolean checkPermission(Activity context, String permission) {
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static BitmapDescriptor BitmapFromVector(Drawable vectorDrawable, int color) {
@@ -36,5 +51,9 @@ public class Utils {
 
         // after generating our bitmap we are returning our bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    public static Drawable getUserDrawable(FragmentActivity activity) {
+        return ContextCompat.getDrawable(activity, R.drawable.ic_android_24dp);
     }
 }

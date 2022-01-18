@@ -3,7 +3,8 @@
     <!-- Custom colors -->
     <color name="colorPrimary">#4AA1D3</color>
     <color name="colorPrimaryDark">#2576A5</color>
-    <color name="colorAccent">#30D96E</color>
+<!--    <color name="colorAccent">#30D96E</color>-->
+    <color name="colorAccent">#2576A5</color>
     <color name="profile_main">#A7C9E4</color>
     <color name="user_default_color">#2576A5</color>
 

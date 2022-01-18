@@ -3,13 +3,14 @@ package com.example.woolky.ui.friends;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.net.Uri;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +22,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.woolky.HomeActivity;
+import com.bumptech.glide.Glide;
+import com.example.woolky.domain.games.GameInviteSender;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.ShareLocationType;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.utils.MarginItemDecoration;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +39,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -53,12 +57,13 @@ public class FriendsListFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_friends_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_friends_list, container, false);
         recyclerView = view.findViewById(R.id.friends_list);
         noFriendsMessage = view.findViewById(R.id.no_friends_message);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new MarginItemDecoration(getResources().getDimensionPixelSize(R.dimen.friends_li_padding)));
         // TODO: Remove this mock data and get DTOs from somewhere else (firebase, ...)
+        view.findViewById(R.id.friendsBackButton).setOnClickListener(v -> getActivity().onBackPressed());
         HomeActivity homeActivity = ((HomeActivity) getActivity());
         databaseRef = homeActivity.getDatabaseRef();
         signedInUser = homeActivity.getSignedInUser();
@@ -170,15 +175,15 @@ public class FriendsListFragment extends Fragment {
     private void updateUser(String userID,User user){
         friends = new ArrayList<>();
         databaseRef.child("users").child(userID).setValue(user);
-        if (user.getFriends()!=null)
-        {
-            for (String id : user.getFriends()){
-                for (User user_n : users){
-                    if (user_n.getUserId().equals(id)){
-                        Friend friend = new Friend(user_n.getUserName(),user_n.getUserId());
-                        friends.add(friend);
-                    }
+        List<Friend> friends = new ArrayList<>();
+        if (signedInUser.getFriends() != null) {
+            for (User user1 : users) {
+                if (signedInUser.getFriends().contains(user1.getUserId())) {
+                    Friend friend = new Friend(user1.getUserId(), user1.getUserName(), user1.getPhotoUrl());
+                    friends.add(friend);
                 }
+                if (friends.size() == signedInUser.getFriends().size())
+                    break;
             }
         }
 
@@ -189,7 +194,9 @@ public class FriendsListFragment extends Fragment {
     }
 
 
-    static class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
+
+    class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
+
         private List<Friend> friends;
 
         public FriendsListAdapter(List<Friend> friends) {
@@ -210,9 +217,14 @@ public class FriendsListFragment extends Fragment {
             );
             //viewHolder.avatar = ...
             holder.name.setText(friends.get(position).name);
-            holder.playButton.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), "Play with " + holder.name.getText(), Toast.LENGTH_SHORT).show()
+            holder.playButton.setOnClickListener(view -> {
+                HomeActivity homeActivity = (HomeActivity) getActivity();
+                new GameInviteSender(homeActivity,
+                        Arrays.asList(homeActivity.getSignedInUser().getUserId(), friends.get(position).id),
+                        null, null).createGameInvite();
+            }
             );
+            Glide.with(getActivity()).load(Uri.parse(friends.get(position).photoUrl)).circleCrop().into(holder.avatar);
         }
 
         @Override
@@ -220,16 +232,16 @@ public class FriendsListFragment extends Fragment {
             return friends.size();
         }
 
-        static class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
             public View view;
-            // public ImageView avatar; // TODO: Avatar should be specific to user. It is a mock for now
+            public ImageView avatar;
             public TextView name;
             public Button playButton;
 
             ViewHolder(View view) {
                 super(view);
                 this.view = view;
-                // this.avatar = itemView.findViewById(R.id.avatar);
+                this.avatar = itemView.findViewById(R.id.avatar);
                 this.name = itemView.findViewById(R.id.name);
                 this.playButton = itemView.findViewById(R.id.play_button);
             }

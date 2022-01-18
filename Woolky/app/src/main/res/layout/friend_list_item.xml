@@ -14,21 +14,23 @@
         android:layout_height="56dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/profile_user"
-        app:tint="@color/colorPrimary" />
+        android:src="@drawable/profile_user" />
 
     <TextView
         android:id="@+id/name"
-        android:text="@id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignTop="@+id/play_button"
+        android:layout_alignBottom="@+id/play_button"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="13dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="13dp"
         android:layout_toStartOf="@id/play_button"
         android:layout_toEndOf="@id/avatar"
         android:gravity="start"
         android:maxLines="1"
+        android:text="@id/text"
         android:textAppearance="?attr/title"
         android:textColor="@color/black"
         android:textSize="16sp" />
@@ -39,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/play" />
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/play"
+        android:textColor="#FFFFFF" />
 </RelativeLayout>

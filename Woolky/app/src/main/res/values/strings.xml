@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Woolky</string>
     <string name="title_activity_maps">Woolky</string>
@@ -30,6 +31,36 @@
     <string name="no_groups">You don\'t have any groups, yet!</string>
     <string name="play">Play</string>
     <string name="string_today">Today</string>
+    <string name="your_Groups">Your Groups</string>
+    <string name="members">Members</string>
     <string name="already_friends">Already Friends</string>
-
+    <string name="groups_name">Group\'s Name</string>
+    <string name="create_group">Create new Group</string>
+    <string name="tutorial">Welcome to the Escape Room editor! Lets go over the basics:\n\n
+        <ul>
+            <li><b>Walls</b> - To build some walls all you have to do is to make a long click wherever you want the next wall to end.\n
+                If you want to connect two points that already exist, click in one of them and then two times on the other one (slowly).</li>
+            \n\n
+            <li><b>Wall Colors</b> - To determine which walls will need to be unlocked you have to
+                make them RED, for that click one time in the desired wall and voilá.\nBut all escape
+                rooms need to have a way out, so to specify the finishing wall you click two times in a wall to make it BLUE.</li>
+            \n\n
+            <li><b>Delete Walls</b> - If you want to delete a wall, activate the trash can button and
+            click in the wall that you want to delete.</li>
+            \n\n
+            <li><b>Start Position</b> - This button\'s purpose is to specify where you want the players
+                to begin to play. For that you activate this button and make a long click on the map wherever you want them to start.</li>
+            \n\n
+            <li><b>Quizzes</b> - Here is the place where you can add a new quiz or edit/delete
+                existing ones. These quizzes will be shown to the players when trying to unlock the red walls.</li>
+            \n\n
+            <li><b>Save</b> - Don\'t forget to save your escape room with a cool name :D</li>
+        </ul>
+    </string>
+    <string name="user_color">User color on the map</string>
+    <string name="play_escape">Play Escape Room</string>
+    <string name="welcome_login">Welcome to Woolky</string>
+    <string name="sign_in">Sign in</string>
+    <string name="visbility_map">Visibility on Map</string>
+    <string name="estatisticas_top3">Mais passos - Top 3</string>
 </resources>

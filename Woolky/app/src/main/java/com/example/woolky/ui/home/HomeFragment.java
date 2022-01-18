@@ -15,11 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.annotation.GlideModule;
-import com.example.woolky.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.FriendsListFragment;
+import com.example.woolky.ui.games.escaperooms.creation.EscapeRoomsFragment;
 import com.example.woolky.ui.groups.GroupsListFragment;
 
 import java.text.SimpleDateFormat;
@@ -70,9 +70,16 @@ public class HomeFragment extends Fragment {
         name.setText(signedInUser.getUserName());
 
         ImageView photo = view.findViewById(R.id.photo);
-        //photo.setImageURI(null);
-        //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
         Glide.with(getActivity()).load(Uri.parse(signedInUser.getPhotoUrl())).circleCrop().into(photo);
+
+        TextView numberOfWins = view.findViewById(R.id.numberOfWinsText);
+        numberOfWins.setText("" + signedInUser.getStats().getTotalWins());
+
+        TextView stepsTaken = view.findViewById(R.id.stepsTaken);
+        stepsTaken.setText("" + ((HomeActivity) getActivity()).pedometer.getCurrentSteps());
+
+        TextView distance = view.findViewById(R.id.distanceTravelledTV);
+        distance.setText(((HomeActivity) getActivity()).pedometer.getDistanceTravelled() + " km");
     }
 
     @Override
@@ -83,6 +90,7 @@ public class HomeFragment extends Fragment {
 
         Button friendsButton = view.findViewById(R.id.friendsButton);
         Button groupsButton = view.findViewById(R.id.groupsButton);
+        Button escapeRoomsButton = view.findViewById(R.id.escapeRoomsButton);
         friendsButton.setOnClickListener(v -> {
             // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment, new FriendsListFragment()).addToBackStack(null).commit();
@@ -90,6 +98,9 @@ public class HomeFragment extends Fragment {
         groupsButton.setOnClickListener(v -> {
             // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupsListFragment()).addToBackStack(null).commit();
+        });
+        escapeRoomsButton.setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment, new EscapeRoomsFragment()).addToBackStack(null).commit();
         });
     }
 

@@ -17,15 +17,13 @@ import android.os.Handler;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.example.woolky.HomeActivity;
-import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.LatLngCustom;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.utils.LatLngCustom;
 import com.example.woolky.domain.ShareLocationType;
-import com.example.woolky.domain.User;
-import com.example.woolky.ui.dialogs.ChallengesDialog;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.R;
-import com.example.woolky.ui.dialogs.UserInformationOnMapDialog;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -47,6 +45,7 @@ import java.util.List;
 
 
 public class VicinityMapFragment extends Fragment implements OnMapReadyCallback, LocationListener {
+
     private static final int FINE_LOCATION_CODE = 114;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -59,12 +58,21 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     private boolean mayUpdate = true;
 
     private Handler handler;
+    private boolean permissionsGranted;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         users = new ArrayList<>();
-        signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
+        HomeActivity activity = (HomeActivity) getActivity();
+        signedInUser = activity.getSignedInUser();
+
+        permissionsGranted = activity.isPermissionsGranted();
+        if (!permissionsGranted) {
+            permissionsGranted = Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+            if (permissionsGranted)
+                activity.setPermissionsGranted(true);
+        }
 
         return inflater.inflate(R.layout.fragment_vicinity_map, container, false);
     }
@@ -77,7 +85,6 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         handler = new Handler();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map) ;
-        Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
         OnMapReadyCallback cx = this;
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/");
@@ -102,57 +109,56 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         view.findViewById(R.id.recenterPositionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
+                if (currentPosition != null)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 18));
             }
         });
 
         view.findViewById(R.id.refreshButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                usersRef.child("users").get().addOnSuccessListener(dataSnapshot -> {
-                    users = getRecentUsers(dataSnapshot, true);
-                    mMap.clear();
-                    drawUsers(currentPosition, getContext());
-                });
+                if (currentPosition != null) {
+                    usersRef.child("users").get().addOnSuccessListener(dataSnapshot -> {
+                        users = getRecentUsers(dataSnapshot, true);
+                        mMap.clear();
+                        drawUsers(currentPosition, getContext());
+                    });
+                }
             }
         });
-
-        Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "PotentialBehaviorOverride"})
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         final Context cx = getActivity();
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(cx, R.raw.style_json));
-        Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                LatLng posicaoInicial = new LatLng(location.getLatitude(), location.getLongitude());
-                currentPosition = posicaoInicial;
 
-                updateCurrentPositionOnBD(currentPosition);
+        if (permissionsGranted) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                    drawUsers(currentPosition, getActivity());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+                    updateCurrentPositionOnBD(currentPosition);
+                }
 
-                drawUsers(posicaoInicial, cx);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicaoInicial, 16));
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        500, 0.5f, this);
+            });
+        } else
+            Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
+                    Toast.LENGTH_SHORT).show();
 
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(@NonNull Marker marker) {
-                        UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTag());
-                        dialog.show(getChildFragmentManager(), "userID");
-                    }
-                });
-            }
+        mMap.setOnInfoWindowClickListener(marker -> {
+            UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTag());
+            dialog.show(getChildFragmentManager(), "userID");
         });
-        Utils.checkPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 2, this);
     }
 
     private void drawUsers(LatLng posicaoInicial, Context cx) {
@@ -160,14 +166,21 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(myVectorDrawable, signedInUser.getColor())));
 
         for (User u : users) {
-            if (u.getVisibilityType() != ShareLocationType.NOBODY && !u.getUserId().equals(signedInUser.getUserId()) &&
-                u.getCurrentPosition() != null) {
-                Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
-                Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
-                        .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
+            if (!u.getUserId().equals(signedInUser.getUserId()) && u.getCurrentPosition() != null) {
+                if (u.getVisibilityType() == ShareLocationType.ALL) {
+                    Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
+                            .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
 
-                //Com isto será possivel armazenar dados de cada user no marker
-                marker.setTag(u);
+                    marker.setTag(u);
+                    
+                } else if (u.getVisibilityType() == ShareLocationType.FRIENDS_ONLY && signedInUser.isFriendsWith(u.getUserId())) {
+                    Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
+                            .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
+
+                    marker.setTag(u);
+                }
             }
         }
     }
@@ -175,14 +188,10 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     private List<User> getRecentUsers(DataSnapshot dataSnapshot, boolean isForcedUpdate) {
         HomeActivity homeActivity = (HomeActivity) getActivity();
         List<User> recentUsers = new ArrayList<>();
-        if (homeActivity.getUsers().isEmpty() || isForcedUpdate) {
-            for (DataSnapshot d : dataSnapshot.getChildren()) {
-                recentUsers.add(d.getValue(User.class));
-            }
-            homeActivity.setUsers(recentUsers);
-        } else {
-            recentUsers = homeActivity.getUsers();
+        for (DataSnapshot d : dataSnapshot.getChildren()) {
+            recentUsers.add(d.getValue(User.class));
         }
+        homeActivity.setUsers(recentUsers);
         return recentUsers;
     }
 
@@ -215,23 +224,19 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
         if (userMarker != null) {
             userMarker.remove();
             userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                    icon(Utils.BitmapFromVector(ContextCompat.getDrawable(getActivity(), R.drawable.ic_android_24dp), signedInUser.getColor())));
+                    icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
+        } else {
+            drawUsers(currentPosition, getActivity());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
         }
         updateCurrentPositionOnBD(currentPosition);
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
+    public void onProviderDisabled(@NonNull String provider) {
+        Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
+    public void onProviderEnabled(@NonNull String provider) {}
 }

@@ -3,6 +3,10 @@ package com.example.woolky.utils;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.geometry.Point;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationCalculator {
 
@@ -79,5 +83,99 @@ public class LocationCalculator {
             degreesMinutesSeconds[1] = String.valueOf(minutesLat);
         }
         degreesMinutesSeconds[2] = String.valueOf(seconds);
+    }
+
+    public static List<LatLng> calculatePositions(LatLng initialPosition, List<PairCustom<Double, Double>> circlesRelativePositions) {
+        List<LatLng> positions = new ArrayList<>();
+
+        LatLng previousPosition = initialPosition;
+        LatLng newPosition;
+        for (PairCustom<Double, Double> p : circlesRelativePositions) {
+            if (p.getFirst() <= 0) {
+                newPosition = getPositionXMetersBelow(previousPosition, p.getFirst().intValue() * -1, -1);
+            } else {
+                newPosition = getPositionXMetersBelow(previousPosition, p.getFirst().intValue(), 1);
+            }
+
+            if (p.getSecond() <= 0) {
+                newPosition = getPositionXMetersRight(newPosition, p.getSecond().intValue() * -1, -1);
+            } else {
+                newPosition = getPositionXMetersRight(newPosition, p.getSecond().intValue(), 1);
+            }
+
+            positions.add(newPosition);
+            previousPosition = newPosition;
+        }
+
+        return positions;
+    }
+
+    public static double distancePointToPoint(LatLng p1, LatLng p2) {
+        float[] results = new float[1];
+        Location.distanceBetween(p1.latitude, p1.longitude, p2.latitude, p2.longitude, results);
+        return results[0];
+    }
+
+    public static PairCustom<Double, Double> diferenceBetweenPoints(LatLng previousPosition, LatLng currentPosition) {
+        LatLng onlyLatitude = new LatLng(currentPosition.latitude, previousPosition.longitude);
+        LatLng onlyLongitude = new LatLng(previousPosition.latitude, currentPosition.longitude);
+
+        //Com isto estou a verificar em que sentido é, se para a esquerda ou direita OU se para baixo ou para cima
+        //Uma latDif < 0 quer dizer que está em baixo
+        //Uma lonDif < 0 quer dizer que está à esquerda
+        double latDif = (currentPosition.latitude - previousPosition.latitude) < 0 ? 1 : -1;
+        double lonDif = (currentPosition.longitude - previousPosition.longitude) < 0 ? -1 : 1;
+
+        float[] resultsLat = new float[1];
+        Location.distanceBetween(previousPosition.latitude, previousPosition.longitude,
+                onlyLatitude.latitude, onlyLatitude.longitude, resultsLat);
+
+        float[] resultsLon = new float[1];
+        Location.distanceBetween(previousPosition.latitude, previousPosition.longitude,
+                onlyLongitude.latitude, onlyLongitude.longitude, resultsLon);
+
+        return new PairCustom<>(resultsLat[0] * latDif, resultsLon[0] * lonDif);
+    }
+
+    public static boolean doLineSegmentsIntersect(Point p, Point p2, Point q, Point q2) {
+        Point r = subtractPoints(p2, p);
+        Point s = subtractPoints(q2, q);
+
+        double uNumerator = crossProduct(subtractPoints(q, p), r);
+        double denominator = crossProduct(r, s);
+
+        if (denominator == 0) {
+            // lines are paralell
+            return false;
+        }
+
+        double u = uNumerator / denominator;
+        double t = crossProduct(subtractPoints(q, p), s) / denominator;
+
+        return (t >= 0) && (t <= 1) && (u >= 0) && (u <= 1);
+    }
+
+    /**
+     * Calculate the cross product of the two points.
+     *
+     * @param point1 point1 point object with x and y coordinates
+     * @param point2 point2 point object with x and y coordinates
+     *
+     * @return the cross product result as a float
+     */
+    private static double crossProduct(Point point1, Point point2) {
+        return point1.x * point2.y - point1.y * point2.x;
+    }
+
+    /**
+     * Subtract the second point from the first.
+     *
+     * @param point1 point1 point object with x and y coordinates
+     * @param point2 point2 point object with x and y coordinates
+     *
+     * @return the subtraction result as a point object
+     */
+    private static Point subtractPoints(Point point1, Point point2) {
+        return new Point(point1.x - point2.x, point1.y - point2.y);
     }
 }
