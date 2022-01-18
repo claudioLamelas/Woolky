@@ -2,6 +2,7 @@ package com.example.woolky.ui.groups;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,29 +89,6 @@ public class GroupsListFragment extends Fragment{
 
 
 
-
-        //updateUI();
-
-//        usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-//            @Override
-//            public void onSuccess(DataSnapshot dataSnapshot) {
-//                boolean newAccount = true;
-//                for (DataSnapshot d : dataSnapshot.getChildren()) {
-//                    User u = d.getValue(User.class);
-//                    if (u.getUserId().equals(user.getUid())) {
-//                        newAccount = false;
-//                    }
-//                }
-//                if (newAccount) {
-//                    User newUser = new User(user.getUid(), user.getDisplayName(), 0, R.color.user_default_color, ShareLocationType.ALL, user.getPhotoUrl().toString());
-//                    usersRef.child(newUser.getUserId()).setValue(newUser).addOnSuccessListener((unused -> updateUI(user)));
-//                } else {
-//                    updateUI(user);
-//                }
-//            }
-//        });
-
-
     }
 
     private void updateUIList() {
@@ -127,22 +105,35 @@ public class GroupsListFragment extends Fragment{
          */
         layout.removeAllViews();
 
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(10,20,10,10);
+
+
 
         TextView noGroupsOwn = new TextView(getContext());
         noGroupsOwn.setText("You don't own any group");
         noGroupsOwn.setTag("tv_no_groups_own");
+        noGroupsOwn.setLayoutParams(params);
+        noGroupsOwn.setGravity(Gravity.CENTER);
 
         TextView noGroupsBelong = new TextView(getContext());
         noGroupsBelong.setText("You don't belong to any group");
         noGroupsBelong.setTag("tv_no_groups_belong");
+        noGroupsBelong.setLayoutParams(params);
+        noGroupsBelong.setGravity(Gravity.CENTER);
 
         TextView groupsOwn = new TextView(getContext());
         groupsOwn.setText("Groups I Own");
         groupsOwn.setTag("tv_own");
+        groupsOwn.setLayoutParams(params);
+        groupsOwn.setGravity(Gravity.CENTER);
 
         TextView groupsBelong = new TextView(getContext());
         groupsBelong.setText("Groups I Belong");
         groupsBelong.setTag("tv_belong");
+        groupsBelong.setLayoutParams(params);
+        groupsBelong.setGravity(Gravity.CENTER);
+
 
 
         if (!groupsIOwn.isEmpty()) {
@@ -190,6 +181,8 @@ public class GroupsListFragment extends Fragment{
 
                 });
 
+                params.setMargins(0,20,0,0);
+                btnTag.setLayoutParams(params);
                 layout.addView(btnTag);
                 //indexLastButton++;
             }
@@ -240,6 +233,8 @@ public class GroupsListFragment extends Fragment{
 
                 });
 
+                params.setMargins(0,20,0,0);
+                btnTag.setLayoutParams(params);
                 layout.addView(btnTag);
             }
         }
@@ -248,10 +243,7 @@ public class GroupsListFragment extends Fragment{
             layout.addView(noGroupsBelong);
 
         }
-
-
-
-
+        
 
     }
 

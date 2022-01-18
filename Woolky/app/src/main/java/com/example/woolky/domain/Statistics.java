@@ -57,6 +57,10 @@ public class Statistics {
         return weeklySteps;
     }
 
+    public boolean getFirstUse() {
+        return firstUse;
+    }
+
     public void updateStepsAndDistance (int steps, double distance ) {
 
         if (weeklySteps == null){
@@ -66,35 +70,35 @@ public class Statistics {
             weeklyDistance = new ArrayList<>();
         }
 
-        int lastPos;
-        if (firstUse)
-            lastPos = 0;
-        else
-            lastPos = (positionWeek == 0) ? 6 : positionWeek-1;
-
-
         String currentDate = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(new Date());
-
-        if (weeklySteps.get(lastPos).getFirst().equals(currentDate)){
-            PairCustom<String, Integer> s = weeklySteps.get(lastPos);
-            s.setSecond(steps);
-            weeklySteps.add(lastPos, s);
-
-            PairCustom<String, Double> d = weeklyDistance.get(lastPos);
-            d.setSecond(distance);
-            weeklyDistance.add(lastPos, d);
-        }
-        else {
+        int lastPos;
+        if (firstUse) {
             weeklySteps.add(positionWeek, new PairCustom<>(currentDate, steps));
             weeklyDistance.add(positionWeek, new PairCustom<>(currentDate, distance));
+            positionWeek = (positionWeek + 1) % 7;
+        }
+        else {
+            lastPos = (positionWeek == 0) ? 6 : positionWeek - 1;
+
+            if (weeklySteps.get(lastPos).getFirst().equals(currentDate)){
+                PairCustom<String, Integer> s = weeklySteps.get(lastPos);
+                s.setSecond(steps);
+                weeklySteps.set(lastPos, s);
+
+
+                PairCustom<String, Double> d = weeklyDistance.get(lastPos);
+                d.setSecond(distance);
+                weeklyDistance.set(lastPos, d);
+            }
+            else {
+                weeklySteps.add(positionWeek, new PairCustom<>(currentDate, steps));
+                weeklyDistance.add(positionWeek, new PairCustom<>(currentDate, distance));
+                positionWeek = (positionWeek + 1) % 7;
+            }
         }
 
 
-
-        positionWeek = (positionWeek + 1) % 7;
         firstUse = false;
-
-
     }
 
     /*

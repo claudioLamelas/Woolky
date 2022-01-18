@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.example.woolky.R;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 
 import java.util.List;
 

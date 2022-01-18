@@ -165,6 +165,8 @@ public class HomeActivity extends AppCompatActivity {
 
                 clearBackStack();
 
+                updateStepsDistanceBD(pedometer.getCurrentSteps(), pedometer.getDistanceTravelled());
+
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, selected).commit();
                 return true;
             };
