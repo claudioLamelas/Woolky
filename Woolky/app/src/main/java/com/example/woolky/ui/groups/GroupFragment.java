@@ -217,104 +217,83 @@ public class GroupFragment extends Fragment {
 
         homeActivity = ((HomeActivity) getActivity());
         signedInUser = homeActivity.getSignedInUser();
+        List<User> membersUsers = new ArrayList<>();
 
         databaseRef.child("groups").child(groupId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 current = dataSnapshot.getValue(Group.class);
 
-                ListView topMembersSteps = view.findViewById(R.id.top3_members);
-                TopMembersGroupAdapter adapter = new TopMembersGroupAdapter(homeActivity, topMembersMostSteps(), getWeekDay());
-                topMembersSteps.setAdapter(adapter);
+                List<String> m = current.getMembers();
+
+                for (String id: m) {
+                    databaseRef.child("users").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                        @Override
+                        public void onSuccess(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            membersUsers.add(user);
+
+                            if (membersUsers.size() == m.size())
+                                handleTheAdapter(view, membersUsers);
+                        }
+                    });
+                }
+
 
             }
         });
 
 
+    }
 
-
-
-
+    private void handleTheAdapter(View view, List<User> users) {
+        ListView topMembersSteps = view.findViewById(R.id.top3_members);
+        TopMembersGroupAdapter adapter = new TopMembersGroupAdapter(homeActivity, topMembersMostSteps(users), getWeekDay());
+        topMembersSteps.setAdapter(adapter);
     }
 
     private int getWeekDay() {
         Calendar now = Calendar.getInstance();
-        //SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
-
         ArrayList<String> days = new ArrayList<>(7);
         int week = -now.get(GregorianCalendar.DAY_OF_WEEK) + 2; //add 2 if your week start on monday
 
         return week;
     }
 
-    private int share;
 
-    private List<User> topMembersMostSteps() {
+    private List<User> topMembersMostSteps(List<User> users) {
 
         ArrayList<User> top3Members = new ArrayList<>(3);
 
-        List<String> copyMembers = current.getMembers();
         int week = getWeekDay();
         int max1 = 0, max2 = 0, max3 = 0;
 
-        List<Pair<User, Integer>> membersSteps = new ArrayList<>();
+        for ( User user : users) {
+            int steps = user.getTotalNumberSteps(week);
 
-        share = 0;
-        List<User> all = homeActivity.getUsers();
-
-        for (User user: all) {
-
-            if (copyMembers.contains(user.getUserId()))
-                membersSteps.add(new Pair<>(user, user.getTotalNumberSteps(week)));
-
-
-/*            databaseRef.child("users").child(userId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                @Override
-                public void onSuccess(DataSnapshot dataSnapshot) {
-
-                    User user = dataSnapshot.getValue(User.class);
-
-                    updateShare();
-
-
-                }
-            });*/
-
-
-        }
-
-
-
-        for ( Pair<User, Integer> user : membersSteps) {
-
-            if (user.second > max1){
-                top3Members.add(0, user.first);
+            if (steps > max1){
+                top3Members.add(0, user);
                 max3 = max2;
                 max2 = max1;
-                max1 = user.second;
+                max1 = steps;
             }
-            else if(user.second > max2){
-                top3Members.add(1, user.first);
+            else if(steps > max2){
+                top3Members.add(1, user);
                 max3 = max2;
-                max2 = user.second;
+                max2 = steps;
 
             }
-            else if(user.second > max3){
-                top3Members.add(2, user.first);
-                max3 = user.second;
+            else if(steps > max3){
+                top3Members.add(2, user);
+                max3 = steps;
             }
 
         }
-
-
 
         return top3Members;
 
     }
-
-    private void updateShare() {
-        share++;
-    }
+    
 
     private void inviteFriendsToGroup() {
 
