@@ -53,7 +53,7 @@ public class EscapeRoom {
         this.userStartPosition = null;
     }
 
-    public void drawEscapeRoom(LatLng initialPosition, GoogleMap mMap) {
+    public void drawEscapeRoom(LatLng initialPosition, GoogleMap mMap, double vertexRadius) {
         vertex.clear();
         polylines.clear();
 
@@ -61,7 +61,7 @@ public class EscapeRoom {
                 circlesRelativePositions);
 
         for (LatLng p : circlePositions) {
-            Circle c = mMap.addCircle(new CircleOptions().center(p).radius(5)
+            Circle c = mMap.addCircle(new CircleOptions().center(p).radius(vertexRadius)
                     .fillColor(Color.BLACK).clickable(true));
             vertex.add(c);
         }

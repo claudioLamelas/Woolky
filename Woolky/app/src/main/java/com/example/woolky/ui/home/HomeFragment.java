@@ -77,6 +77,9 @@ public class HomeFragment extends Fragment {
 
         TextView stepsTaken = view.findViewById(R.id.stepsTaken);
         stepsTaken.setText("" + ((HomeActivity) getActivity()).pedometer.getCurrentSteps());
+
+        TextView distance = view.findViewById(R.id.distanceTravelledTV);
+        distance.setText(((HomeActivity) getActivity()).pedometer.getDistanceTravelled() + " km");
     }
 
     @Override

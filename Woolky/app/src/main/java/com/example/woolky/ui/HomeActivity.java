@@ -338,9 +338,14 @@ public class HomeActivity extends AppCompatActivity {
         this.permissionsGranted = permissionsGranted;
     }
 
-    public void updateHomeSteps(int currentSteps) {
+    public void updateHomeStats(int currentSteps, double distanceTravelled) {
         TextView tv = findViewById(R.id.stepsTaken);
+        TextView tv2 = findViewById(R.id.distanceTravelledTV);
+
         if (tv != null)
             tv.setText("" + currentSteps);
+
+        if (tv2 != null)
+            tv2.setText(distanceTravelled + " km");
     }
 }

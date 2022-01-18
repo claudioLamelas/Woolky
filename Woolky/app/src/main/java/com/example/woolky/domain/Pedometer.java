@@ -16,6 +16,7 @@ import com.example.woolky.ui.HomeActivity;
 
 import org.w3c.dom.Text;
 
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,6 +24,9 @@ import java.time.ZoneId;
 public class Pedometer implements SensorEventListener {
 
     public static final String PREVIOUS_TOTAL_STEPS = "previousTotalSteps";
+    public static final String CURRENT_DAY = "currentDay";
+    //IN METERS
+    public static final double AVERAGE_STEP_LENGTH = 0.74;
 
     private final HomeActivity activity;
     private final SensorManager sensorManager;
@@ -42,7 +46,7 @@ public class Pedometer implements SensorEventListener {
     private void loadData() {
         SharedPreferences sharedPreferences = activity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         previousTotalSteps = sharedPreferences.getFloat(PREVIOUS_TOTAL_STEPS, 0f);
-        int day = sharedPreferences.getInt("currentDay", 1);
+        int day = sharedPreferences.getInt(CURRENT_DAY, 1);
 
         if (day < LocalDateTime.now().getDayOfMonth())
             previousTotalSteps = 0f;
@@ -52,7 +56,7 @@ public class Pedometer implements SensorEventListener {
     public void saveData() {
         SharedPreferences sharedPreferences = activity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
 
-        int day = sharedPreferences.getInt("currentDay", 1);
+        int day = sharedPreferences.getInt(CURRENT_DAY, 1);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (day < LocalDateTime.now().getDayOfMonth()) {
@@ -60,7 +64,7 @@ public class Pedometer implements SensorEventListener {
         } else {
             editor.putFloat(PREVIOUS_TOTAL_STEPS, previousTotalSteps);
         }
-        editor.putInt("currentDay", LocalDateTime.now().getDayOfMonth());
+        editor.putInt(CURRENT_DAY, LocalDateTime.now().getDayOfMonth());
         editor.apply();
     }
 
@@ -76,7 +80,7 @@ public class Pedometer implements SensorEventListener {
         float totalSteps = event.values[0];
         currentSteps = (int) Math.abs((totalSteps - previousTotalSteps));
         if (activity.areWeHome()) {
-            activity.updateHomeSteps(currentSteps);
+            activity.updateHomeStats(currentSteps, getDistanceTravelled());
         }
     }
 
@@ -86,5 +90,10 @@ public class Pedometer implements SensorEventListener {
 
     public int getCurrentSteps() {
         return currentSteps;
+    }
+
+    public double getDistanceTravelled() {
+        double distance = (currentSteps * AVERAGE_STEP_LENGTH / 1000);
+        return Math.round(distance * 100) / 100.0;
     }
 }
