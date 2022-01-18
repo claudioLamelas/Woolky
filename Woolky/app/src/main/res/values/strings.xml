@@ -61,4 +61,5 @@
     <string name="play_escape">Play Escape Room</string>
     <string name="welcome_login">Welcome to Woolky</string>
     <string name="sign_in">Sign in</string>
+    <string name="visbility_map">Visibility on Map</string>
 </resources>
