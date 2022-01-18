@@ -19,9 +19,9 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.woolky.R;
-import com.example.woolky.domain.FriendsInvite;
+import com.example.woolky.domain.friends.FriendsInvite;
 import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.ui.HomeActivity;

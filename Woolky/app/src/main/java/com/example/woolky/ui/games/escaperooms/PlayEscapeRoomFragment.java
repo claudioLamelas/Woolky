@@ -18,14 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGameListener;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.escaperooms.Quiz;
 import com.example.woolky.ui.games.FinishGameDialog;
 import com.example.woolky.utils.LocationCalculator;

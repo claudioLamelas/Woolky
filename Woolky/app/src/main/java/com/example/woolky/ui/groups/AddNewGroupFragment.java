@@ -3,15 +3,12 @@ package com.example.woolky.ui.groups;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +17,7 @@ import android.widget.EditText;
 
 import com.example.woolky.R;
 import com.example.woolky.domain.Group;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
 import com.google.firebase.database.DatabaseReference;
 

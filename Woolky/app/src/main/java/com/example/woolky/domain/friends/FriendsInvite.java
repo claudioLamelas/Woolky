@@ -1,8 +1,11 @@
-package com.example.woolky.domain;
+package com.example.woolky.domain.friends;
 
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+
+import com.example.woolky.domain.Invite;
+import com.example.woolky.domain.InviteState;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

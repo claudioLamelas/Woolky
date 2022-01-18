@@ -2,16 +2,13 @@ package com.example.woolky.ui.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,7 +22,7 @@ import android.widget.Toast;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.utils.LatLngCustom;
 import com.example.woolky.domain.ShareLocationType;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.R;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -165,19 +162,25 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void drawUsers(LatLng posicaoInicial, Context cx) {
-
-
         Drawable myVectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
         userMarker = mMap.addMarker(new MarkerOptions().position(posicaoInicial).icon(Utils.BitmapFromVector(myVectorDrawable, signedInUser.getColor())));
 
         for (User u : users) {
-            if (u.getVisibilityType() != ShareLocationType.NOBODY && !u.getUserId().equals(signedInUser.getUserId()) &&
-                u.getCurrentPosition() != null) {
-                Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
-                Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
-                        .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
+            if (!u.getUserId().equals(signedInUser.getUserId()) && u.getCurrentPosition() != null) {
+                if (u.getVisibilityType() == ShareLocationType.ALL) {
+                    Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
+                            .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
 
-                marker.setTag(u);
+                    marker.setTag(u);
+                    
+                } else if (u.getVisibilityType() == ShareLocationType.FRIENDS_ONLY && signedInUser.isFriendsWith(u.getUserId())) {
+                    Drawable vectorDrawable = ContextCompat.getDrawable(cx, R.drawable.ic_android_24dp).mutate();
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(u.getCurrentPosition().getLatLng()).title(u.getUserName())
+                            .icon(Utils.BitmapFromVector(vectorDrawable, u.getColor())));
+
+                    marker.setTag(u);
+                }
             }
         }
     }
@@ -189,11 +192,6 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
             recentUsers.add(d.getValue(User.class));
         }
         homeActivity.setUsers(recentUsers);
-//        if (homeActivity.getUsers().isEmpty() || isForcedUpdate) {
-//            homeActivity.setUsers(recentUsers);
-//        } else {
-//            recentUsers = homeActivity.getUsers();
-//        }
         return recentUsers;
     }
 

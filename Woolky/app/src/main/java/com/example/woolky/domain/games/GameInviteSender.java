@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.woolky.domain.InviteState;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.ChooseGameModeDialog;
 import com.example.woolky.ui.games.escaperooms.ChooseEscapeRoomDialog;

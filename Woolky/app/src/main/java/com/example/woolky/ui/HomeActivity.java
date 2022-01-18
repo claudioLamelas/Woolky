@@ -13,13 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.woolky.FriendsInvitesListener;
+import com.example.woolky.domain.friends.FriendsInvitesListener;
 import com.example.woolky.R;
-import com.example.woolky.UserChangesListener;
-import com.example.woolky.domain.FriendsInvite;
+import com.example.woolky.domain.user.UserChangesListener;
+import com.example.woolky.domain.friends.FriendsInvite;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.Pedometer;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.games.GameInvitesListener;
@@ -90,13 +90,10 @@ public class HomeActivity extends AppCompatActivity {
 
         databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         DatabaseReference usersRef = databaseRef.child("users");
-        usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    User user = d.getValue(User.class);
-                    users.add(user);
-                }
+        usersRef.get().addOnSuccessListener(dataSnapshot -> {
+            for (DataSnapshot d : dataSnapshot.getChildren()) {
+                User user = d.getValue(User.class);
+                users.add(user);
             }
         });
 

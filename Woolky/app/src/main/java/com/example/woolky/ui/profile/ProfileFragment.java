@@ -11,13 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.google.firebase.auth.FirebaseAuth;
 
 import yuku.ambilwarna.AmbilWarnaDialog;

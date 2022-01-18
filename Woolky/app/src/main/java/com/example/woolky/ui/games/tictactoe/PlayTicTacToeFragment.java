@@ -2,7 +2,6 @@ package com.example.woolky.ui.games.tictactoe;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
@@ -18,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.woolky.domain.User;
+import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGameListener;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
@@ -35,7 +34,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;

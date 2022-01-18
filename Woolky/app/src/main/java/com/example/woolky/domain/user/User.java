@@ -1,7 +1,9 @@
-package com.example.woolky.domain;
+package com.example.woolky.domain.user;
 
 import android.net.Uri;
 
+import com.example.woolky.domain.ShareLocationType;
+import com.example.woolky.domain.Statistics;
 import com.google.android.gms.maps.model.LatLng;
 
 import com.example.woolky.utils.LatLngCustom;
@@ -178,5 +180,9 @@ public class User implements Serializable {
         createNewGroup(groupId);
         leaveGroup(groupId);
 
+    }
+
+    public boolean isFriendsWith(String userId) {
+        return friends != null && friends.contains(userId);
     }
 }
