@@ -13,7 +13,6 @@ import java.util.List;
 
 public class User implements Serializable {
 
-
     private String photoUrl;
     private String userId;
     private String userName;
@@ -21,6 +20,7 @@ public class User implements Serializable {
     private List<String> groupsIBelong, groupsIOwn, friends;
     private LatLngCustom currentPosition;
     private ShareLocationType visibilityType;
+    private Statistics stats;
 
     public User() {}
 
@@ -128,13 +128,22 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
-    public void setphotoUrl (String url) {
-        this.photoUrl = url.toString();
+    public void setPhotoUrl (String url) {
+        this.photoUrl = url;
     }
 
     public String getPhotoUrl (){
         return photoUrl;
     }
+
+    public Statistics getStats() {
+        return stats;
+    }
+
+    public void setStats(Statistics stats) {
+        this.stats = stats;
+    }
+
 
     public void createNewGroup(String key) {
 

@@ -296,6 +296,9 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
     public void finishGame(Boolean finishedGame) {
         if (finishedGame && escapeRoomGame.isFinito()) {
+            HomeActivity activity = (HomeActivity) getActivity();
+            signedInUser.getStats().addOneWin();
+            activity.getDatabaseRef().child("users").child(signedInUser.getUserId()).setValue(signedInUser);
             FinishGameDialog finishDialog = FinishGameDialog.newInstance("You've escaped the room :D");
             finishDialog.show(getChildFragmentManager(), "finish");
         } else {
