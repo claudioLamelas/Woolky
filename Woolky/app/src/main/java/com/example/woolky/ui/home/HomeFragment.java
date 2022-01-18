@@ -70,9 +70,16 @@ public class HomeFragment extends Fragment {
         name.setText(signedInUser.getUserName());
 
         ImageView photo = view.findViewById(R.id.photo);
-        //photo.setImageURI(null);
-        //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
         Glide.with(getActivity()).load(Uri.parse(signedInUser.getPhotoUrl())).circleCrop().into(photo);
+
+        TextView numberOfWins = view.findViewById(R.id.numberOfWinsText);
+        numberOfWins.setText("" + signedInUser.getStats().getTotalWins());
+
+        TextView stepsTaken = view.findViewById(R.id.stepsTaken);
+        stepsTaken.setText("" + ((HomeActivity) getActivity()).pedometer.getCurrentSteps());
+
+        TextView distance = view.findViewById(R.id.distanceTravelledTV);
+        distance.setText(((HomeActivity) getActivity()).pedometer.getDistanceTravelled() + " km");
     }
 
     @Override

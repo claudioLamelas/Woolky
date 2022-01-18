@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.woolky.domain.User;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGameListener;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
@@ -167,15 +168,16 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
 
     public void finishGame(TicTacToeGame.Piece value) {
         if (value == TicTacToeGame.Piece.Blank) {
-            //Toast.makeText(getActivity(), "The game ended in a TIE", Toast.LENGTH_LONG).show();
             FinishGameDialog dialog = FinishGameDialog.newInstance("It's a TIE");
             dialog.show(getChildFragmentManager(), "dialog");
         } else if (value == this.ticTacToeGame.getMyPiece()) {
-            //Toast.makeText(getActivity(), "You WON the game", Toast.LENGTH_LONG).show();
+            HomeActivity activity = (HomeActivity) getActivity();
+            User signedInUser = activity.getSignedInUser();
+            signedInUser.getStats().addOneWin();
+            activity.getDatabaseRef().child("users").child(signedInUser.getUserId()).setValue(signedInUser);
             FinishGameDialog dialog = FinishGameDialog.newInstance("You've Won :D");
             dialog.show(getChildFragmentManager(), "dialog");
         } else {
-            //Toast.makeText(getActivity(), "You LOST the game", Toast.LENGTH_LONG).show();
             FinishGameDialog dialog = FinishGameDialog.newInstance("You've Lost :(");
             dialog.show(getChildFragmentManager(), "dialog");
         }

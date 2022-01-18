@@ -69,7 +69,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_today">
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/distanceTravelledTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4,16 km"
@@ -90,7 +90,7 @@
                     android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:textStyle="normal"
-                    app:layout_constraintBottom_toTopOf="@+id/textView8"
+                    app:layout_constraintBottom_toTopOf="@+id/distanceTravelledTV"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -192,7 +192,7 @@
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/layout_rounded_corners"
                 android:backgroundTint="#00838f"
-                app:layout_constraintEnd_toStartOf="@+id/step_counter"
+                app:layout_constraintEnd_toStartOf="@+id/winsLayout"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/distance_counter"
                 app:layout_constraintTop_toTopOf="@+id/distance_counter">
@@ -205,7 +205,7 @@
                     android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:textStyle="normal"
-                    app:layout_constraintBottom_toTopOf="@+id/textView4"
+                    app:layout_constraintBottom_toTopOf="@+id/stepsTaken"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -227,7 +227,7 @@
                     app:layout_constraintVertical_bias="0.846" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/stepsTaken"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7777"
@@ -243,7 +243,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/step_counter"
+                android:id="@+id/winsLayout"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_marginStart="5dp"
@@ -256,7 +256,7 @@
                 app:layout_constraintTop_toTopOf="@+id/other">
 
                 <TextView
-                    android:id="@+id/textView22"
+                    android:id="@+id/numberOfWinsText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="32"
@@ -277,7 +277,7 @@
                     android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:textStyle="normal"
-                    app:layout_constraintBottom_toTopOf="@+id/textView22"
+                    app:layout_constraintBottom_toTopOf="@+id/numberOfWinsText"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"

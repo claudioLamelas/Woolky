@@ -22,6 +22,7 @@ import android.widget.VideoView;
 
 import com.example.woolky.R;
 import com.example.woolky.domain.ShareLocationType;
+import com.example.woolky.domain.Statistics;
 import com.example.woolky.domain.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -68,31 +69,20 @@ public class LoginActivity extends AppCompatActivity {
 
         SignInButton google = findViewById(R.id.sign_in_button);
 
-        google.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
+        google.setOnClickListener(v -> signIn());
 
         TextView textView = (TextView) google.getChildAt(0);
         textView.setText("Sign In");
 
         VideoView video = findViewById(R.id.login_video);
         video.setVideoPath("android.resource://" + getPackageName() + "/" +R.raw.login);
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.setLooping(true);
-            }
-        });
+        video.setOnPreparedListener(mp -> mp.setLooping(true));
         video.start();
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int height = size.y;
-        height = (int) (height);
 
 
         Button b = findViewById(R.id.login_UI_BT);
@@ -206,22 +196,23 @@ public class LoginActivity extends AppCompatActivity {
 
                             DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://woolky-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
                             DatabaseReference usersRef = databaseRef.child("users");
-                            usersRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                                @Override
-                                public void onSuccess(DataSnapshot dataSnapshot) {
-                                    boolean newAccount = true;
-                                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                        User u = d.getValue(User.class);
-                                        if (u.getUserId().equals(user.getUid())) {
-                                            newAccount = false;
-                                        }
+                            //TODO: Pode ser otimizado
+                            usersRef.get().addOnSuccessListener(dataSnapshot -> {
+                                boolean newAccount = true;
+                                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                    User u = d.getValue(User.class);
+                                    if (u.getUserId().equals(user.getUid())) {
+                                        newAccount = false;
                                     }
-                                    if (newAccount) {
-                                        User newUser = new User(user.getUid(), user.getDisplayName(), 0, R.color.user_default_color, ShareLocationType.ALL, user.getPhotoUrl().toString());
-                                        usersRef.child(newUser.getUserId()).setValue(newUser).addOnSuccessListener((unused -> updateUI(user)));
-                                    } else {
-                                        updateUI(user);
-                                    }
+                                }
+                                if (newAccount) {
+                                    User newUser = new User(user.getUid(), user.getDisplayName(),
+                                            0, R.color.user_default_color, ShareLocationType.ALL, user.getPhotoUrl().toString());
+                                    Statistics statistics = new Statistics(0);
+                                    newUser.setStats(statistics);
+                                    usersRef.child(newUser.getUserId()).setValue(newUser).addOnSuccessListener((unused -> updateUI(user)));
+                                } else {
+                                    updateUI(user);
                                 }
                             });
 

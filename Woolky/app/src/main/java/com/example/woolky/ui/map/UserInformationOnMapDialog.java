@@ -22,17 +22,13 @@ import com.example.woolky.R;
 import com.example.woolky.domain.FriendsInvite;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.User;
-import com.example.woolky.domain.games.EscapeRoomGameInvite;
-import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.domain.games.GameMode;
 import com.example.woolky.ui.HomeActivity;
-import com.example.woolky.ui.games.escaperooms.ChooseEscapeRoomDialog;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -131,7 +127,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
         Glide.with(getActivity()).load(Uri.parse(user.getPhotoUrl())).circleCrop().into(photo);
 
         ((TextView) v.findViewById(R.id.userName)).setText(user.getUserName());
-        ((TextView) v.findViewById(R.id.userLevel)).setText("Level: " + user.getLevel());
+        ((TextView) v.findViewById(R.id.userWins)).setText("Wins: " + user.getStats().getTotalWins());
         String[] array = getResources().getStringArray(R.array.gameModes);
         ArrayAdapter<String> gameModesAdapter = new ArrayAdapter<String>(getActivity(), R.layout.game_modes_dropdown_item, array);
         gamesSpinner = v.findViewById(R.id.gameModeSpinner);

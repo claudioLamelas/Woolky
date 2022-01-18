@@ -3,8 +3,10 @@ package com.example.woolky.ui;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ import com.example.woolky.R;
 import com.example.woolky.UserChangesListener;
 import com.example.woolky.domain.FriendsInvite;
 import com.example.woolky.domain.InviteState;
+import com.example.woolky.domain.Pedometer;
 import com.example.woolky.domain.User;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
@@ -43,6 +46,7 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
     private static final int FINE_LOCATION_CODE = 114;
+    private static final int ACTIVITY_RECOGNITION_CODE = 115;
 
     private Handler handler;
     private DatabaseReference databaseRef;
@@ -57,6 +61,8 @@ public class HomeActivity extends AppCompatActivity {
     private List<User> users;
     private boolean permissionsGranted;
 
+    public Pedometer pedometer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,15 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         permissionsGranted = Utils.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, FINE_LOCATION_CODE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Utils.checkPermission(this, Manifest.permission.ACTIVITY_RECOGNITION, ACTIVITY_RECOGNITION_CODE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            pedometer = new Pedometer(this);
+            pedometer.startCounter();
+        }
 
         handler = new Handler();
         users = new ArrayList<>();
@@ -105,16 +120,28 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            pedometer.saveData();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+
         signedInUser.setCurrentPosition(null);
         DatabaseReference userRef = databaseRef.child("users").child(signedInUser.getUserId());
         userRef.removeEventListener(userListener);
         userRef.setValue(signedInUser);
+
         DatabaseReference gameInvitesRef = databaseRef.child("gameInvites").child(signedInUser.getUserId());
         gameInvitesRef.removeEventListener(gameListener);
+
         DatabaseReference friendInvitesRef = databaseRef.child("friendInvite").child(signedInUser.getUserId());
         friendInvitesRef.removeEventListener(friendListener);
+
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -150,7 +177,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void changeToHome() { bottomNav.setSelectedItemId(R.id.home); }
+    public void changeToHome() { bottomNav.setSelectedItemId(R.id.nav_home); }
+
+    public boolean areWeHome() { return bottomNav.getSelectedItemId() == R.id.nav_home; }
 
     public void changeToMap() {
         bottomNav.setSelectedItemId(R.id.nav_map);
@@ -307,5 +336,16 @@ public class HomeActivity extends AppCompatActivity {
 
     public void setPermissionsGranted(boolean permissionsGranted) {
         this.permissionsGranted = permissionsGranted;
+    }
+
+    public void updateHomeStats(int currentSteps, double distanceTravelled) {
+        TextView tv = findViewById(R.id.stepsTaken);
+        TextView tv2 = findViewById(R.id.distanceTravelledTV);
+
+        if (tv != null)
+            tv.setText("" + currentSteps);
+
+        if (tv2 != null)
+            tv2.setText(distanceTravelled + " km");
     }
 }

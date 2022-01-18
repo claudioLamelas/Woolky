@@ -53,6 +53,7 @@ import java.util.List;
 
 public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCallback, LocationListener, InputDataDialog.OnDataSubmitted {
     private static final int FINE_LOCATION_CODE = 114;
+    public static final int VERTEX_RADIUS = 8;
 
     private GoogleMap mMap;
     private LatLng initialPosition;
@@ -186,7 +187,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         mMap.setOnMapLongClickListener(latLng -> {
 
             if (!choosingStartPosition) {
-                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.BLACK).radius(5).center(latLng).clickable(true));
+                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.BLACK).radius(VERTEX_RADIUS).center(latLng).clickable(true));
                 Polyline p = mMap.addPolyline(new PolylineOptions()
                         .add(activeCircle.getCenter(), c.getCenter()).clickable(true));
                 escapeRoom.getVertex().add(c);
@@ -197,7 +198,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
                 changeActiveCircle(c);
             } else {
-                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.GREEN).radius(5).center(latLng).clickable(false));
+                Circle c = mMap.addCircle(new CircleOptions().fillColor(Color.GREEN).radius(VERTEX_RADIUS - 3).center(latLng).clickable(false));
                 if (userStartPosition != null)
                     userStartPosition.remove();
 
@@ -326,7 +327,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             escapeRoom = new EscapeRoom();
 
             Circle initialCircle = mMap.addCircle(new CircleOptions().fillColor(Color.RED)
-                    .strokeColor(Color.RED).radius(5).center(initialPosition).clickable(true));
+                    .strokeColor(Color.RED).radius(VERTEX_RADIUS).center(initialPosition).clickable(true));
 
             escapeRoom.getVertex().add(initialCircle);
             activeCircle = initialCircle;
@@ -336,10 +337,10 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(initialPosition,
                     Collections.singletonList(escapeRoom.getUserStartPosition())).get(0);
 
-            escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap);
+            escapeRoom.drawEscapeRoom(escapeRoomInitialPosition, mMap, VERTEX_RADIUS);
             activeCircle = escapeRoom.getVertex().get(escapeRoom.getVertex().size()-1);
             changeActiveCircle(activeCircle);
-            userStartPosition =mMap.addCircle(new CircleOptions().center(initialPosition).radius(5)
+            userStartPosition = mMap.addCircle(new CircleOptions().center(initialPosition).radius(VERTEX_RADIUS - 3)
                     .fillColor(Color.GREEN).clickable(false));
         }
         isMapDrawn = true;

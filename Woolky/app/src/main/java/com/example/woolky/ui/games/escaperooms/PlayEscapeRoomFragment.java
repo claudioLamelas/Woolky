@@ -62,6 +62,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
     private static final int FINE_LOCATION_CODE = 114;
     public static final int MINIMUM_DISTANCE_TO_WALL = 20;
+    public static final int VERTEX_RADIUS = 4;
 
     private DatabaseReference gameRef;
     private EscapeRoomGameListener escapeRoomGameListener;
@@ -222,7 +223,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
         LatLng escapeRoomInitialPosition = LocationCalculator.calculatePositions(currentPosition,
                 Collections.singletonList(escapeRoomGame.getEscapeRoom().getUserStartPosition())).get(0);
-        escapeRoomGame.getEscapeRoom().drawEscapeRoom(escapeRoomInitialPosition, mMap);
+        escapeRoomGame.getEscapeRoom().drawEscapeRoom(escapeRoomInitialPosition, mMap, VERTEX_RADIUS);
 
         //Desenha no mapa os markers dos outros players
         DatabaseReference usersRef = ((HomeActivity) getActivity()).getDatabaseRef().child("users");
@@ -267,7 +268,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                     LatLng newEscapeRoomPosition = LocationCalculator.calculatePositions(currentPosition,
                             list).get(0);
                     escapeRoomGame.getEscapeRoom().removeFromMap(mMap);
-                    escapeRoomGame.getEscapeRoom().drawEscapeRoom(newEscapeRoomPosition, mMap);
+                    escapeRoomGame.getEscapeRoom().drawEscapeRoom(newEscapeRoomPosition, mMap, VERTEX_RADIUS);
                     Toast.makeText(getActivity(), "Impossible to reach", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -296,6 +297,9 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
     public void finishGame(Boolean finishedGame) {
         if (finishedGame && escapeRoomGame.isFinito()) {
+            HomeActivity activity = (HomeActivity) getActivity();
+            signedInUser.getStats().addOneWin();
+            activity.getDatabaseRef().child("users").child(signedInUser.getUserId()).setValue(signedInUser);
             FinishGameDialog finishDialog = FinishGameDialog.newInstance("You've escaped the room :D");
             finishDialog.show(getChildFragmentManager(), "finish");
         } else {
