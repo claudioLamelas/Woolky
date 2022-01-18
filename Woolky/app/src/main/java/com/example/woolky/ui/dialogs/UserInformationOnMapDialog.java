@@ -28,13 +28,17 @@ import com.example.woolky.domain.GameInvite;
 import com.example.woolky.domain.GameMode;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.User;
+import com.example.woolky.ui.friends.Friend;
 import com.example.woolky.ui.map.GameModeFragment;
 import com.example.woolky.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 
 /**
@@ -52,6 +56,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
     // TODO: Rename and change types of parameters
     private User user;
     private User signedInUser;
+    //private DatabaseReference databaseRef;
 
     public UserInformationOnMapDialog() {
         // Required empty public constructor
@@ -79,14 +84,20 @@ public class UserInformationOnMapDialog extends DialogFragment {
             this.user = (User) getArguments().getSerializable(ARG_PARAM);
         }
         this.signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
+        updateUser(signedInUser.getUserId(),signedInUser);
 
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_information_on_map_dialog, container, false);
+    }
+    private void updateUser(String userID,User user){
+        DatabaseReference databaseRef = ((HomeActivity) getActivity()).getDatabaseRef();
+        databaseRef.child("users").child(userID).setValue(user);
     }
 
 
@@ -110,9 +121,6 @@ public class UserInformationOnMapDialog extends DialogFragment {
                 }
             }
         }
-
-
-
         v.findViewById(R.id.inviteToPlayButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
