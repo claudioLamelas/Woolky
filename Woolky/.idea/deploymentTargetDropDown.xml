@@ -1,36 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="deploymentTargetDropDown">
-<<<<<<< HEAD
-    <targetSelectedWithDropDown>
-      <Target>
-        <type value="QUICK_BOOT_TARGET" />
-        <deviceKey>
-          <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\catyl\.android\avd\Samsung_Note_9.avd" />
-          </Key>
-        </deviceKey>
-      </Target>
-    </targetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2022-01-18T12:06:30.756897700Z" />
-=======
     <runningDeviceTargetSelectedWithDropDown>
       <Target>
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\claud\.android\avd\Copy_of_Pixel_3_API_R.avd" />
+            <type value="SERIAL_NUMBER" />
+            <value value="L2N0219921002818" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-<<<<<<< HEAD
-    <timeTargetWasSelectedWithDropDown value="2022-01-18T12:06:07.992246800Z" />
-=======
-    <timeTargetWasSelectedWithDropDown value="2022-01-18T11:38:31.282626300Z" />
->>>>>>> 0230d6854082ef9e9d21aaf7fab09ec0407fe595
->>>>>>> 2bddb482d47b7d69ea38cef0f313d73ac209e112
+    <timeTargetWasSelectedWithDropDown value="2022-01-18T12:29:24.626271400Z" />
   </component>
 </project>
