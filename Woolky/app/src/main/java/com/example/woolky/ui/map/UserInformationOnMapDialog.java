@@ -18,6 +18,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.woolky.domain.InviteState;
+import com.example.woolky.R;
+import com.example.woolky.domain.games.GameInvite;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.example.woolky.R;
 import com.example.woolky.domain.friends.FriendsInvite;
 import com.example.woolky.domain.InviteState;
@@ -29,6 +35,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
+
+import java.util.ArrayList;
 
 
 /**
@@ -42,6 +50,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
 
     private User user;
     private User signedInUser;
+    //private DatabaseReference databaseRef;
     private Spinner gamesSpinner;
 
     public UserInformationOnMapDialog() {
@@ -70,14 +79,20 @@ public class UserInformationOnMapDialog extends DialogFragment {
             this.user = (User) getArguments().getSerializable(ARG_PARAM);
         }
         this.signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
+        updateUser(signedInUser.getUserId(),signedInUser);
 
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_information_on_map_dialog, container, false);
+    }
+    private void updateUser(String userID,User user){
+        DatabaseReference databaseRef = ((HomeActivity) getActivity()).getDatabaseRef();
+        databaseRef.child("users").child(userID).setValue(user);
     }
 
 
@@ -106,12 +121,10 @@ public class UserInformationOnMapDialog extends DialogFragment {
                 if (other_user.equals(user.getUserId())){
                     ((TextView) v.findViewById(R.id.time_of_day)).setText("Already Friends");
                     v.findViewById(R.id.sendFriendRequestButton).setVisibility(View.INVISIBLE);
-                    //Toast.makeText(v.getContext(), signedInUser.getUserName()+" e "+user.getUserName()+" já são amigos", Toast.LENGTH_SHORT).show();
                     break;
                 }
             }
         }
-
         v.findViewById(R.id.sendFriendRequestButton).setOnClickListener(v12 -> {
             HomeActivity activity = (HomeActivity) getActivity();
             FriendsInvite friendsInvite = new FriendsInvite(signedInUser.getUserName(), signedInUser.getUserId(),InviteState.SENT);

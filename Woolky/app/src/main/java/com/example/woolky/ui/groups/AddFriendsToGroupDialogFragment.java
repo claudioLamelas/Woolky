@@ -4,13 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +11,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.woolky.R;
@@ -27,6 +25,7 @@ import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.friends.Friend;
 import com.example.woolky.utils.MarginItemDecoration;
+import com.example.woolky.utils.Utils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -88,15 +87,12 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
         @Override
         public void onBindViewHolder(@NonNull AddFriendsToGroupDialogFragment.FriendsListGroupAdapter.ViewHolder holder, int position) {
-            holder.itemView.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), holder.name.getText() + "'s profile", Toast.LENGTH_SHORT).show()
-            );
-            //viewHolder.avatar = ...
             holder.name.setText(friends.get(position).name);
             holder.playButton.setText("Add");
             holder.playButton.setOnClickListener(view ->{
                    addFriendToGroup(friends.get(position).id);
-            Toast.makeText(view.getContext(), holder.name.getText() + " added to group!", Toast.LENGTH_SHORT).show(); });
+                Utils.showSuccesSnackBar(getActivity(), view, holder.name.getText() + " added to group!");
+            });
             Glide.with(getActivity()).load(Uri.parse(friends.get(position).photoUrl)).circleCrop().into(holder.avatar);
 
         }

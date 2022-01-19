@@ -5,20 +5,20 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.example.woolky.R;
+import com.example.woolky.domain.games.escaperooms.OnChallengeCompletedListener;
+import com.example.woolky.utils.Utils;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
@@ -28,11 +28,7 @@ import java.util.Random;
 
 public class ImitateSequenceDialog extends DialogFragment {
 
-    private SequenceListener listener;
-
-    public interface SequenceListener {
-        void rightSequenceDone(DialogFragment dialog, Polyline polyline);
-    }
+    private OnChallengeCompletedListener listener;
 
     private Polyline polyline;
     private CountDownTimer countDownTimer;
@@ -136,7 +132,7 @@ public class ImitateSequenceDialog extends DialogFragment {
 
                         if (sequence.isEmpty()) {
                             itsOver = true;
-                            listener.rightSequenceDone(this, this.polyline);
+                            listener.challengeCompleted(this, this.polyline);
                         }
 
                         fl.setBackgroundColor(Color.GREEN);
@@ -148,7 +144,7 @@ public class ImitateSequenceDialog extends DialogFragment {
                     } else {
                         fl.setBackgroundColor(Color.RED);
                         itsOver = true;
-                        Toast.makeText(getActivity(), "Wrong sequence mate", Toast.LENGTH_SHORT).show();
+                        Utils.showWarningSnackBar(getActivity(), getParentFragment().getView(), "Wrong sequence");
                         this.dismiss();
                     }
                 }
@@ -160,7 +156,7 @@ public class ImitateSequenceDialog extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            listener = (SequenceListener) getParentFragment();
+            listener = (OnChallengeCompletedListener) getParentFragment();
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString()
                     + " must implement SequenceListener");

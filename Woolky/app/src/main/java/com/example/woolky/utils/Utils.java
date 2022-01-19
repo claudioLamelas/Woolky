@@ -1,10 +1,13 @@
 package com.example.woolky.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -14,6 +17,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.woolky.R;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class Utils {
 
@@ -55,5 +60,26 @@ public class Utils {
 
     public static Drawable getUserDrawable(FragmentActivity activity) {
         return ContextCompat.getDrawable(activity, R.drawable.ic_android_24dp);
+    }
+
+    public static void showInfoSnackBar(Context context, View view, String message) {
+        Snackbar snackbar = Snackbar.make(context, view, message, BaseTransientBottomBar.LENGTH_LONG);
+        snackbar.setBackgroundTint(context.getResources().getColor(R.color.colorPrimaryDark, null));
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    public static void showSuccesSnackBar(Context context, View view, String message) {
+        Snackbar snackbar = Snackbar.make(context, view, message, BaseTransientBottomBar.LENGTH_LONG);
+        snackbar.setBackgroundTint(context.getResources().getColor(R.color.napier_green, null));
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    public static void showWarningSnackBar(Context context, View view, String message) {
+        Snackbar snackbar = Snackbar.make(context, view, message, BaseTransientBottomBar.LENGTH_LONG);
+        snackbar.setBackgroundTint(context.getResources().getColor(R.color.cornell_red, null));
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 }

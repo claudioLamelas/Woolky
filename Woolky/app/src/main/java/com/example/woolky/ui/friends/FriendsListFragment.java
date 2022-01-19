@@ -1,5 +1,6 @@
 package com.example.woolky.ui.friends;
 
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,31 +9,37 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.woolky.domain.games.GameInviteSender;
-import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
+import com.example.woolky.domain.games.GameInviteSender;
 import com.example.woolky.domain.user.User;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.utils.MarginItemDecoration;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class FriendsListFragment extends Fragment {
     private RecyclerView recyclerView;
     private FriendsListAdapter adapter;
     private TextView noFriendsMessage;
     private User signedInUser;
+    private DatabaseReference databaseRef;
     private List<User> users; //talvez nao seja boa ideia, mas funciona
+    private List<Friend> friends;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,9 +52,10 @@ public class FriendsListFragment extends Fragment {
         view.findViewById(R.id.friendsBackButton).setOnClickListener(v -> getActivity().onBackPressed());
 
         HomeActivity homeActivity = ((HomeActivity) getActivity());
+        databaseRef = homeActivity.getDatabaseRef();
         users = homeActivity.getUsers();
         signedInUser = homeActivity.getSignedInUser();
-        List<Friend> friends = new ArrayList<>();
+        friends = new ArrayList<>();
         if (signedInUser.getFriends() != null) {
             for (User user : users) {
                 if (signedInUser.getFriends().contains(user.getUserId())) {
@@ -61,10 +69,56 @@ public class FriendsListFragment extends Fragment {
         adapter = new FriendsListAdapter(friends);
         recyclerView.setAdapter(adapter);
         showMessageIfNoFriends(friends);
+
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+
         return view;
     }
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getBindingAdapterPosition();
+            removeFriend(friends.get(position).getId(), position);//apagar da base de dados
+
+        }
+        @Override
+        public void onChildDraw (Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,float dX, float dY,int actionState, boolean isCurrentlyActive){
+
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addBackgroundColor(ContextCompat.getColor(getContext(), R.color.red))
+                    .addActionIcon(R.drawable.ic_baseline_delete_24)
+                    .addSwipeLeftLabel("Remove Friend")
+                    .setSwipeLeftLabelColor(ContextCompat.getColor(getContext(),R.color.white))
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+    };
+
+    private void removeFriend(String id, int position) {
+        databaseRef.child("users").child(id).get().addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot != null){
+                User user = dataSnapshot.getValue(User.class);
+                user.getFriends().remove(signedInUser.getUserId());
+                databaseRef.child("users").child(id).setValue(user);
+            }
+        });
+        //Apaga do user em que estamos
+        signedInUser.getFriends().remove(id);
+        friends.remove(position);
+        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
+        adapter.notifyItemRemoved(position);
+    }
+
 
     class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
+
         private List<Friend> friends;
 
         public FriendsListAdapter(List<Friend> friends) {
@@ -80,10 +134,6 @@ public class FriendsListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.itemView.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), holder.name.getText() + "'s profile", Toast.LENGTH_SHORT).show()
-            );
-            //viewHolder.avatar = ...
             holder.name.setText(friends.get(position).name);
             holder.playButton.setOnClickListener(view -> {
                 HomeActivity homeActivity = (HomeActivity) getActivity();

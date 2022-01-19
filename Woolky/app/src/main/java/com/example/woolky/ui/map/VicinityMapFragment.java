@@ -1,10 +1,5 @@
 package com.example.woolky.ui.map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,16 +9,20 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.woolky.ui.HomeActivity;
-import com.example.woolky.utils.LatLngCustom;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
+import com.example.woolky.R;
 import com.example.woolky.domain.ShareLocationType;
 import com.example.woolky.domain.user.User;
-import com.example.woolky.R;
+import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.utils.LatLngCustom;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -152,8 +151,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
                         500, 0.5f, this);
             });
         } else
-            Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
-                    Toast.LENGTH_SHORT).show();
+            Utils.showInfoSnackBar(getActivity(), getView(), "You need to grant location access if you want to use the maps");
 
         mMap.setOnInfoWindowClickListener(marker -> {
             UserInformationOnMapDialog dialog = UserInformationOnMapDialog.newInstance(marker.getTag());
@@ -234,7 +232,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-        Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+        Utils.showInfoSnackBar(getActivity(), getView(), "Turn On the GPS please");
     }
 
     @Override

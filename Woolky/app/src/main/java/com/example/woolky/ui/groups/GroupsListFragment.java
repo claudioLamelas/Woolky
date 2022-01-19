@@ -23,6 +23,7 @@ import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.Group;
 
 import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.utils.Utils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -281,7 +282,7 @@ public class GroupsListFragment extends Fragment{
 
         static class ViewHolder extends RecyclerView.ViewHolder {
             public View view;
-            // public ImageView icon; // TODO: Icon should be specific to group. It is a mock for now
+            // public ImageView icon;
             public TextView name;
             public Button playButton;
 
@@ -302,7 +303,7 @@ public class GroupsListFragment extends Fragment{
 
         if (requestCode == 1 && resultCode == 0) {
             updateUI();
-            Toast.makeText(getView().getContext(), "New Group created", Toast.LENGTH_SHORT).show();
+            Utils.showSuccesSnackBar(getActivity(), getView(), "New Group Created");
         }
 
     }

@@ -1,22 +1,21 @@
 package com.example.woolky.ui.games.escaperooms.creation;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import com.example.woolky.R;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.games.escaperooms.Quiz;
+import com.example.woolky.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +69,7 @@ public class QuizzesMenuFragment extends Fragment implements CreateNewQuizDialog
             quizQuestions.remove(position);
             escapeRoom.getQuizzes().remove(position);
             arrayAdapter.notifyDataSetChanged();
-            Toast.makeText(getActivity(), "Quiz deleted", Toast.LENGTH_SHORT).show();
+            Utils.showSuccesSnackBar(getActivity(), getView(), "Quiz deleted");
             return false;
         });
     }
@@ -80,11 +79,11 @@ public class QuizzesMenuFragment extends Fragment implements CreateNewQuizDialog
         if (isEdit) {
             quizQuestions.set(chosenIndex, quiz.getQuestion());
             escapeRoom.getQuizzes().set(chosenIndex, quiz);
-            Toast.makeText(getActivity(), "Quiz edited", Toast.LENGTH_SHORT).show();
+            Utils.showSuccesSnackBar(getActivity(), getView(), "Quiz edited");
         } else {
             quizQuestions.add(quiz.getQuestion());
             escapeRoom.getQuizzes().add(quiz);
-            Toast.makeText(getActivity(), "Quiz added", Toast.LENGTH_SHORT).show();
+            Utils.showSuccesSnackBar(getActivity(), getView(), "Quiz added");
         }
         arrayAdapter.notifyDataSetChanged();
         dialog.dismiss();
