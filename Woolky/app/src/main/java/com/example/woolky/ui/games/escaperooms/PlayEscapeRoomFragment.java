@@ -29,6 +29,7 @@ import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.FinishGameDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.CodeNumberDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.FastClickDialog;
+import com.example.woolky.ui.games.escaperooms.challenges.FastPianoDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.ImitateSequenceDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.InputDataDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.ShowQuizDialog;
@@ -55,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -163,15 +163,19 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                     inputDataDialog.show(getChildFragmentManager(), "finalCode");
                 } else {
 
+
                     int quizzesSize = escapeRoomGame.getEscapeRoom().getQuizzes().size();
                     int nextChallenge = ChallengesRandomCalculator
                             .chooseNextChallenge(quizzesSize);
 
                     if (nextChallenge == ChallengesRandomCalculator.NUMBER_CHALLENGES) {
                         Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
-                                .get(ChallengesRandomCalculator.nextQuiz(quizzesSize));
+                                .get(ChallengesRandomCalculator.nextInt(quizzesSize));
                         ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
                         dialog.show(getChildFragmentManager(), "quiz");
+                    } else if (nextChallenge == 2) {
+                        FastPianoDialog dialog = new FastPianoDialog(polyline);
+                        dialog.show(getChildFragmentManager(), "piano");
                     } else if (nextChallenge == 1){
                         ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
                         dialog1.show(getChildFragmentManager(), "seq");
@@ -286,21 +290,25 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     }
 
     private void processCorrectAnswer(Polyline polyline) {
-        polyline.setColor(Color.GREEN);
-        int lineIndex = escapeRoomGame.getEscapeRoom().getPolylines().indexOf(polyline);
-        Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(lineIndex);
-        triple.setThird(Color.GREEN);
+        try {
+            int lineIndex = escapeRoomGame.getEscapeRoom().getPolylines().indexOf(polyline);
+            polyline.setColor(Color.GREEN);
+            Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(lineIndex);
+            triple.setThird(Color.GREEN);
 
-        Utils.showSuccesSnackBar(getActivity(), getView(), "Correct Answer");
+            Utils.showSuccesSnackBar(getActivity(), getView(), "Correct Answer");
 
-        if (escapeRoomGame.isFinished() == 1) {
-            escapeRoomGame.setFinito(true);
-            gameRef.setValue(escapeRoomGame);
-        } else {
-            char c = escapeRoomGame.getFinalCode().charAt(nextCodeDigitIndex);
-            CodeNumberDialog dialog = new CodeNumberDialog(c);
-            dialog.show(getChildFragmentManager(), "codeNumber");
-            nextCodeDigitIndex++;
+            if (escapeRoomGame.isFinished() == 1) {
+                escapeRoomGame.setFinito(true);
+                gameRef.setValue(escapeRoomGame);
+            } else {
+                char c = escapeRoomGame.getFinalCode().charAt(nextCodeDigitIndex);
+                CodeNumberDialog dialog = new CodeNumberDialog(c);
+                dialog.show(getChildFragmentManager(), "codeNumber");
+                nextCodeDigitIndex++;
+            }
+        } catch (Exception e) {
+            Utils.showWarningSnackBar(getActivity(), getView(), "An internal error has occured. Try again");
         }
     }
 
