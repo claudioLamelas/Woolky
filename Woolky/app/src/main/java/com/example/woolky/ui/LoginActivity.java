@@ -13,7 +13,9 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -138,6 +140,8 @@ public class LoginActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     // Here, no request code
+                    ProgressBar bar = findViewById(R.id.progressBar);
+                    bar.setVisibility(View.VISIBLE);
                     Intent data = result.getData();
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     try {
@@ -145,6 +149,7 @@ public class LoginActivity extends AppCompatActivity {
                         GoogleSignInAccount account = task.getResult(ApiException.class);
                         Log.d("success", "firebaseAuthWithGoogle:" + account.getId());
                         firebaseAuthWithGoogle(account.getIdToken());
+                        //bar.setVisibility(View.INVISIBLE);
                     } catch (ApiException e) {
                         // Google Sign In failed, update UI appropriately
                         Log.w("failed", "Google sign in failed", e);
