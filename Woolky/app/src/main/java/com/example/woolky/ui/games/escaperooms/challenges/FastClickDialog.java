@@ -31,7 +31,7 @@ import java.util.Random;
 
 public class FastClickDialog extends DialogFragment {
 
-    public static final int MAXIMUM_TIME_ACCEPTABLE = 450;
+    public static final int MAXIMUM_TIME_ACCEPTABLE = 400;
     private Handler handler;
     private Polyline polyline;
     private long startTime;
@@ -100,7 +100,7 @@ public class FastClickDialog extends DialogFragment {
             }
         });
 
-        long randomGreenTime = new Random().nextInt(6000) + 1000;
+        long randomGreenTime = new Random().nextInt(5000) + 750;
 
         handler.postDelayed(() -> {
             colorSquare.setBackgroundColor(Color.GREEN);
