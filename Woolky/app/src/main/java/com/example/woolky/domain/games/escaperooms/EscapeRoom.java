@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class EscapeRoom {
 
     private String name;
-    //Na verdade é a posição do primeiro vértice da room relativa à posição escolhida para o user começar
     private PairCustom<Double, Double> userStartPosition;
     private List<Triple<Integer, Integer, Integer>> linesCircles;
     private List<PairCustom<Double, Double>> circlesRelativePositions;

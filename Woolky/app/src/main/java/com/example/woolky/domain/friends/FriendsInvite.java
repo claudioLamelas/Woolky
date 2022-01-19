@@ -23,14 +23,6 @@ public class FriendsInvite extends Invite implements Serializable {
         this.from_id = from_id;
     }
 
-//    public static FriendsInvite deserialize(HashMap<String, Object> o) {
-//        FriendsInvite gi = new FriendsInvite();
-//        gi.setFrom((String) o.get("from"));
-//        gi.setInviteState(InviteState.valueOf((String) o.get("inviteState")));
-//        gi.setFrom_id((String) o.get("from_id"));
-//        return gi;
-//    }
-
     public String getFrom_id() {
         return from_id;
     }

@@ -12,8 +12,6 @@ public class Group  implements Serializable  {
     private boolean visible;
     private String id;
 
-
-
     public Group() {}
 
     public Group(String name, String owner, String key) {
@@ -39,6 +37,7 @@ public class Group  implements Serializable  {
     public String getGroupName() {
         return groupName;
     }
+
     public void setGroupName(String name) {
         groupName = name;
     }
@@ -46,10 +45,10 @@ public class Group  implements Serializable  {
     public boolean getVisible(){
         return visible;
     }
+
     public void setVisibles(boolean v) {
         visible = v;
     }
-
 
     public String getOwnerId() {
         return members.get(0);

@@ -22,8 +22,7 @@ public abstract class Invite {
         this.validUntil = Instant.now().plusSeconds(120).toString();
     }
 
-    protected Invite() {
-    }
+    protected Invite() {}
 
     public String getFrom() {
         return from;

@@ -162,8 +162,6 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                             "", EditorInfo.TYPE_CLASS_NUMBER);
                     inputDataDialog.show(getChildFragmentManager(), "finalCode");
                 } else {
-
-
                     int quizzesSize = escapeRoomGame.getEscapeRoom().getQuizzes().size();
                     int nextChallenge = ChallengesRandomCalculator
                             .chooseNextChallenge(quizzesSize);

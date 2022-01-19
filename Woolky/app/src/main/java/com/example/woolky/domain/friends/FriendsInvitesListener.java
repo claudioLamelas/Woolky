@@ -49,7 +49,7 @@ public class FriendsInvitesListener implements ChildEventListener {
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-        //Aqui ver se o invite foi aceite ou recusado e fazer a lógica adequada
+
     }
 
     @Override

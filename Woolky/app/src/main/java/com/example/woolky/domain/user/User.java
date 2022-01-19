@@ -31,9 +31,6 @@ public class User implements Serializable {
     private ShareLocationType visibilityType;
     private Statistics stats;
 
-
-
-
     public User() {}
 
     public User(String userId, String userName, int level, int color, LatLngCustom currentPosition, ShareLocationType visibilityType) {
@@ -45,9 +42,7 @@ public class User implements Serializable {
         this.visibilityType = visibilityType;
 
         this.groupsIBelong = new ArrayList<>();
-        //groupsIBelong.add("nao vazio");
         this.groupsIOwn = new ArrayList<>();
-        //groupsIOwn.add("nao vazio");
         this.friends = new ArrayList<>();
 
 
@@ -62,12 +57,8 @@ public class User implements Serializable {
         this.photoUrl = photoUrl;
 
         this.groupsIBelong = new ArrayList<>();
-        //groupsIBelong.add("nao vazio");
         this.groupsIOwn = new ArrayList<>();
-        //groupsIOwn.add("nao vazio");
-
         this.friends = new ArrayList<>();
-
     }
 
 
@@ -161,42 +152,33 @@ public class User implements Serializable {
 
 
     public void createNewGroup(String key) {
-
         if (groupsIOwn == null){
             groupsIOwn = new ArrayList<>();
         }
-
         groupsIOwn.add(key);
     }
 
     public void leaveGroup(String groupId) {
-
         groupsIBelong.remove(groupId);
-
     }
 
     public void addNewGroup(String groupId) {
-
         if (groupsIBelong == null){
             groupsIBelong = new ArrayList<>();
         }
-
         groupsIBelong.add(groupId);
     }
 
     public void leaveGroupIOwn(String groupId) {
-
         groupsIOwn.remove(groupId);
     }
 
     public void changeFromBelongToOwn(String groupId) {
         createNewGroup(groupId);
         leaveGroup(groupId);
-
     }
 
     public void updateStepsAndDistance (int steps, double distance ) {
-
         stats.updateStepsAndDistance(steps,distance);
     }
 
@@ -204,9 +186,7 @@ public class User implements Serializable {
     Por semana
      */
     public int getTotalNumberSteps(int week) {
-
         return stats.getTotalNumberSteps(week);
-
     }
 
     public boolean isFriendsWith(String userId) {

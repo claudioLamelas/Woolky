@@ -38,7 +38,7 @@ public class FriendsListFragment extends Fragment {
     private TextView noFriendsMessage;
     private User signedInUser;
     private DatabaseReference databaseRef;
-    private List<User> users; //talvez nao seja boa ideia, mas funciona
+    private List<User> users;
     private List<Friend> friends;
 
     @Override
@@ -83,7 +83,7 @@ public class FriendsListFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getBindingAdapterPosition();
-            removeFriend(friends.get(position).getId(), position);//apagar da base de dados
+            removeFriend(friends.get(position).getId(), position);
 
         }
         @Override
@@ -109,7 +109,7 @@ public class FriendsListFragment extends Fragment {
                 databaseRef.child("users").child(id).setValue(user);
             }
         });
-        //Apaga do user em que estamos
+
         signedInUser.getFriends().remove(id);
         friends.remove(position);
         databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);

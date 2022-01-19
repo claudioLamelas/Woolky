@@ -22,7 +22,6 @@ public class Statistics {
 
 
     public Statistics() {
-
         this.weeklySteps = new ArrayList<>(7);
         this.weeklyDistance = new ArrayList<>(7);
         this.positionWeek = 0;
@@ -98,7 +97,6 @@ public class Statistics {
             }
         }
 
-
         firstUse = false;
     }
 
@@ -112,15 +110,11 @@ public class Statistics {
         }
 
         Calendar now = Calendar.getInstance();
-
         SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
-
-
         ArrayList<String> days = new ArrayList<>(7);
 
-        //int delta = -now.get(GregorianCalendar.DAY_OF_WEEK) + 2; //add 2 if your week start on monday
-
         now.add(Calendar.DAY_OF_MONTH, week);
+
         for (int i = 0; i < 7; i++)
         {
             days.add(i,format.format(now.getTime()));
@@ -129,14 +123,10 @@ public class Statistics {
 
         int total = 0;
         for (PairCustom<String, Integer> dailySteps : weeklySteps) {
-
             if (days.contains(dailySteps.getFirst()))
                 total += dailySteps.getSecond();
-
         }
 
         return total;
-
     }
-
 }
