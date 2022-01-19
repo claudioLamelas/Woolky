@@ -37,37 +37,39 @@
         android:id="@+id/addQuizButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:backgroundTint="#FBFBFB"
         android:text="Quizzes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saveEscapeRoomButton" />
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/chooseStartPositionButton"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/chooseStartPositionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="100dp"
         android:backgroundTint="#FFFFFF"
         android:focusableInTouchMode="false"
         android:text="Start Position"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addQuizButton" />
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/addQuizButton" />
 
     <ImageButton
         android:id="@+id/helpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="50dp"
         android:background="@drawable/circle_shape"
         android:backgroundTint="#FFFFFF"
         android:scaleType="center"
         android:src="@drawable/ic_baseline_help_36"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/deleteWallButton"
+        app:layout_constraintTop_toBottomOf="@+id/deleteWallButton"
         app:tint="@color/black"
         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
@@ -75,14 +77,14 @@
         android:id="@+id/deleteWallButton"
         android:layout_width="49dp"
         android:layout_height="49dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/circle_shape"
         android:backgroundTint="#FFFFFF"
         android:elevation="10dp"
         android:src="@drawable/ic_baseline_delete_36"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chooseStartPositionButton"
+        app:layout_constraintTop_toBottomOf="@+id/saveEscapeRoomButton"
         app:tint="#000000"
         tools:ignore="SpeakableTextPresentCheck" />
 

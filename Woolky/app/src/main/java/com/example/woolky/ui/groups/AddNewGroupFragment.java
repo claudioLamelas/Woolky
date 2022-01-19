@@ -57,13 +57,6 @@ public class AddNewGroupFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-//        Point size = new Point();
-//        // Store dimensions of the screen in `size`
-//        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
-//        display.getSize(size);
-//
-//        getDialog().getWindow().setLayout((int)(size.x * 0.85),(int)(size.y * 0.60));
     }
 
 
@@ -75,10 +68,9 @@ public class AddNewGroupFragment extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.fragment_add_new_group, null);
 
-        Button newGroup = v.findViewById(R.id.create_new_group);
-        newGroup.setOnClickListener(view -> createNewGroup(v));
-
-        builder.setView(v);
+        builder.setView(v)
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("Create", (dialog, which) -> createNewGroup(v));
         return builder.create();
     }
 

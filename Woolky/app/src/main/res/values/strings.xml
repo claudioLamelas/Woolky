@@ -35,7 +35,7 @@
     <string name="members">Members</string>
     <string name="already_friends">Already Friends</string>
     <string name="groups_name">Group\'s Name</string>
-    <string name="create_group">Create new Group</string>
+    <string name="create_group">Create New Group</string>
     <string name="tutorial">Welcome to the Escape Room editor! Lets go over the basics:\n\n
         <ul>
             <li><b>Walls</b> - To build some walls all you have to do is to make a long click wherever you want the next wall to end.\n
