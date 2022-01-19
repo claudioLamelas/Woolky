@@ -318,6 +318,7 @@ public class GroupFragment extends Fragment {
         List<String> members = current.getMembers();
 
         LinearLayout layout = view.findViewById(R.id.members_scroll_layout);
+        layout.removeAllViews();
 
 
 
@@ -366,6 +367,9 @@ public class GroupFragment extends Fragment {
 
         if (requestCode == 1 && resultCode == 0) {
             leaveGroup();
+        }
+        else if (requestCode == 2 && resultCode == 0) {
+            onViewCreated(getView(), null);
         }
 
     }

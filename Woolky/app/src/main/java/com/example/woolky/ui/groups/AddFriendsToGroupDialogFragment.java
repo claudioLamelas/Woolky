@@ -2,6 +2,7 @@ package com.example.woolky.ui.groups;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -202,7 +203,8 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
         builder.setView(view)
                 .setTitle("Add friends to Group")
                 .setNegativeButton("Close", (dialog, id) -> {
-                    //intent to update
+                    Intent i = new Intent();
+                    getTargetFragment().onActivityResult(2,0, i);
                     dialog.dismiss();
                 });
         return builder.create();
