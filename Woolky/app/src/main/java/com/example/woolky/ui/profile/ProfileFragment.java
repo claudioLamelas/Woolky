@@ -41,9 +41,7 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemSelec
                 logOut(v);
             }
         });
-
         return v;
-
     }
 
     @Override
@@ -69,7 +67,6 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemSelec
         Button colorButton = view.findViewById(R.id.userColorButton);
         colorButton.setOnClickListener(v -> openColorPicker(signedInUser.getColor()));
 
-
         Spinner spin = view.findViewById(R.id.visibility_spinner);
         spin.setOnItemSelectedListener(this);
         ArrayList<String> options = new ArrayList<>();
@@ -93,7 +90,6 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemSelec
             case NOBODY:
                 spin.setSelection(2);
                 break;
-
         }
     }
 
@@ -123,18 +119,10 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemSelec
 
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        //binding = null;
-    }
-
-
     public void logOut(View v){
         FirebaseAuth.getInstance().signOut();
         HomeActivity home = (HomeActivity) getActivity();
         home.logout();
-
     }
 
     @Override
@@ -162,8 +150,5 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemSelec
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-
-    }
+    public void onNothingSelected(AdapterView<?> parent) { }
 }

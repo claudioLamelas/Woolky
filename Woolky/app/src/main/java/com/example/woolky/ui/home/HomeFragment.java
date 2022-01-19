@@ -25,7 +25,6 @@ import com.example.woolky.ui.groups.GroupsListFragment;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-//import com.example.woolky.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
 
@@ -34,11 +33,10 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
-    private void updateUiCurrentUser(View view) {
 
+    private void updateUiCurrentUser(View view) {
         String currentDate = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(new Date());
 
         TextView date = view.findViewById(R.id.dateDaily);
@@ -63,7 +61,6 @@ public class HomeFragment extends Fragment {
             greeting = "Good Evening";
         }
         time_of_greeting.setText(greeting);
-
 
 
         TextView name = view.findViewById(R.id.username);
@@ -92,21 +89,13 @@ public class HomeFragment extends Fragment {
         Button groupsButton = view.findViewById(R.id.groupsButton);
         Button escapeRoomsButton = view.findViewById(R.id.escapeRoomsButton);
         friendsButton.setOnClickListener(v -> {
-            // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment, new FriendsListFragment()).addToBackStack(null).commit();
         });
         groupsButton.setOnClickListener(v -> {
-            // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
             getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupsListFragment()).addToBackStack(null).commit();
         });
         escapeRoomsButton.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction().replace(R.id.fragment, new EscapeRoomsFragment()).addToBackStack(null).commit();
         });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        //binding = null;
     }
 }

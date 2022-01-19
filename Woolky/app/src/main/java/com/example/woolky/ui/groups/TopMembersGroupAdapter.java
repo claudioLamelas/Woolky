@@ -31,13 +31,10 @@ public class TopMembersGroupAdapter extends ArrayAdapter {
         super(context, R.layout.top_member_item, members);
 
         this.context = context;
-        // vem ordenados do melhor para pior
         topMembers = members;
         week = weekNumber;
         maxSteps = 85000;
-
     }
-
 
     @NonNull
     @Override

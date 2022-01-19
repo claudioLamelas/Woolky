@@ -57,14 +57,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallback, LocationListener,
         ShowQuizDialog.AnswerQuizListener, OnChallengeCompletedListener,
         InputDataDialog.OnDataSubmitted {
 
-    private static final int FINE_LOCATION_CODE = 114;
     public static final int MINIMUM_DISTANCE_TO_WALL = 20;
     public static final int VERTEX_RADIUS = 4;
 
@@ -115,7 +112,6 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_play_escape_room, container, false);
     }
 

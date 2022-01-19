@@ -34,7 +34,6 @@ public class ChooseEscapeRoomDialog extends DialogFragment {
     private OnChosenEscapeRoomListener listener;
 
     public ChooseEscapeRoomDialog(GameInviteSender gameInviteSender) {
-        // Required empty public constructor
         listener = gameInviteSender;
     }
 
@@ -46,7 +45,6 @@ public class ChooseEscapeRoomDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_escape_rooms_list, container, false);
     }
 

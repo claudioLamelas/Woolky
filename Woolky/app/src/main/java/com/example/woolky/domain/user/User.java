@@ -9,6 +9,7 @@ import com.example.woolky.domain.Statistics;
 import com.google.android.gms.maps.model.LatLng;
 
 import com.example.woolky.utils.LatLngCustom;
+import com.google.firebase.database.Exclude;
 
 
 import java.io.Serializable;
@@ -193,6 +194,7 @@ public class User implements Serializable {
         return friends != null && friends.contains(userId);
     }
 
+    @Exclude
     public int getNumberFriends() {
         return friends.size();
     }

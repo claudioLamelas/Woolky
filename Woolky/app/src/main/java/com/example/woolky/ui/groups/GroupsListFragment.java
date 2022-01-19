@@ -10,19 +10,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.example.woolky.R;
-import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.Group;
-
+import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,14 +29,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class GroupsListFragment extends Fragment{
-    private RecyclerView recyclerView;
-    //private GroupsListAdapter adapter;
-    private TextView noGroupsMessage;
 
     private User signedInUser;
     private DatabaseReference databaseRef;
 
-    private int indexLastButton = 1;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,17 +51,13 @@ public class GroupsListFragment extends Fragment{
 
         Button newGroupButton = view.findViewById(R.id.newGroup);
         newGroupButton.setOnClickListener(v -> {
-            // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
             createNewGroup();
-
         });
         updateUI();
-
-
     }
 
-    private void updateUI() {
 
+    private void updateUI() {
         databaseRef.child("users").child(signedInUser.getUserId()).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
@@ -77,40 +65,24 @@ public class GroupsListFragment extends Fragment{
                 updateUIList();
             }
         });
-
     }
 
     private void createNewGroup() {
-
         FragmentManager fm = getParentFragmentManager();
         AddNewGroupFragment addNewGroup = AddNewGroupFragment.newInstance("Add Group");
-        // SETS the target fragment for use later when sending results
         addNewGroup.setTargetFragment(GroupsListFragment.this, 300);
-        //fm.putFragment();
         addNewGroup.show(fm, "fragment_edit_name");
-
-
-
     }
 
     private void updateUIList() {
-
         List<String> groupsIOwn = signedInUser.getGroupsIOwn();
         List<String> groupsIBelong = signedInUser.getGroupsIBelong();
 
         LinearLayout layout = (LinearLayout) getView().findViewById(R.id.scrollLayout);
-
-        /*
-        ESTA LINHA ELIMINA METADE IFS VERIFICACAO :((
-
-        NAO DEVE SER O MAIS CORRETO APAGAR TO_DO O LAYOUT E FAZER DE NOVO
-         */
         layout.removeAllViews();
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(10,20,10,10);
-
-
 
         TextView noGroupsOwn = new TextView(getContext());
         noGroupsOwn.setText("You don't own any group");
@@ -136,37 +108,21 @@ public class GroupsListFragment extends Fragment{
         groupsBelong.setLayoutParams(params);
         groupsBelong.setGravity(Gravity.CENTER);
 
-
-
         if (!groupsIOwn.isEmpty()) {
 
             Collections.reverse(groupsIOwn);
-
-/*            TextView testNoGroups = layout.findViewWithTag("tv_no_groups_own");
-            if (testNoGroups != null) {
-                layout.removeView(noGroupsOwn);
-            }*/
-
             TextView testOwn = layout.findViewWithTag("tv_own");
             if (testOwn == null) {
                 layout.addView(groupsOwn);
             }
 
-
-
-            // nao eh name eh ID
             for (String id : groupsIOwn) {
-
-
                 Button btnTag = new Button(getContext());
                 btnTag.setBackgroundResource(R.drawable.button_group);
                 btnTag.setTextColor(Color.WHITE);
                 btnTag.setTransformationMethod(null);
                 btnTag.setTextSize(16);
                 btnTag.setPadding(5,5,5,5);
-
-                //Button btnTag = (Button)getLayoutInflater().inflate(R.drawable.button_group, null);
-
 
                 databaseRef.child("groups").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
                     @Override
@@ -176,44 +132,23 @@ public class GroupsListFragment extends Fragment{
                     }
                 });
 
-                //set the properties for button
-
-                //btnTag.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-                //btnTag.setId(some_random_id);
-
                 //add button to the layout
                 btnTag.setOnClickListener(v -> {
-                    // getLayoutInflater().inflate(R.id.fragment, new FriendsListFragment(), false);
                     getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupFragment(id, databaseRef)).addToBackStack(null).commit();
-
-
                 });
 
                 params.setMargins(0,20,0,0);
                 btnTag.setLayoutParams(params);
                 layout.addView(btnTag);
-                //indexLastButton++;
             }
         }
         else {
-
             layout.addView(noGroupsOwn);
-
         }
 
 
-
-
         if (!groupsIBelong.isEmpty()) {
-
             Collections.reverse(groupsIBelong);
-
-/*            TextView test = layout.findViewWithTag("tv_no_groups_belong");
-            if (test != null) {
-                layout.removeView(noGroupsBelong);
-            }*/
-
             groupsBelong.setPadding(0, 50,0,0);
             TextView testBelong= layout.findViewWithTag("tv_belong");
 
@@ -221,19 +156,13 @@ public class GroupsListFragment extends Fragment{
                 layout.addView(groupsBelong);
             }
 
-
-
-            // ver se tem a mensagem de nenhum grupo
             for (String name : groupsIBelong) {
-
                 Button btnTag = new Button(getContext());
                 btnTag.setBackgroundResource(R.drawable.button_group);
                 btnTag.setTextColor(Color.WHITE);
                 btnTag.setTransformationMethod(null);
                 btnTag.setTextSize(16);
                 btnTag.setPadding(5,5,5,5);
-
-
 
                 databaseRef.child("groups").child(name).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
                     @Override
@@ -243,11 +172,8 @@ public class GroupsListFragment extends Fragment{
                     }
                 });
 
-
                 btnTag.setOnClickListener(v -> {
                     getParentFragmentManager().beginTransaction().replace(R.id.fragment, new GroupFragment(name, databaseRef)).addToBackStack(null).commit();
-
-
                 });
 
                 params.setMargins(0,20,0,0);
@@ -256,80 +182,16 @@ public class GroupsListFragment extends Fragment{
             }
         }
         else {
-
             layout.addView(noGroupsBelong);
-
         }
-        
-
     }
-
-
-    /*static class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.ViewHolder> {
-        private List<Group> groups;
-
-        public GroupsListAdapter(List<Group> groups) {
-            this.groups = groups;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_list_item, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.itemView.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), "Clicked on " + holder.name.getText(), Toast.LENGTH_SHORT).show()
-            );
-            //viewHolder.icon = ...
-            holder.name.setText(groups.get(position).name);
-            holder.playButton.setOnClickListener(view ->
-                    Toast.makeText(view.getContext(), "Play with " + holder.name.getText(), Toast.LENGTH_SHORT).show()
-            );
-        }
-
-        @Override
-        public int getItemCount() {
-            return groups.size();
-        }
-
-        static class ViewHolder extends RecyclerView.ViewHolder {
-            public View view;
-            // public ImageView icon;
-            public TextView name;
-            public Button playButton;
-
-            ViewHolder(View view) {
-                super(view);
-                this.view = view;
-                // this.avatar = itemView.findViewById(R.id.avatar);
-                this.name = itemView.findViewById(R.id.name);
-                this.playButton = itemView.findViewById(R.id.play_button);
-            }
-        }
-    }*/
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 1 && resultCode == 0) {
             updateUI();
             Utils.showSuccesSnackBar(getActivity(), getView(), "New Group Created");
         }
-
     }
-
-    private void showMessageIfNoGroups(List<Group> groups) {
-        if (groups.isEmpty()) {
-            noGroupsMessage.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        }
-    }
-
-
 }

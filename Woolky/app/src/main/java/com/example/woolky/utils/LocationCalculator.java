@@ -145,7 +145,6 @@ public class LocationCalculator {
         double denominator = crossProduct(r, s);
 
         if (denominator == 0) {
-            // lines are paralell
             return false;
         }
 
@@ -155,26 +154,10 @@ public class LocationCalculator {
         return (t >= 0) && (t <= 1) && (u >= 0) && (u <= 1);
     }
 
-    /**
-     * Calculate the cross product of the two points.
-     *
-     * @param point1 point1 point object with x and y coordinates
-     * @param point2 point2 point object with x and y coordinates
-     *
-     * @return the cross product result as a float
-     */
     private static double crossProduct(Point point1, Point point2) {
         return point1.x * point2.y - point1.y * point2.x;
     }
 
-    /**
-     * Subtract the second point from the first.
-     *
-     * @param point1 point1 point object with x and y coordinates
-     * @param point2 point2 point object with x and y coordinates
-     *
-     * @return the subtraction result as a point object
-     */
     private static Point subtractPoints(Point point1, Point point2) {
         return new Point(point1.x - point2.x, point1.y - point2.y);
     }

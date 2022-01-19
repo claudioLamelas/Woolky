@@ -41,8 +41,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
-
-    private static final int RC_SIGN_IN = 1;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
 
@@ -53,15 +51,11 @@ public class LoginActivity extends AppCompatActivity {
         
         mAuth = FirebaseAuth.getInstance();
 
-
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-        // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         SignInButton google = findViewById(R.id.sign_in_button);
@@ -82,14 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         int height = size.y;
 
         Button b = findViewById(R.id.login_UI_BT);
-        //b.setHeight((int) dpHeight);
 
         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) b.getLayoutParams();
 
-        // change height of the params e.g. 480dp
         params.height = (int) (height * 0.45);
 
-        // initialize new parameters for my element
         b.setLayoutParams(new ConstraintLayout.LayoutParams(params));
     }
 
@@ -131,7 +122,6 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
         mGoogleSignInClient.signOut();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        //startActivityForResult(signInIntent, RC_SIGN_IN);
         loginActivityResultLauncher.launch(signInIntent);
     }
 
@@ -139,19 +129,15 @@ public class LoginActivity extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    // Here, no request code
                     ProgressBar bar = findViewById(R.id.progressBar);
                     bar.setVisibility(View.VISIBLE);
                     Intent data = result.getData();
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     try {
-                        // Google Sign In was successful, authenticate with Firebase
                         GoogleSignInAccount account = task.getResult(ApiException.class);
                         Log.d("success", "firebaseAuthWithGoogle:" + account.getId());
                         firebaseAuthWithGoogle(account.getIdToken());
-                        //bar.setVisibility(View.INVISIBLE);
                     } catch (ApiException e) {
-                        // Google Sign In failed, update UI appropriately
                         Log.w("failed", "Google sign in failed", e);
                     }
                 }
@@ -165,7 +151,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d("success", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
@@ -183,9 +168,7 @@ public class LoginActivity extends AppCompatActivity {
                                     updateUI(user);
                                 }
                             });
-
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w("failed", "signInWithCredential:failure", task.getException());
                             updateUI(null);
                         }

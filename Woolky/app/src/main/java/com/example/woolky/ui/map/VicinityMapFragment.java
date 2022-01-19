@@ -45,7 +45,6 @@ import java.util.List;
 
 public class VicinityMapFragment extends Fragment implements OnMapReadyCallback, LocationListener {
 
-    private static final int FINE_LOCATION_CODE = 114;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     protected LocationManager locationManager;
@@ -229,7 +228,7 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
             }
             updateCurrentPositionOnBD(currentPosition);
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 
     @Override

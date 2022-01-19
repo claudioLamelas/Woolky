@@ -23,18 +23,10 @@ import com.example.woolky.R;
  */
 public class ChallengesDialog extends DialogFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ChallengesDialog() {
-        // Required empty public constructor
-    }
+    public ChallengesDialog() {}
 
     /**
      * Use this factory method to create a new instance of
@@ -44,7 +36,6 @@ public class ChallengesDialog extends DialogFragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment ChallengesDialog.
      */
-    // TODO: Rename and change types and number of parameters
     public static ChallengesDialog newInstance(String param1, String param2) {
         ChallengesDialog fragment = new ChallengesDialog();
         Bundle args = new Bundle();
@@ -55,18 +46,8 @@ public class ChallengesDialog extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_challenges_dialog, container, false);
     }
 
@@ -78,12 +59,7 @@ public class ChallengesDialog extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.fragment_challenges_dialog, null);
         builder.setView(v)
-                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton("Close", (dialog, id) -> dialog.dismiss());
         return builder.create();
     }
 }
