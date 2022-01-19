@@ -1,7 +1,5 @@
 package com.example.woolky.domain;
 
-import android.util.Pair;
-
 import com.example.woolky.utils.PairCustom;
 
 import java.text.SimpleDateFormat;
