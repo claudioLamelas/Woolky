@@ -7,26 +7,11 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\PC\.android\avd\Pixel_2_API_29_2.avd" />
+            <value value="C:\Users\claud\.android\avd\Copy_of_Pixel_3_API_R.avd" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-<<<<<<< HEAD
-    <timeTargetWasSelectedWithDropDown value="2022-01-18T23:37:20.814618300Z" />
-    <runningDeviceTargetsSelectedWithDialog>
-      <Target>
-        <type value="RUNNING_DEVICE_TARGET" />
-        <deviceKey>
-          <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\PC\.android\avd\Pixel_2_API_29.avd" />
-          </Key>
-        </deviceKey>
-      </Target>
-    </runningDeviceTargetsSelectedWithDialog>
-=======
-    <timeTargetWasSelectedWithDropDown value="2022-01-19T00:23:23.083411500Z" />
->>>>>>> escapeRooms
+    <timeTargetWasSelectedWithDropDown value="2022-01-19T00:56:37.769345700Z" />
   </component>
 </project>

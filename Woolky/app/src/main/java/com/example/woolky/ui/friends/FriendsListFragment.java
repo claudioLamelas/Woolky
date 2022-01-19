@@ -97,7 +97,7 @@ public class FriendsListFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getBindingAdapterPosition();
-            removeFriend(friends.get(position).getId(),position);//apagar da base de dados
+            removeFriend(friends.get(position).getId(), position);//apagar da base de dados
 
         }
         @Override
@@ -106,7 +106,7 @@ public class FriendsListFragment extends Fragment {
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                     .addBackgroundColor(ContextCompat.getColor(getContext(), R.color.red))
                     .addActionIcon(R.drawable.ic_baseline_delete_24)
-                    .addSwipeLeftLabel("Remove")
+                    .addSwipeLeftLabel("Remove Friend")
                     .setSwipeLeftLabelColor(ContextCompat.getColor(getContext(),R.color.white))
                     .create()
                     .decorate();
@@ -114,22 +114,8 @@ public class FriendsListFragment extends Fragment {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
-    private void removeFriendFromLists(String id,int position){
-        //Apagar do outro user
-        databaseRef.child("users").child(id).get().addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot != null){
-                User user = dataSnapshot.getValue(User.class);
-                user.getFriends().remove(signedInUser.getUserId());
-                databaseRef.child("users").child(id).setValue(user);
-            }
-        });
-        //Apaga do user em que estamos
-        signedInUser.getFriends().remove(position);
-        friends.remove(position);
-        databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser).addOnCompleteListener(task -> adapter.notifyDataSetChanged());
-    }
 
-    private void removeFriend(String id,int position) {
+    private void removeFriend(String id, int position) {
         databaseRef.child("users").child(id).get().addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot != null){
                 User user = dataSnapshot.getValue(User.class);
@@ -138,34 +124,11 @@ public class FriendsListFragment extends Fragment {
             }
         });
         //Apaga do user em que estamos
-        signedInUser.getFriends().remove(position);
+        signedInUser.getFriends().remove(id);
         friends.remove(position);
         databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemRemoved(position);
     }
-    /*private void deleteFriend(String userID,String id){
-        databaseRef.child("users").child(userID).child("friends").child(id).removeValue();
-    }*/
-
-    /*private void updateUser(String userID,User user){
-        friends = new ArrayList<>();
-        List<Friend> friends = new ArrayList<>();
-        if (signedInUser.getFriends() != null) {
-            for (User user1 : users) {
-                if (signedInUser.getFriends().contains(user1.getUserId())) {
-                    Friend friend = new Friend(user1.getUserId(), user1.getUserName(), user1.getPhotoUrl());
-                    friends.add(friend);
-                }
-                if (friends.size() == signedInUser.getFriends().size())
-                    break;
-            }
-        }
-        databaseRef.child("users").child(userID).setValue(user);
-
-    }*/
-
-
-
 
 
     class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
