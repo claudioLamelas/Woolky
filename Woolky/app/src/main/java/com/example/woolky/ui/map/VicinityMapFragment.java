@@ -218,16 +218,18 @@ public class VicinityMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onLocationChanged(Location location) {
-        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-        if (userMarker != null) {
-            userMarker.remove();
-            userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
-                    icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
-        } else {
-            drawUsers(currentPosition, getActivity());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
-        }
-        updateCurrentPositionOnBD(currentPosition);
+        try {
+            currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+            if (userMarker != null) {
+                userMarker.remove();
+                userMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).
+                        icon(Utils.BitmapFromVector(Utils.getUserDrawable(getActivity()), signedInUser.getColor())));
+            } else {
+                drawUsers(currentPosition, getActivity());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+            }
+            updateCurrentPositionOnBD(currentPosition);
+        } catch (Exception e) {}
     }
 
     @Override
