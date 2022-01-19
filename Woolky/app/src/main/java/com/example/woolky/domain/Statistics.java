@@ -73,6 +73,7 @@ public class Statistics {
         String currentDate = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(new Date());
         int lastPos;
         if (firstUse) {
+
             weeklySteps.add(positionWeek, new PairCustom<>(currentDate, steps));
             weeklyDistance.add(positionWeek, new PairCustom<>(currentDate, distance));
             positionWeek = (positionWeek + 1) % 7;
@@ -91,8 +92,8 @@ public class Statistics {
                 weeklyDistance.set(lastPos, d);
             }
             else {
-                weeklySteps.add(positionWeek, new PairCustom<>(currentDate, steps));
-                weeklyDistance.add(positionWeek, new PairCustom<>(currentDate, distance));
+                weeklySteps.add(new PairCustom<>(currentDate, steps));
+                weeklyDistance.add(new PairCustom<>(currentDate, distance));
                 positionWeek = (positionWeek + 1) % 7;
             }
         }
@@ -109,7 +110,6 @@ public class Statistics {
         if (weeklySteps == null) {
             weeklySteps = new ArrayList<>();
         }
-
 
         Calendar now = Calendar.getInstance();
 

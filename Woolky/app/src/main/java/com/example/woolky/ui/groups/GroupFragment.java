@@ -207,7 +207,7 @@ public class GroupFragment extends Fragment {
                     Button addFriends = view.findViewById(R.id.addFriendsGroupBt);
                     addFriends.setVisibility(View.VISIBLE);
                     addFriends.setOnClickListener(v -> {
-                        inviteFriendsToGroup();
+                        inviteFriendsToGroup(current);
                     });
                 }
 
@@ -248,8 +248,10 @@ public class GroupFragment extends Fragment {
 
     private void handleTheAdapter(View view, List<User> users) {
         ListView topMembersSteps = view.findViewById(R.id.top3_members);
+
         TopMembersGroupAdapter adapter = new TopMembersGroupAdapter(homeActivity, topMembersMostSteps(users), getWeekDay());
         topMembersSteps.setAdapter(adapter);
+
     }
 
     private int getWeekDay() {
@@ -295,7 +297,7 @@ public class GroupFragment extends Fragment {
     }
     
 
-    private void inviteFriendsToGroup() {
+    private void inviteFriendsToGroup(Group current) {
 
         /*FrameLayout addFriends = getView().findViewById(R.id.addFriendsGroupFragment);
         addFriends.setVisibility(View.VISIBLE);
@@ -303,7 +305,7 @@ public class GroupFragment extends Fragment {
 */
 
         FragmentManager fm = getParentFragmentManager();
-        AddFriendsToGroupDialogFragment addNewGroup = AddFriendsToGroupDialogFragment.newInstance("Add Friends", groupId);
+        AddFriendsToGroupDialogFragment addNewGroup = AddFriendsToGroupDialogFragment.newInstance("Add Friends", current);
         // SETS the target fragment for use later when sending results
         addNewGroup.setTargetFragment(GroupFragment.this, 300);
         //fm.putFragment();
@@ -313,6 +315,8 @@ public class GroupFragment extends Fragment {
     private void updateMembersUI(View view) {
 
         List<String> members = current.getMembers();
+
+        LinearLayout layout = view.findViewById(R.id.members_scroll_layout);
 
 
 
@@ -339,7 +343,7 @@ public class GroupFragment extends Fragment {
                     //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
                     Glide.with(getActivity()).load(Uri.parse(current.getPhotoUrl())).circleCrop().into(photo);
 
-                    LinearLayout layout = view.findViewById(R.id.members_scroll_layout);
+
                     layout.addView(photo);
 
                 }

@@ -10,18 +10,26 @@ public class Group  implements Serializable  {
     private List<String> members;
     private String groupName;
     private boolean visible;
+    private String id;
 
-    public Group(String name, String owner){
+
+
+    public Group() {}
+
+    public Group(String name, String owner, String key) {
         this.groupName = name;
         members = new ArrayList<>();
         members.add(owner);
         visible = true;
+        id=key;
     }
-
-    public Group() {}
 
     public List<String> getMembers() {
         return members;
+    }
+
+    public String getId(){
+        return id;
     }
 
     public void setMembers(List<String> list) {
@@ -61,5 +69,9 @@ public class Group  implements Serializable  {
 
     public void deleteMember(String memberId) {
         members.remove(memberId);
+    }
+
+    public boolean hasMember(String id) {
+        return members.contains(id);
     }
 }

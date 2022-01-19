@@ -212,4 +212,8 @@ public class User implements Serializable {
     public boolean isFriendsWith(String userId) {
         return friends != null && friends.contains(userId);
     }
+
+    public int getNumberFriends() {
+        return friends.size();
+    }
 }

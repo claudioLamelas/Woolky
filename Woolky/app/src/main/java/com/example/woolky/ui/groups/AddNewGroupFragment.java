@@ -91,11 +91,12 @@ public class AddNewGroupFragment extends DialogFragment {
             DatabaseReference databaseRef = ha.getDatabaseRef();
             User owner = ha.getSignedInUser();
 
-            Group newGroup = new Group(groupName, owner.getUserId());
+
 
             DatabaseReference groupsRef = databaseRef.child("groups");
             DatabaseReference push = groupsRef.push();
             String key = push.getKey();
+            Group newGroup = new Group(groupName, owner.getUserId(),key);
             groupsRef.child(key).setValue(newGroup);
 
             owner.createNewGroup(key);

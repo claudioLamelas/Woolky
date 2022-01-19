@@ -38,7 +38,7 @@ import java.util.List;
 public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
 
-    private final String groupId;
+    private Group group;
 
     private RecyclerView recyclerView;
 
@@ -52,13 +52,13 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
     private DatabaseReference databaseRef;
 
-    public AddFriendsToGroupDialogFragment(String groupId) {
-        this.groupId = groupId;
+    public AddFriendsToGroupDialogFragment(Group current) {
+        group = current;
     }
 
 
-    public static AddFriendsToGroupDialogFragment newInstance(String title, String groupId) {
-        AddFriendsToGroupDialogFragment frag = new AddFriendsToGroupDialogFragment(groupId);
+    public static AddFriendsToGroupDialogFragment newInstance(String title, Group group) {
+        AddFriendsToGroupDialogFragment frag = new AddFriendsToGroupDialogFragment(group);
         Bundle args = new Bundle();
         args.putString("title", title);
         frag.setArguments(args);
@@ -124,23 +124,21 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
     private void addFriendToGroup(String id) {
 
-        databaseRef.child("groups").child(groupId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                Group current = dataSnapshot.getValue(Group.class);
-                current.addMember(id);
-                databaseRef.child("groups").child(groupId).setValue(current);
+                if (!group.hasMember(id)) {
 
-                databaseRef.child("users").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                    @Override
-                    public void onSuccess(DataSnapshot dataSnapshot) {
-                        User friend = dataSnapshot.getValue(User.class);
-                        friend.addNewGroup(groupId);
-                        databaseRef.child("users").child(friend.getUserId()).setValue(friend);
-                    }
-                });
-            }
-        });
+                    group.addMember(id);
+                    databaseRef.child("groups").child(group.getId()).setValue(group);
+
+                    databaseRef.child("users").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                        @Override
+                        public void onSuccess(DataSnapshot dataSnapshot) {
+                            User friend = dataSnapshot.getValue(User.class);
+                            friend.addNewGroup(group.getId());
+                            databaseRef.child("users").child(friend.getUserId()).setValue(friend);
+                        }
+
+                    });
+                }
     }
 
     private void showMessageIfNoFriends(List<Friend> friends) {
@@ -155,10 +153,10 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_add_friends_to_group, null);
-
 
 
         recyclerView = view.findViewById(R.id.listFriendsToAdd);
@@ -171,29 +169,47 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
         signedInUser = homeActivity.getSignedInUser();
 
-        List<Friend> friends = new ArrayList<>();
 
         databaseRef = homeActivity.getDatabaseRef();
         List<User> users = homeActivity.getUsers();
-        List<String> friendsId = signedInUser.getFriends();
+        //List<String> friendsId = signedInUser.getFriends();
+        List<Friend> friends = new ArrayList<>();
 
-        if (signedInUser.getFriends()!=null)
+        int size = signedInUser.getNumberFriends() - group.getNumberMembers() - 1;
+
+        List<String> friendsId = signedInUser.getFriends();
+        List<String> members = group.getMembers();
+
+
+        if (friendsId != null) {
+
+            for (User user : users) {
+
+                if (friendsId.contains(user.getUserId()) && !members.contains(user.getUserId())) {
+
+                    friends.add(new Friend(user.getUserId(), user.getUserName(), user.getPhotoUrl()));
+                }
+            }
+        }
+
+
+/*        if (signedInUser.getFriends()!=null)
             for (User friend: users) {
                 if (friendsId.contains(friend.getUserId()))
-                    friends.add(new Friend(friend.getUserId(), friend.getUserName(), friend.getPhotoUrl()));
-            }
 
+            }*/
+
+        //complete
 
         adapter = new AddFriendsToGroupDialogFragment.FriendsListGroupAdapter(friends);
         recyclerView.setAdapter(adapter);
-
-
-
         builder.setView(view)
                 .setTitle("Add friends to Group")
                 .setNegativeButton("Close", (dialog, id) -> dialog.dismiss());
         return builder.create();
+
     }
+
 
 
 
