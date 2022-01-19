@@ -109,6 +109,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/members_scroll" />
 
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="@string/max_steps"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="@+id/members_TV2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.937"
+                app:layout_constraintStart_toEndOf="@+id/members_TV2"
+                app:layout_constraintTop_toTopOf="@+id/members_TV2" />
+
             <ListView
                 android:id="@+id/top3_members"
                 android:layout_width="match_parent"

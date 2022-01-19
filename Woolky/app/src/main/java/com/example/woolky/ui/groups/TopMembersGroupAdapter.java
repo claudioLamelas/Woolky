@@ -25,6 +25,7 @@ public class TopMembersGroupAdapter extends ArrayAdapter {
     private List<User> topMembers;
     private Activity context;
     private int week;
+    private int maxSteps;
 
     public TopMembersGroupAdapter (Activity context, List<User> members, int weekNumber) {
         super(context, R.layout.top_member_item, members);
@@ -33,6 +34,7 @@ public class TopMembersGroupAdapter extends ArrayAdapter {
         // vem ordenados do melhor para pior
         topMembers = members;
         week = weekNumber;
+        maxSteps = 85000;
 
     }
 
@@ -55,17 +57,10 @@ public class TopMembersGroupAdapter extends ArrayAdapter {
         Glide.with(context).load(Uri.parse(topMembers.get(position).getPhotoUrl())).circleCrop().into(member);
 
         ProgressBar pb = row.findViewById(R.id.steps_count_PB);
-        if (position == 0){
-            pb.setProgress(100);
 
-        }
-        else{
-            int maxSteps = topMembers.get(0).getTotalNumberSteps(week);
-            double percentagem = (totalSteps*1.0) / (maxSteps*1.0);
-            int valor = (int) (percentagem * 100);
-            pb.setProgress(valor);
-        }
-
+        double percentagem = (totalSteps*1.0) / (maxSteps*1.0);
+        int valor = (int) (percentagem * maxSteps);
+        pb.setProgress(valor);
 
         return  row;
     }
