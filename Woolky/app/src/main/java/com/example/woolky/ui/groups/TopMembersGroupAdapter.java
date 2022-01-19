@@ -60,7 +60,9 @@ public class TopMembersGroupAdapter extends ArrayAdapter {
 
         }
         else{
-            int valor = (int) (totalSteps / topMembers.get(0).getTotalNumberSteps(week)) * 100;
+            int maxSteps = topMembers.get(0).getTotalNumberSteps(week);
+            double percentagem = (totalSteps*1.0) / (maxSteps*1.0);
+            int valor = (int) (percentagem * 100);
             pb.setProgress(valor);
         }
 

@@ -201,7 +201,10 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
         recyclerView.setAdapter(adapter);
         builder.setView(view)
                 .setTitle("Add friends to Group")
-                .setNegativeButton("Close", (dialog, id) -> dialog.dismiss());
+                .setNegativeButton("Close", (dialog, id) -> {
+                    //intent to update
+                    dialog.dismiss();
+                });
         return builder.create();
 
     }
