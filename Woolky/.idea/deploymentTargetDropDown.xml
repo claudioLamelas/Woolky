@@ -12,6 +12,7 @@
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
+<<<<<<< HEAD
     <timeTargetWasSelectedWithDropDown value="2022-01-18T23:37:20.814618300Z" />
     <runningDeviceTargetsSelectedWithDialog>
       <Target>
@@ -24,5 +25,8 @@
         </deviceKey>
       </Target>
     </runningDeviceTargetsSelectedWithDialog>
+=======
+    <timeTargetWasSelectedWithDropDown value="2022-01-19T00:23:23.083411500Z" />
+>>>>>>> escapeRooms
   </component>
 </project>

@@ -2,7 +2,9 @@ package com.example.woolky.ui.games.escaperooms.challenges;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,16 +23,21 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.woolky.R;
+import com.example.woolky.domain.games.escaperooms.OnChallengeCompletedListener;
 import com.google.android.gms.maps.model.Polyline;
+
+import java.util.Random;
 
 
 public class FastClickDialog extends DialogFragment {
 
+    public static final int MAXIMUM_TIME_ACCEPTABLE = 450;
     private Handler handler;
     private Polyline polyline;
     private long startTime;
     private CountDownTimer countDownTimer;
     private boolean touched;
+    private OnChallengeCompletedListener listener;
 
     public FastClickDialog(Polyline polyline) {
         this.polyline = polyline;
@@ -69,25 +76,68 @@ public class FastClickDialog extends DialogFragment {
         timeTV.setText("0.000 s");
 
         colorSquare.setOnClickListener((v) -> {
-            touched = true;
-            if (countDownTimer != null)
-                countDownTimer.cancel();
-            
+            if (!touched) {
+                if (countDownTimer != null)
+                    countDownTimer.cancel();
+
+                boolean valid = false;
+                if (colorSquare.getBackground() instanceof ColorDrawable)
+                    valid = ((ColorDrawable) colorSquare.getBackground()).getColor() == Color.GREEN;
+
+                if (!valid) {
+                    handler.removeCallbacksAndMessages(null);
+                    timeTV.setText("Too soon Sir...");
+                    terminateChallenge(false);
+                } else if (startTime < MAXIMUM_TIME_ACCEPTABLE) {
+                    timeTV.setText("YOU DID IT!");
+                    terminateChallenge(true);
+                } else {
+                    timeTV.setText("You are too slow. You shall not pass!");
+                    terminateChallenge(false);
+                }
+
+                touched = true;
+            }
         });
+
+        long randomGreenTime = new Random().nextInt(6000) + 1000;
 
         handler.postDelayed(() -> {
             colorSquare.setBackgroundColor(Color.GREEN);
             countDownTimer = new CountDownTimer(4000, 10) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    timeTV.setText(((4000 - millisUntilFinished) / 1000.0) + " s");
+                    startTime = (4000 - millisUntilFinished);
+                    timeTV.setText((startTime / 1000.0) + " s");
                 }
 
                 @Override
                 public void onFinish() {
-
+                    if (!touched)
+                        timeTV.setText("Jesus Christ.. Not even a snail could be this slow");
+                    terminateChallenge(false);
                 }
             }.start();
-        }, 5000);
+        }, randomGreenTime);
+    }
+
+    private void terminateChallenge(boolean passed) {
+        handler.postDelayed(() -> {
+            if (passed)
+                listener.challengeCompleted(this, polyline);
+            else
+                this.dismiss();
+        }, 2000);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            listener = (OnChallengeCompletedListener) getParentFragment();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString()
+                    + " must implement SequenceListener");
+        }
     }
 }
