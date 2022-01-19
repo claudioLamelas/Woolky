@@ -1,6 +1,7 @@
 package com.example.woolky.ui.groups;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -158,6 +159,13 @@ public class GroupsListFragment extends Fragment{
 
 
                 Button btnTag = new Button(getContext());
+                btnTag.setBackgroundResource(R.drawable.button_group);
+                btnTag.setTextColor(Color.WHITE);
+                btnTag.setTransformationMethod(null);
+                btnTag.setTextSize(16);
+                btnTag.setPadding(5,5,5,5);
+
+                //Button btnTag = (Button)getLayoutInflater().inflate(R.drawable.button_group, null);
 
 
                 databaseRef.child("groups").child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
@@ -206,17 +214,25 @@ public class GroupsListFragment extends Fragment{
                 layout.removeView(noGroupsBelong);
             }*/
 
-
+            groupsBelong.setPadding(0, 50,0,0);
             TextView testBelong= layout.findViewWithTag("tv_belong");
+
             if (testBelong == null) {
                 layout.addView(groupsBelong);
             }
+
 
 
             // ver se tem a mensagem de nenhum grupo
             for (String name : groupsIBelong) {
 
                 Button btnTag = new Button(getContext());
+                btnTag.setBackgroundResource(R.drawable.button_group);
+                btnTag.setTextColor(Color.WHITE);
+                btnTag.setTransformationMethod(null);
+                btnTag.setTextSize(16);
+                btnTag.setPadding(5,5,5,5);
+
 
 
                 databaseRef.child("groups").child(name).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
