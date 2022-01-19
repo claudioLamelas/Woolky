@@ -31,7 +31,7 @@ import java.util.List;
 
 public class FastPianoDialog extends DialogFragment {
 
-    public static final int COLOR_ON_SCREEN_TIME = 700;
+    public static final int COLOR_ON_SCREEN_TIME = 850;
     public static final int NUMBER_OF_COLORS_SHOWN = 9;
     public static final int COUNTDOWN_TOTAL_TIME = COLOR_ON_SCREEN_TIME * NUMBER_OF_COLORS_SHOWN * 2;
 
