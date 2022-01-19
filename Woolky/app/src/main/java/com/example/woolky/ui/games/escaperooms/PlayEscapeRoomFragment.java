@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGameListener;
+import com.example.woolky.domain.games.escaperooms.OnChallengeCompletedListener;
 import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.user.User;
@@ -61,7 +62,7 @@ import java.util.Random;
  * A simple {@link Fragment} subclass.
  */
 public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallback, LocationListener,
-        ShowQuizDialog.AnswerQuizListener, ImitateSequenceDialog.SequenceListener,
+        ShowQuizDialog.AnswerQuizListener, OnChallengeCompletedListener,
         InputDataDialog.OnDataSubmitted {
 
     private static final int FINE_LOCATION_CODE = 114;
@@ -163,19 +164,21 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                             "", EditorInfo.TYPE_CLASS_NUMBER);
                     inputDataDialog.show(getChildFragmentManager(), "finalCode");
                 } else {
-                    FastClickDialog fastClickDialog = new FastClickDialog(polyline);
-                    fastClickDialog.show(getChildFragmentManager(), "fast");
-//                    Random random = new Random();
-//                    int x = random.nextInt(2);
-//                    if (x == 0 && !escapeRoomGame.getEscapeRoom().getQuizzes().isEmpty()) {
-//                        Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
-//                                .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
-//                        ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
-//                        dialog.show(getChildFragmentManager(), "quiz");
-//                    } else {
-//                        ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
-//                        dialog1.show(getChildFragmentManager(), "seq");
-//                    }
+                    //TODO: Melhorar odds de desafios
+                    Random random = new Random();
+                    int x = random.nextInt(3);
+                    if (x == 0 && !escapeRoomGame.getEscapeRoom().getQuizzes().isEmpty()) {
+                        Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
+                                .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
+                        ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
+                        dialog.show(getChildFragmentManager(), "quiz");
+                    } else if (x == 1){
+                        ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
+                        dialog1.show(getChildFragmentManager(), "seq");
+                    } else {
+                        FastClickDialog fastClickDialog = new FastClickDialog(polyline);
+                        fastClickDialog.show(getChildFragmentManager(), "fast");
+                    }
                 }
             }
         });
@@ -354,7 +357,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
     }
 
     @Override
-    public void rightSequenceDone(DialogFragment dialog, Polyline polyline) {
+    public void challengeCompleted(DialogFragment dialog, Polyline polyline) {
         processCorrectAnswer(polyline);
         dialog.dismiss();
     }
