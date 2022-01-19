@@ -19,6 +19,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.example.woolky.R;
+import com.example.woolky.domain.games.escaperooms.ChallengesRandomCalculator;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGameListener;
 import com.example.woolky.domain.games.escaperooms.OnChallengeCompletedListener;
@@ -161,15 +162,17 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                             "", EditorInfo.TYPE_CLASS_NUMBER);
                     inputDataDialog.show(getChildFragmentManager(), "finalCode");
                 } else {
-                    //TODO: Melhorar odds de desafios
-                    Random random = new Random();
-                    int x = random.nextInt(3);
-                    if (x == 0 && !escapeRoomGame.getEscapeRoom().getQuizzes().isEmpty()) {
+
+                    int quizzesSize = escapeRoomGame.getEscapeRoom().getQuizzes().size();
+                    int nextChallenge = ChallengesRandomCalculator
+                            .chooseNextChallenge(quizzesSize);
+
+                    if (nextChallenge == ChallengesRandomCalculator.NUMBER_CHALLENGES) {
                         Quiz quiz = escapeRoomGame.getEscapeRoom().getQuizzes()
-                                .get(random.nextInt(escapeRoomGame.getEscapeRoom().getQuizzes().size()));
+                                .get(ChallengesRandomCalculator.nextQuiz(quizzesSize));
                         ShowQuizDialog dialog = new ShowQuizDialog(quiz, polyline);
                         dialog.show(getChildFragmentManager(), "quiz");
-                    } else if (x == 1){
+                    } else if (nextChallenge == 1){
                         ImitateSequenceDialog dialog1 = new ImitateSequenceDialog(polyline);
                         dialog1.show(getChildFragmentManager(), "seq");
                     } else {
