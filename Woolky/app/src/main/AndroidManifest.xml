@@ -20,10 +20,12 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.SplashScreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +42,8 @@
 
         <activity
             android:name=".ui.HomeActivity"
-            android:exported="true"></activity>
+            android:exported="true"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
