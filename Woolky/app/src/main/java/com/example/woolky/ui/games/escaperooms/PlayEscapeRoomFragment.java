@@ -8,25 +8,23 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Toast;
-
+import com.example.woolky.R;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGameListener;
 import com.example.woolky.domain.games.escaperooms.OnChallengeCompletedListener;
-import com.example.woolky.ui.HomeActivity;
-import com.example.woolky.R;
-import com.example.woolky.domain.user.User;
 import com.example.woolky.domain.games.escaperooms.Quiz;
+import com.example.woolky.domain.user.User;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.FinishGameDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.CodeNumberDialog;
 import com.example.woolky.ui.games.escaperooms.challenges.FastClickDialog;
@@ -154,8 +152,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             });
         }
         else
-            Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
-                    Toast.LENGTH_SHORT).show();
+            Utils.showInfoSnackBar(getActivity(), getView(), "You need to grant location access if you want to use the maps");
 
         mMap.setOnPolylineClickListener(polyline -> {
             if (admissibleChallengeWall(polyline, currentPosition)) {
@@ -196,7 +193,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
         boolean admissible = PolyUtil.distanceToLine(currentPosition, c1.getCenter(), c2.getCenter()) <= MINIMUM_DISTANCE_TO_WALL;
         if (!admissible)
-            Toast.makeText(getActivity(), "Too far from the wall", Toast.LENGTH_SHORT).show();
+            Utils.showInfoSnackBar(getActivity(), getView(), "Too far from the wall");
 
         return admissible;
     }
@@ -257,7 +254,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
 
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-        Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+        Utils.showInfoSnackBar(getActivity(), getView(), "Turn On the GPS please");
     }
 
     private void keepPlayerInside(LatLng previousPosition, Point previous, Point current) {
@@ -278,7 +275,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
                             list).get(0);
                     escapeRoomGame.getEscapeRoom().removeFromMap(mMap);
                     escapeRoomGame.getEscapeRoom().drawEscapeRoom(newEscapeRoomPosition, mMap, VERTEX_RADIUS);
-                    Toast.makeText(getActivity(), "Impossible to reach", Toast.LENGTH_SHORT).show();
+                    Utils.showWarningSnackBar(getActivity(), getView(), "Impossible to reach");
                     break;
                 }
             }
@@ -291,7 +288,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
         Triple<Integer, Integer, Integer> triple = escapeRoomGame.getEscapeRoom().getLinesCircles().get(lineIndex);
         triple.setThird(Color.GREEN);
 
-        Toast.makeText(getActivity(), "Correct Answer", Toast.LENGTH_SHORT).show();
+        Utils.showSuccesSnackBar(getActivity(), getView(), "Correct Answer");
 
         if (escapeRoomGame.isFinished() == 1) {
             escapeRoomGame.setFinito(true);
@@ -351,7 +348,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             processCorrectAnswer(polyline);
             escapeRoomGame.getEscapeRoom().getQuizzes().remove(quiz);
         } else
-            Toast.makeText(getActivity(), "Wrong Answer", Toast.LENGTH_SHORT).show();
+            Utils.showWarningSnackBar(getActivity(), getView(), "Wrong Answer");
 
         dialog.dismiss();
     }
@@ -371,7 +368,7 @@ public class PlayEscapeRoomFragment extends Fragment implements OnMapReadyCallba
             Polyline polyline = escapeRoomGame.getEscapeRoom().getPolylines().get(bluePolylineIndex);
             processCorrectAnswer(polyline);
         } else {
-            Toast.makeText(getActivity(), "Wrong code", Toast.LENGTH_LONG).show();
+            Utils.showWarningSnackBar(getActivity(), getView(), "Wrong code");
         }
     }
 }

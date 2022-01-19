@@ -1,9 +1,5 @@
 package com.example.woolky.ui.games.tictactoe;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.example.woolky.domain.user.User;
-import com.example.woolky.domain.games.tictactoe.TicTacToeGameListener;
-import com.example.woolky.ui.HomeActivity;
-import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.woolky.R;
+import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
+import com.example.woolky.domain.games.tictactoe.TicTacToeGameListener;
+import com.example.woolky.domain.user.User;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.FinishGameDialog;
 import com.example.woolky.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -78,8 +77,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0.5f, locationListener);
                 });
             } else
-                Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
-                        Toast.LENGTH_SHORT).show();
+                Utils.showInfoSnackBar(getActivity(), getView(), "You need to grant location access if you want to use the maps");
         }
     };
 
@@ -137,7 +135,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
                     }
                     gameRef.setValue(ticTacToeGame);
                 } else {
-                    Toast.makeText(getActivity(), "You can't make this move", Toast.LENGTH_SHORT).show();
+                    Utils.showWarningSnackBar(getActivity(), getView(), "You can't make this move");
                 }
             }
         });
@@ -197,7 +195,7 @@ public class PlayTicTacToeFragment extends Fragment implements LocationListener 
 
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-        Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+        Utils.showInfoSnackBar(getActivity(), getView(), "Turn On the GPS please");
     }
 
     @Override

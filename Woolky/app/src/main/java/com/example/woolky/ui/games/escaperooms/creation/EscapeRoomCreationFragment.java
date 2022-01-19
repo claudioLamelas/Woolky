@@ -9,24 +9,22 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.example.woolky.ui.HomeActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+
 import com.example.woolky.R;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.user.User;
+import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.ui.games.escaperooms.challenges.InputDataDialog;
 import com.example.woolky.utils.LocationCalculator;
 import com.example.woolky.utils.PairCustom;
@@ -128,9 +126,9 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
 
         view.findViewById(R.id.saveEscapeRoomButton).setOnClickListener(v -> {
             if (escapeRoom.getBlueLine() == null)
-                Toast.makeText(getActivity(), "You need to specify a finishing door (Blue)", Toast.LENGTH_SHORT).show();
+                Utils.showWarningSnackBar(getActivity(), getView(), "You need to define a finishing door (BLUE)");
             else if (escapeRoom.getUserStartPosition() == null)
-                Toast.makeText(getActivity(), "You need to specify a starting position for the players", Toast.LENGTH_LONG).show();
+                Utils.showWarningSnackBar(getActivity(), getView(), "You need to specify a starting position for the players");
             else {
                 InputDataDialog dialog = new InputDataDialog("Give your escape room a name",
                         escapeRoom.getName(),"Hardest Room Ever", EditorInfo.TYPE_CLASS_TEXT);
@@ -180,8 +178,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0.1f, this);
             });
         } else
-            Toast.makeText(getActivity(), "You need to grant location access if you want to use the maps",
-                    Toast.LENGTH_SHORT).show();
+            Utils.showInfoSnackBar(getActivity(), getView(), "You need to grant location access if you want to use the maps");
 
         mMap.setOnMapLongClickListener(latLng -> {
 
@@ -291,8 +288,8 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         String roomID = escapeRoomId.equals("") ? ref.push().getKey() : escapeRoomId;
         escapeRoomId = roomID;
 
-        ref.child(roomID).setValue(escapeRoom).addOnSuccessListener(unused ->
-                Toast.makeText(homeActivity, "Escape Room Saved", Toast.LENGTH_SHORT).show());
+        ref.child(roomID).setValue(escapeRoom)
+                .addOnSuccessListener(unused -> Utils.showSuccesSnackBar(getActivity(), getView(), "Escape Room Saved"));
     }
 
     private void saveRelativePositions() {
@@ -353,7 +350,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
         if (initialPosition == null) {
             getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             getActivity().getSupportFragmentManager().popBackStack();
-            Toast.makeText(getActivity(), "Turn On the GPS please", Toast.LENGTH_SHORT).show();
+            Utils.showInfoSnackBar(getActivity(), getView(), "Turn On the GPS please");
         }
     }
 
@@ -364,7 +361,7 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
             escapeRoom.setName(inputData);
             saveEscapeRoom();
         } else {
-            Toast.makeText(getActivity(), "You need to choose a name", Toast.LENGTH_LONG).show();
+            Utils.showWarningSnackBar(getActivity(), getView(), "You need to choose a name");
         }
     }
 }

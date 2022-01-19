@@ -1,11 +1,13 @@
 package com.example.woolky.ui;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -198,7 +200,8 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-                    Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
+////                    Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
+//                    Utils.showInfoSnackBar(getBaseContext(), getWindow().getDecorView().getRootView(), "The invite was " + inviteState.toString());
                     if (inviteState == InviteState.ACCEPTED) {
                         setupFriend(inviteId,false, toUserId);
                     }
@@ -218,8 +221,8 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-                    if (inviteState == InviteState.DECLINED)
-                        Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
+//                    if (inviteState == InviteState.DECLINED)
+//                        Utils.showInfoSnackBar(getBaseContext(), ((ViewGroup)activity.findViewById(R.id.content)).getChildAt(0), "The invite was " + inviteState.toString());
 
                     if (inviteState == InviteState.ACCEPTED && !isPlaying) {
                         isPlaying = true;
