@@ -162,7 +162,7 @@
         android:textAllCaps="false"
         android:textColor="#423F3F"
         android:textSize="16sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/inviteToGroupGameButton"
         app:layout_constraintEnd_toStartOf="@+id/inviteToGroupGameButton"
         app:layout_constraintHorizontal_bias="0.5"
