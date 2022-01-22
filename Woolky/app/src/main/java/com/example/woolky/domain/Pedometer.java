@@ -46,7 +46,7 @@ public class Pedometer implements SensorEventListener {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void loadData() {
         SharedPreferences sharedPreferences = activity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        previousTotalSteps = sharedPreferences.getFloat(PREVIOUS_TOTAL_STEPS, 0f);
+        previousTotalSteps = sharedPreferences.getFloat(activity.getSignedInUser().getUserId(), 0f);
         int day = sharedPreferences.getInt(CURRENT_DAY, 1);
 
         if (day < LocalDateTime.now().getDayOfMonth())
@@ -61,15 +61,14 @@ public class Pedometer implements SensorEventListener {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (day < LocalDateTime.now().getDayOfMonth()) {
-            editor.putFloat(PREVIOUS_TOTAL_STEPS, 0f);
+            editor.putFloat(activity.getSignedInUser().getUserId(), 0f);
         } else {
-            editor.putFloat(PREVIOUS_TOTAL_STEPS, previousTotalSteps);
+            editor.putFloat(activity.getSignedInUser().getUserId(), previousTotalSteps);
         }
         editor.putInt(CURRENT_DAY, LocalDateTime.now().getDayOfMonth());
         editor.apply();
 
         activity.updateStepsDistanceBD(currentSteps, getDistanceTravelled());
-
     }
 
     public void startCounter() {

@@ -77,12 +77,6 @@ public class HomeActivity extends AppCompatActivity {
         }
         permissionsGranted = Utils.askForPermission(this, permissions, FINE_LOCATION_CODE);
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            pedometer = new Pedometer(this);
-            pedometer.startCounter();
-        }
-
         handler = new Handler();
         users = new ArrayList<>();
 
@@ -105,6 +99,11 @@ public class HomeActivity extends AppCompatActivity {
             DatabaseReference userReference = databaseRef.child("users").child(signedInUser.getUserId());
             userListener = new UserChangesListener(this);
             userReference.addValueEventListener(userListener);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                pedometer = new Pedometer(this);
+                pedometer.startCounter();
+            }
 
             getSupportFragmentManager().beginTransaction().add(R.id.fragment, new HomeFragment()).commit();
         });
