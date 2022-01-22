@@ -41,20 +41,13 @@ public class Utils {
     }
 
     public static BitmapDescriptor BitmapFromVector(Drawable vectorDrawable, int color) {
-        // below line is use to set bounds to our vector drawable.
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
         vectorDrawable.setTint(color);
 
-        // below line is use to create a bitmap for our drawable which we have added.
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-
-        // below line is use to add bitmap in our canvas.
         Canvas canvas = new Canvas(bitmap);
-
-        // below line is use to draw our vector drawable in canvas.
         vectorDrawable.draw(canvas);
 
-        // after generating our bitmap we are returning our bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 

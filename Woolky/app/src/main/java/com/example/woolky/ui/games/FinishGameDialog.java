@@ -24,16 +24,11 @@ import com.example.woolky.R;
  */
 public class FinishGameDialog extends DialogFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
 
-    // TODO: Rename and change types of parameters
     private String message;
 
-    public FinishGameDialog() {
-        // Required empty public constructor
-    }
+    public FinishGameDialog() {}
 
     /**
      * Use this factory method to create a new instance of
@@ -42,7 +37,6 @@ public class FinishGameDialog extends DialogFragment {
      * @param message message to be shown
      * @return A new instance of fragment TicTacToeFinishDialog.
      */
-    // TODO: Rename and change types and number of parameters
     public static FinishGameDialog newInstance(String message) {
         FinishGameDialog fragment = new FinishGameDialog();
         Bundle args = new Bundle();
@@ -62,7 +56,6 @@ public class FinishGameDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tic_tac_toe_finish_dialog, container, false);
     }
 

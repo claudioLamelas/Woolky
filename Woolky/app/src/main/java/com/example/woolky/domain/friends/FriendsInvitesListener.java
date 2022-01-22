@@ -41,7 +41,7 @@ public class FriendsInvitesListener implements ChildEventListener {
                 FriendsInviteFragment gif = FriendsInviteFragment.newInstance(lastInvite, lastInviteKey);
                 gif.setInviteReference(inviteReference);
 
-                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance(activity);
+                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance();
                 inviteDispatcher.addPendingInvite(gif);
             }
         }
@@ -49,7 +49,7 @@ public class FriendsInvitesListener implements ChildEventListener {
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-        //Aqui ver se o invite foi aceite ou recusado e fazer a lógica adequada
+
     }
 
     @Override

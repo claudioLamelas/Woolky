@@ -1,33 +1,31 @@
 package com.example.woolky.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.woolky.domain.friends.FriendsInvitesListener;
 import com.example.woolky.R;
-import com.example.woolky.domain.user.UserChangesListener;
-import com.example.woolky.domain.friends.FriendsInvite;
+import com.example.woolky.domain.InviteDispatcher;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.Pedometer;
-import com.example.woolky.domain.user.User;
+import com.example.woolky.domain.friends.FriendsInvite;
+import com.example.woolky.domain.friends.FriendsInvitesListener;
 import com.example.woolky.domain.games.EscapeRoomGameInvite;
 import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.games.GameInvitesListener;
 import com.example.woolky.domain.games.escaperooms.EscapeRoom;
 import com.example.woolky.domain.games.escaperooms.EscapeRoomGame;
 import com.example.woolky.domain.games.tictactoe.TicTacToeGame;
+import com.example.woolky.domain.user.User;
+import com.example.woolky.domain.user.UserChangesListener;
 import com.example.woolky.ui.games.escaperooms.PlayEscapeRoomFragment;
 import com.example.woolky.ui.games.tictactoe.PlayTicTacToeFragment;
 import com.example.woolky.ui.home.HomeFragment;
@@ -48,7 +46,6 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
     private static final int FINE_LOCATION_CODE = 114;
-    private static final int ACTIVITY_RECOGNITION_CODE = 115;
 
     private Handler handler;
     private DatabaseReference databaseRef;
@@ -70,6 +67,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        InviteDispatcher.getInstance().setNewActivity(this);
 
         String[] permissions = new String[2];
         permissions[0] = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -147,6 +146,14 @@ public class HomeActivity extends AppCompatActivity {
         handler.removeCallbacksAndMessages(null);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (areWeHome() && !isPlaying)
+            super.onBackPressed();
+        else
+            changeToHome();
+    }
+
     private BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
                 Fragment selected = null;
@@ -181,9 +188,11 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void changeToHome() { bottomNav.setSelectedItemId(R.id.nav_home); }
-
     public boolean areWeHome() { return bottomNav.getSelectedItemId() == R.id.nav_home; }
+
+    public void changeToHome() {
+        bottomNav.setSelectedItemId(R.id.nav_home);
+    }
 
     public void changeToMap() {
         bottomNav.setSelectedItemId(R.id.nav_map);
@@ -200,8 +209,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-////                    Toast.makeText(getBaseContext(), "The invite was " + inviteState.toString(), Toast.LENGTH_SHORT).show();
-//                    Utils.showInfoSnackBar(getBaseContext(), getWindow().getDecorView().getRootView(), "The invite was " + inviteState.toString());
+
                     if (inviteState == InviteState.ACCEPTED) {
                         setupFriend(inviteId,false, toUserId);
                     }
@@ -221,9 +229,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 InviteState inviteState = snapshot.getValue(InviteState.class);
                 if (inviteState != InviteState.SENT) {
-//                    if (inviteState == InviteState.DECLINED)
-//                        Utils.showInfoSnackBar(getBaseContext(), ((ViewGroup)activity.findViewById(R.id.content)).getChildAt(0), "The invite was " + inviteState.toString());
-
                     if (inviteState == InviteState.ACCEPTED && !isPlaying) {
                         isPlaying = true;
                         switch (invite.getGameMode()) {
@@ -264,7 +269,7 @@ public class HomeActivity extends AppCompatActivity {
                 signedInUser.setFriends(finalFriends);
                 databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
             });
-        }else{
+        } else {
             DatabaseReference friendRef = databaseRef.child("friendInvite").child(toUserId).child(friendInviteID);
             List<String> finalFriends = friends;
             friendRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
@@ -354,7 +359,6 @@ public class HomeActivity extends AppCompatActivity {
             tv2.setText(distanceTravelled + " km");
     }
 
-
     public void updateUser() {
         databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
     }
@@ -362,6 +366,5 @@ public class HomeActivity extends AppCompatActivity {
     public void updateStepsDistanceBD(int currentSteps, double distanceTravelled) {
         signedInUser.updateStepsAndDistance(currentSteps, distanceTravelled);
         updateUser();
-
     }
 }

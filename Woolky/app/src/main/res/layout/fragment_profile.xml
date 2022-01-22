@@ -105,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/round_corners"
-                android:backgroundTint="#D12121"
+                android:backgroundTint="@color/cornell_red"
                 android:drawableStart="@drawable/ic_baseline_exit_to_app_24"
                 android:drawablePadding="5dp"
                 android:drawableTint="#FFFFFF"

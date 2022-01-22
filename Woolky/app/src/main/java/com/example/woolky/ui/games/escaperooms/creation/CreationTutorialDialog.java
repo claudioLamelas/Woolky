@@ -20,14 +20,11 @@ import com.example.woolky.R;
 
 public class CreationTutorialDialog extends DialogFragment {
 
-    public CreationTutorialDialog() {
-        // Required empty public constructor
-    }
+    public CreationTutorialDialog() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_creation_tutorial_dialog, container, false);
     }
 

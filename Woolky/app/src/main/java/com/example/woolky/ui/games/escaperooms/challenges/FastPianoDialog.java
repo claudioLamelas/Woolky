@@ -31,12 +31,12 @@ import java.util.List;
 
 public class FastPianoDialog extends DialogFragment {
 
-    public static final int COLOR_ON_SCREEN_TIME = 700;
+    public static final int COLOR_ON_SCREEN_TIME = 850;
     public static final int NUMBER_OF_COLORS_SHOWN = 9;
     public static final int COUNTDOWN_TOTAL_TIME = COLOR_ON_SCREEN_TIME * NUMBER_OF_COLORS_SHOWN * 2;
 
-    private static List<String> words = Arrays.asList("Blue", "Red", "Yellow", "Green", "Black", "Orange");
-    private static List<Integer> colors =
+    private static final List<String> words = Arrays.asList("Blue", "Red", "Yellow", "Green", "Black", "Orange");
+    private static final List<Integer> colors =
             Arrays.asList(R.color.cornell_red, R.color.napier_green, R.color.tangerine_yellow,
                     R.color.blueberry_blue, R.color.purple_sage_bush);
 
@@ -63,7 +63,6 @@ public class FastPianoDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_fast_piano_dialog, container, false);
     }
 

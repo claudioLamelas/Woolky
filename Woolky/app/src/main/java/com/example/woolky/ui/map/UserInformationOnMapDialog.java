@@ -50,12 +50,9 @@ public class UserInformationOnMapDialog extends DialogFragment {
 
     private User user;
     private User signedInUser;
-    //private DatabaseReference databaseRef;
     private Spinner gamesSpinner;
 
-    public UserInformationOnMapDialog() {
-        // Required empty public constructor
-    }
+    public UserInformationOnMapDialog() {}
 
     /**
      * Use this factory method to create a new instance of
@@ -78,23 +75,21 @@ public class UserInformationOnMapDialog extends DialogFragment {
         if (getArguments() != null) {
             this.user = (User) getArguments().getSerializable(ARG_PARAM);
         }
+
         this.signedInUser = ((HomeActivity) getActivity()).getSignedInUser();
         updateUser(signedInUser.getUserId(),signedInUser);
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_information_on_map_dialog, container, false);
     }
+
     private void updateUser(String userID,User user){
         DatabaseReference databaseRef = ((HomeActivity) getActivity()).getDatabaseRef();
         databaseRef.child("users").child(userID).setValue(user);
     }
-
 
     @NonNull
     @Override
@@ -114,9 +109,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
             senderManager.createGameInvite();
         });
 
-        if (signedInUser.getFriends()!=null)//ver se existe pelo menos 1 amigo
-        {
-            //ver se ja sao amigos
+        if (signedInUser.getFriends()!=null) {
             for (String other_user : signedInUser.getFriends()){
                 if (other_user.equals(user.getUserId())){
                     ((TextView) v.findViewById(R.id.time_of_day)).setText("Already Friends");
@@ -125,6 +118,7 @@ public class UserInformationOnMapDialog extends DialogFragment {
                 }
             }
         }
+
         v.findViewById(R.id.sendFriendRequestButton).setOnClickListener(v12 -> {
             HomeActivity activity = (HomeActivity) getActivity();
             FriendsInvite friendsInvite = new FriendsInvite(signedInUser.getUserName(), signedInUser.getUserId(),InviteState.SENT);

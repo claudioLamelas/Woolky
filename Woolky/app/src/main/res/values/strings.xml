@@ -3,7 +3,6 @@
     <string name="app_name">Woolky</string>
     <string name="title_activity_maps">Woolky</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="send_friend_request">Send Friend Request</string>
     <string name="invite_to_play">Invite To Play</string>
@@ -42,7 +41,7 @@
                 If you want to connect two points that already exist, click in one of them and then two times on the other one (slowly).</li>
             \n\n
             <li><b>Wall Colors</b> - To determine which walls will need to be unlocked you have to
-                make them RED, for that click one time in the desired wall and voilá.\nBut all escape
+                make them RED, for that click one time in the desired wall et voilà.\nBut all escape
                 rooms need to have a way out, so to specify the finishing wall you click two times in a wall to make it BLUE.</li>
             \n\n
             <li><b>Delete Walls</b> - If you want to delete a wall, activate the trash can button and
@@ -53,6 +52,8 @@
             \n\n
             <li><b>Quizzes</b> - Here is the place where you can add a new quiz or edit/delete
                 existing ones. These quizzes will be shown to the players when trying to unlock the red walls.</li>
+            \n\n
+            <li><b>Other challenges</b> - To unlock the doors also exists 3 more types of challenges that can be chosen with equally probability.</li>
             \n\n
             <li><b>Save</b> - Don\'t forget to save your escape room with a cool name :D</li>
         </ul>

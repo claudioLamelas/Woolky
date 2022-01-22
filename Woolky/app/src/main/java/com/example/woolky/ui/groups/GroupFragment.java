@@ -44,35 +44,18 @@ import java.util.List;
 
 public class GroupFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private String groupId;
     private DatabaseReference databaseRef;
     private Group current;
     private User signedInUser;
     private HomeActivity homeActivity;
 
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public GroupFragment() {
-        // Required empty public constructor
-    }
+    public GroupFragment() {}
 
     public GroupFragment(String groupId, DatabaseReference databaseRef) {
         this.groupId = groupId;
-        Log.d("id", groupId);
         this.databaseRef = databaseRef;
-
-
     }
-
-
 
 
     @Override
@@ -82,9 +65,6 @@ public class GroupFragment extends Fragment {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 current = dataSnapshot.getValue(Group.class);
-                Log.d("nome", current.getGroupName());
-
-
             }
         });
     }
@@ -92,7 +72,6 @@ public class GroupFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_group, container, false);
 
 
@@ -101,12 +80,8 @@ public class GroupFragment extends Fragment {
 
             FragmentManager fm = getParentFragmentManager();
             LeaveGroupConfirmationDialogFragment leaveGroupDF = LeaveGroupConfirmationDialogFragment.newInstance();
-            // SETS the target fragment for use later when sending results
             leaveGroupDF.setTargetFragment(GroupFragment.this, 300);
-            //fm.putFragment();
             leaveGroupDF.show(fm, "fragment_add_friends");
-
-
         });
 
         view.findViewById(R.id.inviteToGroupGameButton).setOnClickListener(v -> {
@@ -127,11 +102,8 @@ public class GroupFragment extends Fragment {
             signedInUser.leaveGroupIOwn(groupId);
             updateUser(signedInUser.getUserId(), signedInUser);
             deleteGroup();
-        }
 
-
-        else if (current.getOwnerId().equals(signedInUser.getUserId())) {
-
+        } else if (current.getOwnerId().equals(signedInUser.getUserId())) {
             signedInUser.leaveGroupIOwn(groupId);
             updateUser(signedInUser.getUserId(), signedInUser);
             current.deleteOwner();
@@ -148,25 +120,18 @@ public class GroupFragment extends Fragment {
                 }
             });
 
-
-        }
-        else {
+        } else {
 
             signedInUser.leaveGroup(groupId);
             updateUser(signedInUser.getUserId(), signedInUser);
             current.deleteMember(signedInUser.getUserId());
             updateGroup();
             goodbye();
-
-
         }
-
-
     }
 
     private void updateGroup() {
         databaseRef.child("groups").child(groupId).setValue(current);
-
     }
 
     private void updateUser(String id, User user) {
@@ -176,11 +141,9 @@ public class GroupFragment extends Fragment {
     private void deleteGroup() {
         databaseRef.child("groups").child(groupId).removeValue();
         goodbye();
-
     }
 
     private void goodbye() {
-//        getParentFragmentManager().beginTransaction().replace(R.id.fragment, new HomeFragment()).commit();
         getParentFragmentManager().beginTransaction().remove(this).commitNow();
         getParentFragmentManager().popBackStack();
     }
@@ -192,8 +155,6 @@ public class GroupFragment extends Fragment {
 
         TextView name = view.findViewById(R.id.groupName_TV);
 
-        //nao eh rapido
-
         databaseRef.child("groups").child(groupId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
@@ -204,17 +165,14 @@ public class GroupFragment extends Fragment {
                 updateMembersUI(view);
 
                 if (signedInUser.getUserId().equals(current.getOwnerId())){
-
                     Button addFriends = view.findViewById(R.id.addFriendsGroupBt);
                     addFriends.setVisibility(View.VISIBLE);
                     addFriends.setOnClickListener(v -> {
                         inviteFriendsToGroup(current);
                     });
                 }
-
             }
         });
-
 
         homeActivity = ((HomeActivity) getActivity());
         signedInUser = homeActivity.getSignedInUser();
@@ -239,8 +197,6 @@ public class GroupFragment extends Fragment {
                         }
                     });
                 }
-
-
             }
         });
 
@@ -259,7 +215,6 @@ public class GroupFragment extends Fragment {
         Calendar now = Calendar.getInstance();
         ArrayList<String> days = new ArrayList<>(7);
         int week = -now.get(GregorianCalendar.DAY_OF_WEEK) + 2; //add 2 if your week start on monday
-
         return week;
     }
 
@@ -299,32 +254,18 @@ public class GroupFragment extends Fragment {
     
 
     private void inviteFriendsToGroup(Group current) {
-
-        /*FrameLayout addFriends = getView().findViewById(R.id.addFriendsGroupFragment);
-        addFriends.setVisibility(View.VISIBLE);
-        getParentFragmentManager().beginTransaction().replace(R.id.addFriendsGroupFragment, new AddFriendsToGroupDialogFragment(groupId)).commit();
-*/
-
         FragmentManager fm = getParentFragmentManager();
         AddFriendsToGroupDialogFragment addNewGroup = AddFriendsToGroupDialogFragment.newInstance("Add Friends", current);
-        // SETS the target fragment for use later when sending results
         addNewGroup.setTargetFragment(GroupFragment.this, 300);
-        //fm.putFragment();
         addNewGroup.show(fm, "fragment_add_friends");
     }
 
     private void updateMembersUI(View view) {
-
         List<String> members = current.getMembers();
-
         LinearLayout layout = view.findViewById(R.id.members_scroll_layout);
         layout.removeAllViews();
 
-
-
         for (String name : members) {
-
-
             databaseRef.child("users").child(name).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
                 @Override
                 public void onSuccess(DataSnapshot dataSnapshot) {
@@ -336,26 +277,13 @@ public class GroupFragment extends Fragment {
 
                     params.setMargins(25,10,10,10);
 
-
                     photo.setLayoutParams(params);
-
-
-                    //lp.setMargins(8,8,8,8));
-                    //photo.setImageURI(null);
-                    //photo.setImageURI(Uri.parse(signedInUser.getPhotoUrl()));
                     Glide.with(getActivity()).load(Uri.parse(current.getPhotoUrl())).circleCrop().into(photo);
 
-
                     layout.addView(photo);
-
                 }
             });
-
-
         }
-
-
-
     }
 
     /*
@@ -371,6 +299,5 @@ public class GroupFragment extends Fragment {
         else if (requestCode == 2 && resultCode == 0) {
             onViewCreated(getView(), null);
         }
-
     }
 }

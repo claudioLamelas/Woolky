@@ -27,18 +27,7 @@ import com.example.woolky.domain.games.GameMode;
  */
 public class LeaveGroupConfirmationDialogFragment extends DialogFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public LeaveGroupConfirmationDialogFragment() {
-        // Required empty public constructor
-    }
+    public LeaveGroupConfirmationDialogFragment() {}
 
 
     public static LeaveGroupConfirmationDialogFragment newInstance() {
@@ -48,11 +37,6 @@ public class LeaveGroupConfirmationDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,7 +58,6 @@ public class LeaveGroupConfirmationDialogFragment extends DialogFragment {
                 .setNegativeButton("NO", (dialog, id) -> dialog.dismiss());
         return builder.create();
     }
-
 
 
     public void leaveGroup() {

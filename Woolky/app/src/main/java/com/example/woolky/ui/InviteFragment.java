@@ -13,14 +13,11 @@ import com.example.woolky.R;
 
 public abstract class InviteFragment extends Fragment {
 
-    public InviteFragment() {
-        // Required empty public constructor
-    }
+    public InviteFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_invite, container, false);
     }
 }

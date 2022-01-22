@@ -49,7 +49,6 @@ import java.util.List;
 
 
 public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCallback, LocationListener, InputDataDialog.OnDataSubmitted {
-    private static final int FINE_LOCATION_CODE = 114;
     public static final int VERTEX_RADIUS = 8;
 
     private GoogleMap mMap;
@@ -105,7 +104,6 @@ public class EscapeRoomCreationFragment extends Fragment implements OnMapReadyCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_escape_room_creation, container, false);
     }
 

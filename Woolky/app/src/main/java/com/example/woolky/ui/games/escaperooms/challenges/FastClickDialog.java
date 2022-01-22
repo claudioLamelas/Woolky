@@ -47,7 +47,6 @@ public class FastClickDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_fast_click_dialog, container, false);
     }
 
@@ -71,7 +70,7 @@ public class FastClickDialog extends DialogFragment {
         TextView timeTV = view.findViewById(R.id.fastClickText);
         Button reactionButton = view.findViewById(R.id.startFastClickChallengeButton);
         FrameLayout colorSquare = view.findViewById(R.id.fastClickColorLayout);
-//        reactionButton.setText("Click");
+
         reactionButton.setVisibility(View.INVISIBLE);
         timeTV.setText("0.000 s");
 

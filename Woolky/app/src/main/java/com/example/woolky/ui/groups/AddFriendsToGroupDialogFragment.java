@@ -37,25 +37,17 @@ import java.util.List;
 
 public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
-
     private Group group;
-
     private RecyclerView recyclerView;
-
     private TextView noFriendsMessage;
-
     private User signedInUser;
-
     private AddFriendsToGroupDialogFragment.FriendsListGroupAdapter adapter;
-
     private HomeActivity homeActivity;
-
     private DatabaseReference databaseRef;
 
     public AddFriendsToGroupDialogFragment(Group current) {
         group = current;
     }
-
 
     public static AddFriendsToGroupDialogFragment newInstance(String title, Group group) {
         AddFriendsToGroupDialogFragment frag = new AddFriendsToGroupDialogFragment(group);
@@ -68,8 +60,7 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_add_friends_to_group, container, false);
-        return view;
+        return (RelativeLayout) inflater.inflate(R.layout.fragment_add_friends_to_group, container, false);
     }
 
     class FriendsListGroupAdapter extends RecyclerView.Adapter<AddFriendsToGroupDialogFragment.FriendsListGroupAdapter.ViewHolder> {
@@ -120,9 +111,7 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
     }
 
     private void addFriendToGroup(String id) {
-
                 if (!group.hasMember(id)) {
-
                     group.addMember(id);
                     databaseRef.child("groups").child(group.getId()).setValue(group);
 
@@ -133,7 +122,6 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
                             friend.addNewGroup(group.getId());
                             databaseRef.child("users").child(friend.getUserId()).setValue(friend);
                         }
-
                     });
                 }
     }
@@ -149,7 +137,6 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
@@ -169,34 +156,19 @@ public class AddFriendsToGroupDialogFragment extends DialogFragment {
 
         databaseRef = homeActivity.getDatabaseRef();
         List<User> users = homeActivity.getUsers();
-        //List<String> friendsId = signedInUser.getFriends();
         List<Friend> friends = new ArrayList<>();
-
-        int size = signedInUser.getNumberFriends() - group.getNumberMembers() - 1;
 
         List<String> friendsId = signedInUser.getFriends();
         List<String> members = group.getMembers();
 
 
         if (friendsId != null) {
-
             for (User user : users) {
-
                 if (friendsId.contains(user.getUserId()) && !members.contains(user.getUserId())) {
-
                     friends.add(new Friend(user.getUserId(), user.getUserName(), user.getPhotoUrl()));
                 }
             }
         }
-
-
-/*        if (signedInUser.getFriends()!=null)
-            for (User friend: users) {
-                if (friendsId.contains(friend.getUserId()))
-
-            }*/
-
-        //complete
 
         adapter = new AddFriendsToGroupDialogFragment.FriendsListGroupAdapter(friends);
         recyclerView.setAdapter(adapter);

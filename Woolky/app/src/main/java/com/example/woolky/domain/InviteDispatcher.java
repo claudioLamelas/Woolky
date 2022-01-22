@@ -15,14 +15,13 @@ public class InviteDispatcher {
     public HomeActivity activity;
     public List<InviteFragment> pendingInvites;
 
-    private InviteDispatcher(HomeActivity activity) {
-        this.activity = activity;
+    private InviteDispatcher() {
         pendingInvites = new ArrayList<>();
     }
 
-    public static InviteDispatcher getInstance(HomeActivity activity) {
+    public static InviteDispatcher getInstance() {
         if (inviteDispatcher == null) {
-            inviteDispatcher = new InviteDispatcher(activity);
+            inviteDispatcher = new InviteDispatcher();
         }
         return inviteDispatcher;
     }
@@ -45,5 +44,9 @@ public class InviteDispatcher {
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.inviteFragment, nextInviteFragment, "inviteFragment").commitNow();
             }
         }
+    }
+
+    public void setNewActivity(HomeActivity activity) {
+        this.activity = activity;
     }
 }

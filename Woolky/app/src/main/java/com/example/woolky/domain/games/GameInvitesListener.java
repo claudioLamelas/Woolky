@@ -48,7 +48,7 @@ public class GameInvitesListener implements ChildEventListener {
                 GameInviteFragment gif = GameInviteFragment.newInstance(invite, invite.getGameId());
                 gif.setInviteReference(inviteReference);
 
-                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance(activity);
+                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance();
                 inviteDispatcher.addPendingInvite(gif);
             }
         }

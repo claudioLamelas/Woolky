@@ -14,30 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.woolky.R;
 import com.example.woolky.domain.Group;
 import com.example.woolky.domain.user.User;
 import com.example.woolky.ui.HomeActivity;
+import com.example.woolky.utils.Utils;
 import com.google.firebase.database.DatabaseReference;
 
 
 public class AddNewGroupFragment extends DialogFragment {
 
-
-
-    public AddNewGroupFragment() {
-        // Required empty public constructor
-    }
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-    }
+    public AddNewGroupFragment() {}
 
     public static AddNewGroupFragment newInstance(String title) {
         AddNewGroupFragment frag = new AddNewGroupFragment();
@@ -50,7 +39,6 @@ public class AddNewGroupFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_new_group, container, false);
     }
 
@@ -77,13 +65,17 @@ public class AddNewGroupFragment extends DialogFragment {
     public void createNewGroup(View view) {
         EditText groupNameET = view.findViewById(R.id.groupsNameInput);
         String groupName = groupNameET.getText().toString();
+        HomeActivity ha = (HomeActivity) getActivity();
 
-        if (!groupName.isEmpty()) {
-            HomeActivity ha = (HomeActivity) getActivity();
+        if (groupName.isEmpty()) {
+            Utils.showWarningSnackBar(ha, getTargetFragment().getView(),  "All groups need an awesome name!");
+        }
+        else if (groupName.length() > 40) {
+            Utils.showWarningSnackBar(ha, getTargetFragment().getView(),  "Try a shorter name!");
+        }
+        else {
             DatabaseReference databaseRef = ha.getDatabaseRef();
             User owner = ha.getSignedInUser();
-
-
 
             DatabaseReference groupsRef = databaseRef.child("groups");
             DatabaseReference push = groupsRef.push();
