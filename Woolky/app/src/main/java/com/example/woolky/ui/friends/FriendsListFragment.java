@@ -114,6 +114,7 @@ public class FriendsListFragment extends Fragment {
         friends.remove(position);
         databaseRef.child("users").child(signedInUser.getUserId()).setValue(signedInUser);
         adapter.notifyItemRemoved(position);
+        showMessageIfNoFriends(friends);
     }
 
 

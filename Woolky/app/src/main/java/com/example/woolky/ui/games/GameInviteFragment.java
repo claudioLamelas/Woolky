@@ -117,11 +117,17 @@ public class GameInviteFragment extends InviteFragment {
         }, secondsDelayed * 1000);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
+
     public void setInviteReference(DatabaseReference inviteReference) {
         this.inviteReference = inviteReference;
     }
 
     private void signalFragmentExit(HomeActivity activity) {
-        InviteDispatcher.getInstance(activity).signalToShowNextInvite();
+        InviteDispatcher.getInstance().signalToShowNextInvite();
     }
 }

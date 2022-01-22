@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.woolky.R;
+import com.example.woolky.domain.InviteDispatcher;
 import com.example.woolky.domain.InviteState;
 import com.example.woolky.domain.Pedometer;
 import com.example.woolky.domain.friends.FriendsInvite;
@@ -66,6 +67,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        InviteDispatcher.getInstance().setNewActivity(this);
 
         String[] permissions = new String[2];
         permissions[0] = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -143,6 +146,14 @@ public class HomeActivity extends AppCompatActivity {
         handler.removeCallbacksAndMessages(null);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (areWeHome() && !isPlaying)
+            super.onBackPressed();
+        else
+            changeToHome();
+    }
+
     private BottomNavigationView.OnItemSelectedListener navListener =
             item -> {
                 Fragment selected = null;
@@ -178,6 +189,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public boolean areWeHome() { return bottomNav.getSelectedItemId() == R.id.nav_home; }
+
+    public void changeToHome() {
+        bottomNav.setSelectedItemId(R.id.nav_home);
+    }
 
     public void changeToMap() {
         bottomNav.setSelectedItemId(R.id.nav_map);

@@ -41,7 +41,7 @@ public class FriendsInvitesListener implements ChildEventListener {
                 FriendsInviteFragment gif = FriendsInviteFragment.newInstance(lastInvite, lastInviteKey);
                 gif.setInviteReference(inviteReference);
 
-                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance(activity);
+                InviteDispatcher inviteDispatcher = InviteDispatcher.getInstance();
                 inviteDispatcher.addPendingInvite(gif);
             }
         }
