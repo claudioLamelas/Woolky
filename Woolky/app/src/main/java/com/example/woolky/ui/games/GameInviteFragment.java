@@ -20,6 +20,7 @@ import com.example.woolky.ui.HomeActivity;
 import com.example.woolky.R;
 import com.example.woolky.domain.games.GameInvite;
 import com.example.woolky.domain.InviteState;
+import com.example.woolky.utils.Utils;
 import com.google.firebase.database.DatabaseReference;
 
 /**
@@ -76,17 +77,22 @@ public class GameInviteFragment extends InviteFragment {
         acceptButton.setOnClickListener((view) -> {
             handler.removeCallbacksAndMessages(null);
             inviteReference.child("inviteState").setValue(InviteState.ACCEPTED);
+            HomeActivity activity = (HomeActivity) requireActivity();
+            if (!activity.isPlaying) {
 
-            if (gameInvite instanceof EscapeRoomGameInvite) {
-                EscapeRoomGameInvite invite = ((EscapeRoomGameInvite) gameInvite);
-                ((HomeActivity) getActivity()).setupEscapeRoomGame(gameInviteID,
-                        invite.getEscapeRoomId(), invite.getFromId(), invite.getPlayersIds(), true);
+                activity.isPlaying = true;
+                if (gameInvite instanceof EscapeRoomGameInvite) {
+                    EscapeRoomGameInvite invite = ((EscapeRoomGameInvite) gameInvite);
+                    ((HomeActivity) getActivity()).setupEscapeRoomGame(gameInviteID,
+                            invite.getEscapeRoomId(), invite.getFromId(), invite.getPlayersIds(), true);
+                } else {
+                    ((HomeActivity) getActivity()).setupTicTacToeGame(gameInviteID, true);
+                }
+
             } else {
-                ((HomeActivity) getActivity()).setupTicTacToeGame(gameInviteID, true);
+                Utils.showInfoSnackBar(activity, getView(), "Already in a game");
             }
 
-            HomeActivity activity = (HomeActivity) requireActivity();
-            activity.isPlaying = true;
             activity.getSupportFragmentManager().beginTransaction().remove(this).commitNow();
             signalFragmentExit(activity);
         });
